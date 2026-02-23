@@ -1,0 +1,296 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "تعديل الدورة";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .form-card {
+        background: var(--c-white);
+        border-radius: 2rem;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(10,50,84,0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        border-bottom: 5px solid var(--c-secondary);
+    }
+
+    .header-icon {
+        width: 5rem;
+        height: 5rem;
+        background: var(--c-secondary);
+        color: var(--c-primary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 1rem auto;
+        box-shadow: 0 10px 25px rgba(175,143,66,0.4);
+    }
+
+    .card-header h2 {
+        color: var(--c-white);
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-header p {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .form-body {
+        padding: 3rem 2.5rem;
+    }
+
+    .input-group {
+        margin-bottom: 2rem;
+    }
+
+    .input-label {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 0.8rem;
+    }
+
+        .input-label span {
+            color: #ef4444;
+        }
+
+    .form-control {
+        width: 100%;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+        font-family: inherit;
+        font-weight: bold;
+        color: var(--c-primary);
+        transition: var(--transition);
+    }
+
+        .form-control:focus {
+            outline: none;
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
+        }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    @@media(min-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .price-wrapper {
+        position: relative;
+    }
+
+    .price-icon {
+        position: absolute;
+        left: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: #10b981;
+    }
+
+    .price-input {
+        padding-left: 3rem;
+        font-family: Arial, sans-serif;
+        font-size: 1.3rem;
+    }
+
+    .toggle-box {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        cursor: pointer;
+        transition: var(--transition);
+        height: 100%;
+    }
+
+        .toggle-box:hover {
+            border-color: var(--c-secondary);
+        }
+
+        .toggle-box input {
+            width: 1.5rem;
+            height: 1.5rem;
+            accent-color: var(--c-secondary);
+            cursor: pointer;
+        }
+
+    .toggle-text h4 {
+        margin: 0 0 0.3rem 0;
+        font-size: 1.2rem;
+        color: var(--c-primary);
+        font-weight: 900;
+    }
+
+    .toggle-text p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: bold;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-save {
+        flex: 2;
+        min-width: 200px;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border: none;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+    }
+
+        .btn-save:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-3px);
+        }
+
+    .btn-cancel {
+        flex: 1;
+        min-width: 150px;
+        background: #f1f5f9;
+        color: #64748b;
+        text-align: center;
+        text-decoration: none;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: var(--c-primary);
+        }
+
+    .val-error {
+        color: #ef4444;
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: block;
+        margin-top: 0.5rem;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+
+        <div class="card-header">
+            <div class="header-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+            <h2>تحديث بيانات الدورة</h2>
+            <p>تعديل مسار الدورة، التكلفة، أو حالة التفعيل.</p>
+        </div>
+
+        <form asp-controller="Admin" asp-action="EditCourse" method="post" class="form-body">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="input-group">
+                <label asp-for="Title" class="input-label">عنوان الدورة <span>*</span></label>
+                <input asp-for="Title" required class="form-control" />
+                <span asp-validation-for="Title" class="val-error"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="Description" class="input-label">النبذة الوصفية <span>*</span></label>
+                <textarea asp-for="Description" rows="4" required class="form-control"></textarea>
+                <span asp-validation-for="Description" class="val-error"></span>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group" style="margin: 0;">
+                    <label asp-for="Price" class="input-label">تكلفة الاشتراك (ريال) <span>*</span></label>
+                    <div class="price-wrapper">
+                        <input asp-for="Price" type="number" step="0.01" required class="form-control price-input" />
+                        <i class="fa-solid fa-money-bill-wave price-icon"></i>
+                    </div>
+                    <span asp-validation-for="Price" class="val-error"></span>
+                </div>
+
+                <div class="input-group" style="margin: 0;">
+                    <label class="input-label" style="visibility: hidden;">التفعيل</label>
+                    <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
+                        <input asp-for="IsActive" type="checkbox" id="IsActive" style="pointer-events: none;" />
+                        <div class="toggle-text">
+                            <h4>الدورة مفعلة ونشطة</h4>
+                            <p>إذا تم الإلغاء، لن تظهر للطلاب.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fa-solid fa-save"></i> حفظ التحديثات</button>
+                <a href="/Admin/Index" class="btn-cancel">تراجع</a>
+            </div>
+        </form>
+    </div>
+</div>

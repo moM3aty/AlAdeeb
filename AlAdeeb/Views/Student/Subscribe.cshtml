@@ -1,0 +1,461 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "تأكيد الاشتراك";
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-card: 0 20px 50px rgba(10, 50, 84, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .subscribe-page {
+        font-family: 'Hayah', sans-serif;
+        padding: 4rem 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        direction: rtl;
+    }
+
+    .sub-card {
+        background: var(--c-white);
+        border-radius: 2.5rem;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        border: 1px solid rgba(175,143,66,0.1);
+        animation: fadeUp 0.8s ease;
+    }
+
+    .sub-header {
+        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        md: flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .sub-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(175,143,66,0.2) 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+
+    .course-info {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        text-align: right;
+    }
+
+    .course-icon {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid rgba(175,143,66,0.5);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--c-secondary);
+        backdrop-filter: blur(5px);
+    }
+
+    .course-info h2 {
+        font-size: 2rem;
+        color: var(--c-white);
+        margin: 0 0 0.5rem 0;
+        font-weight: 900;
+    }
+
+    .course-info p {
+        font-size: 1.2rem;
+        color: var(--c-secondary);
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .price-tag {
+        position: relative;
+        z-index: 10;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 1rem 2rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+        .price-tag span {
+            display: block;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-tag strong {
+            font-size: 2.5rem;
+            color: var(--c-white);
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .price-tag small {
+            font-size: 1rem;
+            color: var(--c-secondary);
+            font-family: 'Hayah', sans-serif;
+        }
+
+    .sub-body {
+        padding: 3rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    @@media(min-width: 768px) {
+        .sub-body {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: var(--c-primary);
+        font-weight: 900;
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .section-title i {
+            color: var(--c-secondary);
+        }
+
+    /* Bank Details */
+    .bank-card {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .bank-logo {
+        width: 5rem;
+        height: 5rem;
+        background: var(--c-white);
+        border-radius: 1.2rem;
+        margin: 0 auto 1rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #2e7d32;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .bank-card h4 {
+        font-size: 1.4rem;
+        color: var(--c-primary);
+        margin: 0 0 0.5rem 0;
+        font-weight: 900;
+    }
+
+    .bank-card p {
+        font-size: 1rem;
+        color: #64748b;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .iban-box {
+        background: var(--c-white);
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .iban-text {
+        font-family: Arial, sans-serif;
+        font-weight: 900;
+        color: var(--c-primary);
+        font-size: 1.1rem;
+        direction: ltr;
+        letter-spacing: 1px;
+    }
+
+    .copy-btn {
+        background: #f1f5f9;
+        border: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.5rem;
+        color: var(--c-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+        .copy-btn:hover {
+            background: var(--c-primary);
+            color: var(--c-secondary);
+        }
+
+    /* Upload Form */
+    .upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 1.5rem;
+        background: #f8fafc;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+        .upload-area:hover {
+            border-color: var(--c-secondary);
+            background: rgba(175,143,66,0.02);
+        }
+
+    .upload-input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    .upload-icon {
+        width: 4rem;
+        height: 4rem;
+        background: var(--c-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: #94a3b8;
+        margin: 0 auto 1rem auto;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: var(--transition);
+    }
+
+    .upload-area:hover .upload-icon {
+        color: var(--c-secondary);
+    }
+
+    .upload-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--c-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .upload-hint {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .preview-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: var(--c-white);
+        z-index: 5;
+        border-radius: 1.3rem;
+        display: none;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border: none;
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-family: 'Hayah', sans-serif;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+    }
+
+        .submit-btn:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(175,143,66,0.3);
+        }
+
+    .whatsapp-support {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .whatsapp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: #edf7ed;
+        color: #2e7d32;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 900;
+        text-decoration: none;
+        border: 1px solid #c8e6c9;
+        transition: var(--transition);
+    }
+
+        .whatsapp-btn:hover {
+            background: #2e7d32;
+            color: var(--c-white);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="subscribe-page">
+    <div class="sub-card">
+
+        <div class="sub-header">
+            <div class="course-info">
+                <div class="course-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                <div>
+                    <h2>تأكيد حجز الدورة</h2>
+                    <p>@Model.Title</p>
+                </div>
+            </div>
+            <div class="price-tag">
+                <span>المبلغ المطلوب</span>
+                <strong>@Model.Price <small>ريال</small></strong>
+            </div>
+        </div>
+
+        <div class="sub-body">
+
+            <div class="bank-section">
+                <h3 class="section-title"><i class="fa-solid fa-building-columns"></i> بيانات التحويل</h3>
+                <div class="bank-card">
+                    <div class="bank-logo"><i class="fa-solid fa-building-columns"></i></div>
+                    <h4>البنك الأهلي السعودي</h4>
+                    <p>باسم: أ. صلاح عبد العال</p>
+
+                    <div class="iban-box">
+                        <span class="iban-text" id="iban">SA12 3456 7891 0111 2131 41</span>
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText('SA12345678910111213141'); alert('تم النسخ');"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+                    <span style="font-size: 0.85rem; color: #2e7d32; font-weight: bold; background: #edf7ed; padding: 0.3rem 0.8rem; border-radius: 0.5rem;"><i class="fa-solid fa-shield-check"></i> حساب بنكي موثق</span>
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <h3 class="section-title"><i class="fa-solid fa-cloud-arrow-up"></i> إرفاق إيصال الدفع</h3>
+                <form asp-controller="Student" asp-action="SubmitSubscription" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="courseId" value="@Model.Id" />
+
+                    <div class="upload-area">
+                        <input type="file" name="receiptImage" id="receiptImage" required accept="image/*" class="upload-input" onchange="previewImg(this)">
+                        <img id="preview" src="" class="preview-img" />
+                        <div id="upload-content">
+                            <div class="upload-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                            <h4 class="upload-text">اضغط لرفع صورة الإيصال</h4>
+                            <p class="upload-hint">مسموح بالصور (JPG, PNG)</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        إرسال للتفعيل <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <div class="whatsapp-support">
+            <p style="color: #64748b; font-weight: bold; margin-bottom: 1rem;">هل واجهت مشكلة؟ فريق الدعم متواجد لخدمتك</p>
+            <a href="https://wa.me/966540091992" target="_blank" class="whatsapp-btn">
+                <i class="fa-brands fa-whatsapp"></i> تواصل مع خدمة العملاء
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function previewImg(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('upload-content').style.opacity = '0';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

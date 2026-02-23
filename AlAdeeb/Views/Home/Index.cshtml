@@ -1,0 +1,564 @@
+﻿@{
+    ViewData["Title"] = "الرئيسية";
+}
+
+<style>
+    /* استدعاء خط Hayah */
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-primary-dark: #061d33;
+        --c-secondary: #af8f42;
+        --c-secondary-light: #cfa858;
+        --c-bg: #f8f9fc;
+        --c-white: #ffffff;
+        --c-text-main: #1e293b;
+        --c-text-muted: #64748b;
+        --shadow-glow: 0 15px 35px -5px rgba(175, 143, 66, 0.3);
+        --shadow-card: 0 20px 40px -10px rgba(10, 50, 84, 0.1);
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body {
+        font-family: 'Hayah', sans-serif;
+        background-color: var(--c-bg);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* ---------------- Hero Section ---------------- */
+    .hero-section {
+        position: relative;
+        background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary) 100%);
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        direction: rtl;
+    }
+
+    .hero-bg-shapes {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+    }
+
+    .hero-blob-1 {
+        position: absolute;
+        top: -20%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: var(--c-secondary);
+        border-radius: 50%;
+        filter: blur(150px);
+        opacity: 0.15;
+        animation: floatShape 12s infinite alternate ease-in-out;
+    }
+
+    .hero-blob-2 {
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: var(--c-white);
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.05;
+        animation: floatShape 15s infinite alternate-reverse ease-in-out;
+    }
+
+    .hero-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+        width: 100%;
+    }
+
+    @@media (min-width: 992px) {
+        .hero-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .hero-content {
+        animation: fadeUp 1s ease forwards;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(175, 143, 66, 0.3);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        color: var(--c-secondary-light);
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+        .hero-badge i {
+            animation: pulseGlow 2s infinite;
+        }
+
+    .hero-title {
+        font-size: clamp(3rem, 6vw, 4.5rem);
+        font-weight: 900;
+        color: var(--c-white);
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+        .hero-title span {
+            color: var(--c-secondary);
+            background: -webkit-linear-gradient(0deg, var(--c-secondary-light), var(--c-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .hero-description {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.8;
+        margin-bottom: 3rem;
+        max-width: 600px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        background: var(--c-secondary);
+        color: var(--c-primary-dark);
+        padding: 1.2rem 2.5rem;
+        border-radius: 1.2rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: var(--shadow-glow);
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            background: var(--c-secondary-light);
+            box-shadow: 0 20px 40px -5px rgba(175, 143, 66, 0.5);
+        }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--c-white);
+        padding: 1.2rem 2.5rem;
+        border-radius: 1.2rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: var(--transition);
+    }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--c-secondary);
+            color: var(--c-secondary);
+        }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        animation: fadeLeft 1s ease forwards;
+        display: none;
+    }
+
+    @@media (min-width: 992px) {
+        .hero-visual {
+            display: block;
+        }
+    }
+
+    .visual-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 3rem;
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+        transform-style: preserve-3d;
+        transition: var(--transition);
+    }
+
+    .hero-visual:hover .visual-frame {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+
+    .visual-icon {
+        font-size: 10rem;
+        color: var(--c-secondary);
+        opacity: 0.8;
+        transform: translateZ(50px);
+    }
+
+    .float-card-1 {
+        position: absolute;
+        top: 20%;
+        right: -10%;
+        background: var(--c-white);
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-card);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transform: translateZ(80px);
+        animation: floatY 5s infinite ease-in-out;
+    }
+
+        .float-card-1 i {
+            color: var(--c-secondary);
+            font-size: 2rem;
+        }
+
+        .float-card-1 span {
+            color: var(--c-primary);
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+    /* ---------------- Stats Section ---------------- */
+    .stats-section {
+        position: relative;
+        z-index: 20;
+        margin-top: -5rem;
+        padding: 0 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        background: var(--c-white);
+        border-radius: 2rem;
+        box-shadow: var(--shadow-card);
+        border: 1px solid rgba(10, 50, 84, 0.05);
+        padding: 3rem;
+        gap: 2rem;
+    }
+
+    @@media (min-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .stat-item {
+        text-align: center;
+        position: relative;
+    }
+
+    @@media (min-width: 768px) {
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: rgba(10, 50, 84, 0.1);
+        }
+    }
+
+    .stat-value {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        font-family: Arial, sans-serif; /* For numbers */
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: var(--c-secondary);
+        font-weight: 700;
+    }
+
+    /* ---------------- Features Section ---------------- */
+    .features-section {
+        padding: 8rem 2rem;
+        background: var(--c-bg);
+        direction: rtl;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 5rem;
+    }
+
+    .section-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--c-text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .features-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .feature-card {
+        background: var(--c-white);
+        border-radius: 2rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        border: 1px solid transparent;
+        transition: var(--transition);
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-card);
+            border-color: rgba(175, 143, 66, 0.2);
+        }
+
+    .f-icon-wrapper {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(10, 50, 84, 0.03);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem auto;
+        color: var(--c-primary);
+        font-size: 2.5rem;
+        transition: var(--transition);
+    }
+
+    .feature-card:hover .f-icon-wrapper {
+        background: var(--c-secondary);
+        color: var(--c-white);
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .feature-card h3 {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        font-size: 1.1rem;
+        color: var(--c-text-muted);
+        line-height: 1.7;
+    }
+
+    /* Animations */
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes floatShape {
+        0% {
+            transform: translate(0,0) scale(1);
+        }
+
+        100% {
+            transform: translate(30px, 30px) scale(1.1);
+        }
+    }
+
+    @@keyframes floatY {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @@keyframes pulseGlow {
+        0%, 100% {
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(175, 143, 66, 0.5);
+        }
+
+        50% {
+            opacity: 0.5;
+            text-shadow: none;
+        }
+    }
+</style>
+
+<div class="premium-home">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg-shapes">
+            <div class="hero-blob-1"></div>
+            <div class="hero-blob-2"></div>
+        </div>
+
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-crown"></i> المنصة رقم #1 للقدرات
+                </div>
+
+                <h1 class="hero-title">
+                    الدرجة النهائية تبدأ من <br><span>الأديب</span>
+                </h1>
+
+                <p class="hero-description">
+                    منصة تعليمية متكاملة تضمن لك تأسيساً قوياً وتدريباً مكثفاً على كافة مهارات القدرات اللفظي بأحدث الاستراتيجيات مع خبير القدرات أ. صلاح عبد العال.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="/Account/Register" class="btn-primary">
+                        ابدأ رحلة الـ 100% <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <a href="/Student/BrowseCourses" class="btn-outline">
+                        تصفح الدورات <i class="fa-solid fa-compass"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="visual-frame">
+                    <img src="~/images/Salah.jpg" style="border-radius:50px;width: 100%;" alt="Alternate Text" />
+
+
+                    <div class="float-card-1">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>علامة كاملة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value">+@ViewBag.TotalStudentsDisplay</div>
+                <div class="stat-label">طالب وطالبة</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">محاكاة دقيقة</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">+@ViewBag.CoursesCount</div>
+                <div class="stat-label">دورة متخصصة</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">دعم فني وتدريب</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">لماذا تختار الأديب؟</h2>
+            <p class="section-subtitle">صُممت المنصة بعناية فائقة لتلبية كافة احتياجاتك وضمان وصولك للقمة.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="f-icon-wrapper"><i class="fa-solid fa-layer-group"></i></div>
+                <h3>تأسيس من الصفر</h3>
+                <p>بناء قاعدة معرفية صلبة تمكنك من فهم الجذور الأساسية للأسئلة بأسلوب سلس ومبسط.</p>
+            </div>
+            <div class="feature-card">
+                <div class="f-icon-wrapper"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3>شفرات الحل السريع</h3>
+                <p>تعلم كيف تستنتج الإجابة الصحيحة في ثوانٍ معدودة باستخدام استراتيجياتنا الحصرية.</p>
+            </div>
+            <div class="feature-card">
+                <div class="f-icon-wrapper"><i class="fa-solid fa-laptop-file"></i></div>
+                <h3>محاكاة اختبار قياس</h3>
+                <p>اختبارات إلكترونية ذكية بنفس واجهة وتوقيت الاختبار الفعلي لكسر رهبة الامتحان.</p>
+            </div>
+        </div>
+    </section>
+
+</div>

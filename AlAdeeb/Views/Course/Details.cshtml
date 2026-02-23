@@ -1,0 +1,349 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "غرفة تحكم الكورس";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .course-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-mini {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 2rem;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+        .stat-mini i {
+            width: 50px;
+            height: 50px;
+            background: rgba(175, 143, 66, 0.1);
+            color: var(--c-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+    .stat-mini-text h5 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: 900;
+    }
+
+    .stat-mini-text p {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        font-family: Arial;
+    }
+
+    .control-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    @@media(min-width: 1024px) {
+        .control-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .panel {
+        background: #fff;
+        border-radius: 2.5rem;
+        border: 1px solid #eef0f2;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        background: #f8fafc;
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .panel-header h3 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--c-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+            .panel-header h3 i {
+                color: var(--c-secondary);
+            }
+
+    .btn-add-mini {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 0.6rem 1.2rem;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 1.1rem;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-add-mini:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+        }
+
+    .panel-body {
+        padding: 2rem;
+        flex: 1;
+    }
+
+    .list-item {
+        padding: 1.2rem;
+        background: #fcfcfc;
+        border: 1px solid #f1f5f9;
+        border-radius: 1.2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+        .list-item:hover {
+            border-color: var(--c-secondary);
+            transform: translateX(-5px);
+        }
+
+    .item-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .item-meta i {
+            font-size: 1.5rem;
+        }
+
+    .item-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--c-primary);
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,50,84,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+
+        .modal.open {
+            display: flex;
+        }
+
+    .modal-content {
+        background: #fff;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 2.5rem;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+        animation: zoomIn 0.4s ease;
+    }
+
+    .modal-header {
+        background: var(--c-primary);
+        padding: 2rem;
+        text-align: center;
+        color: var(--c-secondary);
+        border-bottom: 5px solid var(--c-secondary);
+    }
+
+    .modal-form {
+        padding: 2.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        border: 2px solid #e2e8f0;
+        font-family: inherit;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+        .form-control:focus {
+            border-color: var(--c-secondary);
+            outline: none;
+        }
+
+    @@keyframes zoomIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="course-stats">
+    <div class="stat-mini">
+        <i class="fa-solid fa-play"></i>
+        <div class="stat-mini-text"><h5>الفيديوهات</h5><p>@Model.Materials?.Count(m => m.MaterialType != "PDF")</p></div>
+    </div>
+    <div class="stat-mini">
+        <i class="fa-solid fa-file-pdf"></i>
+        <div class="stat-mini-text"><h5>المذكرات</h5><p>@Model.Materials?.Count(m => m.MaterialType == "PDF")</p></div>
+    </div>
+    <div class="stat-mini">
+        <i class="fa-solid fa-list-check"></i>
+        <div class="stat-mini-text"><h5>الاختبارات</h5><p>@Model.Quizzes?.Count</p></div>
+    </div>
+</div>
+
+<div class="control-grid">
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3><i class="fa-solid fa-photo-film"></i> دروس الكورس</h3>
+            <button class="btn-add-mini" onclick="openModal('videoModal')">+ إضافة محتوى</button>
+        </div>
+        <div class="panel-body">
+            @if (Model.Materials != null && Model.Materials.Any())
+            {
+                foreach (var m in Model.Materials.OrderBy(x => x.OrderIndex))
+                {
+                    <div class="list-item">
+                        <div class="item-meta">
+                            <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf text-red-600" : "fa-circle-play text-blue-600")"></i>
+                            <span class="item-title">@m.Title</span>
+                        </div>
+                        <form asp-action="DeleteMaterial" asp-route-id="@m.Id" method="post" onsubmit="return confirm('حذف المحتوى؟');">
+                            <button type="submit" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.3rem;"><i class="fa-solid fa-trash-can"></i></button>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+
+                <p style="text-align:center; color:#94a3b8; font-weight:bold;">لا يوجد دروس بعد.</p>
+            }
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3><i class="fa-solid fa-clipboard-question"></i> الاختبارات</h3>
+            <a href="/Admin/AddQuiz?courseId=@Model.Id" class="btn-add-mini">+ بناء اختبار</a>
+        </div>
+        <div class="panel-body">
+            @if (Model.Quizzes != null && Model.Quizzes.Any())
+            {
+                foreach (var q in Model.Quizzes)
+                {
+                    <div class="list-item">
+                        <div class="item-meta">
+                            <i class="fa-solid fa-list-check text-emerald-600"></i>
+                            <span class="item-title">@q.Title</span>
+                        </div>
+                        <form asp-action="DeleteQuiz" asp-route-id="@q.Id" method="post" onsubmit="return confirm('حذف الاختبار؟');">
+                            <button type="submit" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.3rem;"><i class="fa-solid fa-trash-can"></i></button>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+
+                <p style="text-align:center; color:#94a3b8; font-weight:bold;">لا توجد اختبارات مضافة.</p>
+            }
+        </div>
+    </div>
+
+</div>
+
+<!-- Modals -->
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>إضافة فيديو أو ملف</h2></div>
+        <form asp-controller="Course" asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="modal-form">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <div class="form-group">
+                <label class="form-label">عنوان الدرس</label>
+                <input type="text" name="title" required class="form-control" placeholder="مثال: التناظر اللفظي 1" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">النوع</label>
+                <select name="materialType" class="form-control" id="mType" onchange="toggleInputs()">
+                    <option value="YouTube">يوتيوب</option>
+                    <option value="PDF">ملف PDF</option>
+                </select>
+            </div>
+            <div class="form-group" id="ytInp">
+                <label class="form-label">رابط الفيديو</label>
+                <input type="url" name="youtubeUrl" class="form-control" dir="ltr" placeholder="https://youtube.com/..." />
+            </div>
+            <div class="form-group hidden" id="pdfInp">
+                <label class="form-label">اختر ملف الـ PDF</label>
+                <input type="file" name="pdfFile" class="form-control" accept="application/pdf" />
+            </div>
+            <div style="display:flex; gap:1rem; margin-top:2rem;">
+                <button type="submit" class="btn-add-mini" style="flex:1; padding:1.2rem;">حفظ المحتوى</button>
+                <button type="button" onclick="closeModal('videoModal')" class="btn-add-mini" style="background:#f1f5f9; color:#64748b; flex:1;">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function toggleInputs() {
+        const type = document.getElementById('mType').value;
+        document.getElementById('ytInp').classList.toggle('hidden', type === 'PDF');
+        document.getElementById('pdfInp').classList.toggle('hidden', type === 'YouTube');
+    }
+</script>

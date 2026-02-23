@@ -1,0 +1,283 @@
+﻿@model AlAdeeb.Models.ApplicationUser
+@{
+    ViewData["Title"] = "الملف الشخصي";
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-card: 0 25px 50px -12px rgba(10, 50, 84, 0.15);
+        --transition: all 0.3s ease;
+    }
+
+    .profile-page {
+        font-family: 'Hayah', sans-serif;
+        padding: 4rem 1.5rem;
+        max-width: 800px;
+        margin: 0 auto;
+        direction: rtl;
+    }
+
+    .alert-success {
+        background: #edf7ed;
+        color: #2e7d32;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 2rem;
+        border: 1px solid #c8e6c9;
+    }
+
+    .profile-card {
+        background: var(--c-white);
+        border-radius: 2.5rem;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        position: relative;
+        animation: fadeUp 0.6s ease;
+        border: 1px solid rgba(10,50,84,0.05);
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
+        height: 180px;
+        position: relative;
+    }
+
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(175,143,66,0.2) 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+
+    .profile-avatar-container {
+        text-align: center;
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: var(--c-white);
+        border: 4px solid var(--c-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin: 0 auto 1rem auto;
+        box-shadow: 0 15px 30px rgba(10,50,84,0.2);
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        color: var(--c-primary);
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .profile-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(175,143,66,0.1);
+        color: var(--c-secondary);
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .profile-form {
+        padding: 0 3rem 3rem 3rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2rem;
+        transition: var(--transition);
+    }
+
+    .form-control {
+        width: 100%;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1.2rem;
+        padding: 1.2rem 1.2rem 1.2rem 3rem;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--c-primary);
+        transition: var(--transition);
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+        .form-control.ltr-input {
+            font-family: Arial, sans-serif;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .form-control:focus {
+            outline: none;
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
+        }
+
+            .form-control:focus + .input-icon {
+                color: var(--c-secondary);
+            }
+
+    .form-note {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .form-note i {
+            color: var(--c-secondary);
+        }
+
+    .btn-save {
+        width: 100%;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border: none;
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-family: 'Hayah', sans-serif;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(10, 50, 84, 0.2);
+        margin-top: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+    }
+
+        .btn-save:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(175, 143, 66, 0.3);
+        }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="profile-page">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+
+    <div class="profile-card">
+        <div class="profile-header"></div>
+
+        <div class="profile-avatar-container">
+            <div class="profile-avatar">@Model.FullName.Substring(0, 1)</div>
+            <h2 class="profile-name">إعدادات الحساب</h2>
+            <div class="profile-date">
+                <i class="fa-regular fa-calendar-check"></i>
+                انضممت في: <span dir="ltr">@Model.CreatedAt.ToString("yyyy-MM-dd")</span>
+            </div>
+        </div>
+
+        <form asp-controller="Student" asp-action="UpdateProfile" method="post" class="profile-form">
+
+            <div class="form-group">
+                <label class="form-label">الاسم الثلاثي المعتمد</label>
+                <div class="input-wrapper">
+                    <input name="FullName" value="@Model.FullName" required class="form-control" />
+                    <i class="fa-solid fa-user input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">رقم الجوال (اسم الدخول)</label>
+                <div class="input-wrapper">
+                    <input name="PhoneNumber" value="@Model.PhoneNumber" required class="form-control ltr-input" />
+                    <i class="fa-solid fa-phone input-icon"></i>
+                </div>
+                <div class="form-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    تنبيه: تغيير الرقم سيؤدي لتغيير بيانات تسجيل الدخول.
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                <label class="form-label">تحديث كلمة المرور <span style="color:#94a3b8; font-weight:normal;">(اختياري)</span></label>
+                <div class="input-wrapper">
+                    <input name="NewPassword" type="password" class="form-control" placeholder="أدخل كلمة مرور جديدة أو اترك الحقل فارغاً..." />
+                    <i class="fa-solid fa-lock input-icon"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث البيانات
+            </button>
+        </form>
+    </div>
+</div>

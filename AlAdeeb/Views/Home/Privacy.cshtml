@@ -1,0 +1,280 @@
+﻿@{
+    ViewData["Title"] = "سياسة الخصوصية والشروط";
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-soft: 0 20px 40px rgba(10, 50, 84, 0.08);
+        --radius-lg: 2.5rem;
+    }
+
+    .privacy-page {
+        font-family: 'Hayah', sans-serif;
+        background-color: var(--c-bg);
+        min-height: 100vh;
+        padding: 5rem 1.5rem;
+        direction: rtl;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bg-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        z-index: 0;
+        opacity: 0.1;
+    }
+
+    .shape-top {
+        top: -10%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        background: var(--c-secondary);
+    }
+
+    .privacy-container {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        animation: fadeUp 0.8s ease;
+    }
+
+    .badge {
+        display: inline-block;
+        background: rgba(175,143,66,0.1);
+        border: 1px solid rgba(175,143,66,0.3);
+        color: var(--c-secondary);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        color: var(--c-primary);
+        font-weight: 900;
+        margin: 0 0 1rem 0;
+        line-height: 1.2;
+    }
+
+        .page-title span {
+            color: var(--c-secondary);
+        }
+
+    .page-desc {
+        font-size: 1.2rem;
+        color: #64748b;
+    }
+
+    .privacy-card {
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: 4rem 3rem;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 1s ease backwards;
+    }
+
+    .card-line {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--c-primary), var(--c-secondary));
+    }
+
+    .policy-section {
+        margin-bottom: 3.5rem;
+    }
+
+        .policy-section:last-child {
+            margin-bottom: 0;
+        }
+
+    .sec-header {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .sec-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        background: rgba(10,50,84,0.05);
+        color: var(--c-primary);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        border: 1px solid rgba(10,50,84,0.1);
+    }
+
+    .sec-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin: 0;
+    }
+
+    .sec-content {
+        padding-right: 4.7rem;
+        font-size: 1.15rem;
+        color: #475569;
+        line-height: 1.8;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+    }
+
+        .sec-content p {
+            margin: 0 0 1rem 0;
+        }
+
+        .sec-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .sec-content li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+            .sec-content li i {
+                color: var(--c-secondary);
+                margin-top: 0.4rem;
+            }
+
+    .danger-li {
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid #fecaca;
+    }
+
+        .danger-li i {
+            color: #b91c1c !important;
+        }
+
+    .divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 3rem 4.7rem 3rem 0;
+        border: none;
+    }
+
+    @@media (max-width: 768px) {
+        .privacy-card {
+            padding: 2.5rem 1.5rem;
+        }
+
+        .sec-content {
+            padding-right: 0;
+            margin-top: 1.5rem;
+        }
+
+        .divider {
+            margin: 2.5rem 0;
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="privacy-page">
+    <div class="bg-shape shape-top"></div>
+
+    <div class="privacy-container">
+        <div class="page-header">
+            <span class="badge">الشفافية والأمان</span>
+            <h1 class="page-title">سياسة الخصوصية <span>والشروط</span></h1>
+            <p class="page-desc">نلتزم بحماية بياناتك وتقديم بيئة تعليمية آمنة وموثوقة.</p>
+        </div>
+
+        <div class="privacy-card">
+            <div class="card-line"></div>
+
+            <div class="policy-section">
+                <div class="sec-header">
+                    <div class="sec-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h2 class="sec-title">حماية المحتوى الفكري</h2>
+                </div>
+                <div class="sec-content">
+                    <p>جميع المحتويات المتوفرة على "منصة الأديب" من فيديوهات، مذكرات (PDF)، واختبارات إلكترونية هي ملكية فكرية وحصرية للأستاذ صلاح عبد العال.</p>
+                    <div class="danger-li">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        يمنع منعاً باتاً تسجيل الفيديوهات، تصوير الشاشات، أو نشر وتداول المذكرات خارج المنصة. أي انتهاك لهذه الحقوق يعرض صاحبه للمساءلة القانونية والإلغاء الفوري للحساب دون استرجاع أي رسوم.
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="policy-section">
+                <div class="sec-header">
+                    <div class="sec-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                    <h2 class="sec-title">سياسة الدفع والاشتراك</h2>
+                </div>
+                <div class="sec-content">
+                    <p>يتم تفعيل حساب الطالب بشكل يدوي بعد مراجعة إيصال التحويل البنكي والتأكد من وصول المبلغ للحساب المعتمد.</p>
+                    <ul>
+                        <li><i class="fa-solid fa-check-circle"></i> المبالغ المدفوعة غير قابلة للاسترداد بعد التفعيل ودخول الطالب للكورس.</li>
+                        <li><i class="fa-solid fa-check-circle"></i> الاشتراك شخصي ولا يجوز مشاركة بيانات الدخول مع أي شخص آخر.</li>
+                        <li><i class="fa-solid fa-check-circle"></i> اكتشاف أكثر من مستخدم على نفس الحساب يؤدي إلى الحظر النهائي تلقائياً.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="policy-section">
+                <div class="sec-header">
+                    <div class="sec-icon"><i class="fa-solid fa-user-lock"></i></div>
+                    <h2 class="sec-title">سرية بيانات الطلاب</h2>
+                </div>
+                <div class="sec-content">
+                    <p>نحن في منصة الأديب نلتزم التزاماً كاملاً بحماية خصوصية طلابنا. كافة البيانات المدخلة مشفرة ومحفوظة بسرية تامة على خوادم آمنة، ولن يتم بيعها أو مشاركتها مع أي جهة خارجية. تُستخدم البيانات حصراً لتطوير تجربتك التعليمية بالمنصة.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

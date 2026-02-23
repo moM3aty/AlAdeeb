@@ -1,0 +1,502 @@
+﻿@{
+    ViewData["Title"] = "عن المدرب";
+}
+
+<style>
+    /* استدعاء فونت Hayah المخصص (مع استخدام @@ لبيئة Razor) */
+    @@font-face {
+        font-family: 'Hayah';
+        /* قم بتغيير المسار التالي ليتطابق مع مسار ملف الفونت في مجلد wwwroot لديك */
+        src: url('/fonts/Hayah.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-primary-light: #124b7a;
+        --c-secondary: #af8f42;
+        --c-secondary-light: #d1b46b;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --c-text-dark: #111827;
+        --c-text-muted: #64748b;
+        --shadow-soft: 0 20px 40px -10px rgba(10, 50, 84, 0.08);
+        --shadow-glow: 0 15px 35px -5px rgba(175, 143, 66, 0.3);
+        --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Base Setup */
+    .premium-about-page {
+        font-family: 'Hayah', sans-serif;
+        background-color: var(--c-bg);
+        min-height: 100vh;
+        direction: rtl;
+        position: relative;
+        overflow: hidden;
+        padding: 5rem 0;
+    }
+
+    /* Abstract Background Graphics */
+    .bg-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        z-index: 0;
+        opacity: 0.4;
+        animation: shapeFloat 15s infinite alternate ease-in-out;
+    }
+
+    .shape-1 {
+        top: -10%;
+        right: -5%;
+        width: 600px;
+        height: 600px;
+        background: var(--c-secondary);
+    }
+
+    .shape-2 {
+        bottom: -20%;
+        left: -10%;
+        width: 700px;
+        height: 700px;
+        background: var(--c-primary);
+        animation-delay: -5s;
+        opacity: 0.15;
+    }
+
+    /* Container */
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Section Header */
+    .section-header {
+        text-align: center;
+        margin-bottom: 5rem;
+        animation: fadeUp 1s ease forwards;
+    }
+
+    .subtitle-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(175, 143, 66, 0.1);
+        color: var(--c-secondary);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem; /* تم التكبير */
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(175, 143, 66, 0.2);
+    }
+
+        .subtitle-badge i {
+            font-size: 1.2rem; /* تم التكبير */
+        }
+
+    .main-title {
+        font-size: clamp(3rem, 6vw, 4.5rem); /* تم التكبير */
+        font-weight: 900;
+        color: var(--c-primary);
+        line-height: 1.3;
+        margin: 0;
+    }
+
+        .main-title span {
+            color: var(--c-secondary);
+            position: relative;
+        }
+
+    /* The Grid Layout */
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+
+    @@media (min-width: 992px) {
+        .about-grid {
+            grid-template-columns: 5fr 7fr;
+        }
+    }
+
+    /* ---------------- Image Side (Left visual weight) ---------------- */
+    .image-showcase {
+        position: relative;
+        border-radius: 2rem;
+        animation: fadeRight 1s ease forwards;
+    }
+
+    .image-frame {
+        position: relative;
+        border-radius: 2rem;
+        overflow: hidden;
+        z-index: 2;
+        box-shadow: var(--shadow-soft);
+        background: var(--c-primary);
+        aspect-ratio: 4/5;
+    }
+
+        .image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: var(--transition);
+        }
+
+        .image-frame:hover img {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .image-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--c-primary) 0%, transparent 60%);
+            z-index: 1;
+        }
+
+    /* Decorative Elements around image */
+    .gold-border {
+        position: absolute;
+        inset: -20px 20px 20px -20px;
+        border: 3px solid var(--c-secondary);
+        border-radius: 2rem;
+        z-index: 1;
+        transition: var(--transition);
+    }
+
+    .image-showcase:hover .gold-border {
+        inset: -10px 10px 10px -10px;
+    }
+
+    .floating-card {
+        position: absolute;
+        bottom: 30px;
+        right: -30px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-glow);
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid rgba(175, 143, 66, 0.2);
+        animation: floatY 6s infinite ease-in-out;
+    }
+
+        .floating-card .icon-box {
+            width: 4rem; /* تم التكبير */
+            height: 4rem; /* تم التكبير */
+            background: var(--c-secondary);
+            color: var(--c-white);
+            border-radius: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem; /* تم التكبير */
+        }
+
+        .floating-card .text h4 {
+            font-size: 1.8rem; /* تم التكبير */
+            font-weight: 900;
+            color: var(--c-primary);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .floating-card .text p {
+            font-size: 1.1rem; /* تم التكبير */
+            font-weight: 600;
+            color: var(--c-secondary);
+            margin: 0;
+            margin-top: 0.25rem;
+        }
+
+    /* ---------------- Content Side (Right visual weight) ---------------- */
+    .content-showcase {
+        animation: fadeLeft 1s ease forwards;
+    }
+
+    .intro-text {
+        font-size: 1.4rem; /* تم التكبير */
+        color: var(--c-text-muted);
+        line-height: 1.8;
+        margin-bottom: 3rem;
+        position: relative;
+        padding-right: 2rem;
+    }
+
+        .intro-text::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 0;
+            bottom: 10px;
+            width: 4px;
+            background: var(--c-secondary);
+            border-radius: 4px;
+        }
+
+        .intro-text strong {
+            color: var(--c-primary);
+            font-weight: 900;
+            font-size: 1.5rem; /* تم التكبير */
+        }
+
+    /* Features Layout */
+    .features-wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .premium-feature {
+        background: var(--c-white);
+        border: 1px solid rgba(10, 50, 84, 0.05);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        display: flex;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-card);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 0%;
+            background: var(--c-secondary);
+            transition: var(--transition);
+            border-radius: 0 1.5rem 1.5rem 0;
+        }
+
+        .premium-feature:hover {
+            transform: translateX(-10px);
+            box-shadow: var(--shadow-soft);
+            border-color: rgba(175, 143, 66, 0.3);
+        }
+
+            .premium-feature:hover::before {
+                height: 100%;
+            }
+
+    .f-icon {
+        width: 4.5rem; /* تم التكبير */
+        height: 4.5rem; /* تم التكبير */
+        background: rgba(10, 50, 84, 0.03);
+        border: 1px solid rgba(10, 50, 84, 0.1);
+        border-radius: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem; /* تم التكبير */
+        color: var(--c-primary);
+        flex-shrink: 0;
+        transition: var(--transition);
+    }
+
+    .premium-feature:hover .f-icon {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        transform: rotate(5deg) scale(1.1);
+    }
+
+    .f-content h3 {
+        font-size: 1.5rem; /* تم التكبير */
+        font-weight: 800;
+        color: var(--c-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .f-content p {
+        font-size: 1.15rem; /* تم التكبير */
+        color: var(--c-text-muted);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Animations (مع استخدام @@ لبيئة Razor) */
+    @@keyframes shapeFloat {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        100% {
+            transform: translate(-30px, 30px) scale(1.1);
+        }
+    }
+
+    @@keyframes floatY {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeRight {
+        from {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes fadeLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 991px) {
+        .floating-card {
+            right: 10px;
+            bottom: -20px;
+            padding: 1rem;
+        }
+
+        .intro-text {
+            padding-right: 1.5rem;
+            font-size: 1.25rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .premium-feature {
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+
+            .premium-feature:hover {
+                transform: translateY(-5px);
+            }
+    }
+</style>
+
+<div class="premium-about-page">
+
+    <!-- ديكور الخلفية -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <div class="container">
+
+        <div class="section-header">
+            <div class="subtitle-badge">
+                <i class="fa-solid fa-crown"></i> ريادة في التدريب
+            </div>
+            <h1 class="main-title">من هو <span>أ. صلاح عبد العال</span>؟</h1>
+        </div>
+
+        <div class="about-grid">
+
+            <!-- القسم الأيمن (الصورة والإحصائيات) -->
+            <div class="image-showcase">
+                <div class="gold-border"></div>
+                <div class="image-frame">
+                    <img src="~/images/Salah.jpg" alt="أ. صلاح عبد العال" onerror="this.src='https://ui-avatars.com/api/?name=صلاح+عبدالعال&background=0a3254&color=af8f42&size=500';" />
+                </div>
+
+                <!-- بطاقة طافية للإحصائيات -->
+                <div class="floating-card">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="text">
+                        <h4>100%</h4>
+                        <p>نسبة نجاح وتفوق</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- القسم الأيسر (المحتوى والمميزات) -->
+            <div class="content-showcase">
+                <div class="intro-text">
+                    يُعد الأستاذ <strong>صلاح عبد العال</strong> من أبرز الأسماء والخبراء في مجال تدريب القدرات اللفظي. بفضل سنوات من الخبرة العميقة والتحليل الدقيق لأسئلة (قياس)، قام بتأسيس <strong>منصة الأديب</strong> لتكون المرجع الأول والأساسي لكل طالب يطمح للوصول إلى الدرجة النهائية بثقة تامة.
+                </div>
+
+                <div class="features-wrapper">
+
+                    <!-- ميزة 1 -->
+                    <div class="premium-feature">
+                        <div class="f-icon">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>خبرة معمقة في قياس</h3>
+                            <p>إلمام تفصيلي بكافة تحديثات وأنماط أسئلة المركز الوطني للقياس، مما يضمن لك دراسة ما سيأتيك في الاختبار الفعلي تماماً.</p>
+                        </div>
+                    </div>
+
+                    <!-- ميزة 2 -->
+                    <div class="premium-feature">
+                        <div class="f-icon">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>شفرات الحل السريع</h3>
+                            <p>ابتكار استراتيجيات ذكية ومبسطة تساعدك على تحليل النصوص واستخراج الإجابة الصحيحة في ثوانٍ معدودة دون تشتت.</p>
+                        </div>
+                    </div>
+
+                    <!-- ميزة 3 -->
+                    <div class="premium-feature">
+                        <div class="f-icon">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="f-content">
+                            <h3>توجيه واهتمام شخصي</h3>
+                            <p>نحن لا نقدم شروحات فقط، بل نتابع تطور مستواك خطوة بخطوة، ونقدم لك الدعم النفسي والتقني حتى يوم اختبارك.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

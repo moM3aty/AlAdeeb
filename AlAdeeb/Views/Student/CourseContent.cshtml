@@ -1,0 +1,461 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "غرفة المشاهدة";
+    var liveSessions = ViewBag.LiveSessions as IEnumerable<AlAdeeb.Models.LiveSession>;
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-primary-dark: #051b2e;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-panel: 0 20px 40px rgba(0, 0, 0, 0.05);
+        --radius-lg: 2rem;
+        --transition: all 0.3s ease;
+    }
+
+    .viewer-page {
+        font-family: 'Hayah', sans-serif;
+        background: var(--c-bg);
+        min-height: calc(100vh - 80px);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        direction: rtl;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    @@media(min-width: 992px) {
+        .viewer-page {
+            flex-direction: row;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            padding: 2rem;
+        }
+    }
+
+    /* Main Area (Player) */
+    .main-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        min-width: 0;
+    }
+
+    .player-container {
+        background: var(--c-primary-dark);
+        border-radius: var(--radius-lg);
+        flex-grow: 1;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(10,50,84,0.3);
+        border: 2px solid rgba(175,143,66,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+    }
+
+    .player-iframe {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        border: none;
+        z-index: 10;
+    }
+
+    .player-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        background: radial-gradient(circle at center, var(--c-primary), var(--c-primary-dark));
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .play-icon-wrapper {
+        width: 6rem;
+        height: 6rem;
+        background: var(--c-secondary);
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--c-primary-dark);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 30px rgba(175,143,66,0.4);
+    }
+
+    .player-placeholder h3 {
+        color: var(--c-white);
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        font-weight: 900;
+    }
+
+    .player-placeholder p {
+        color: rgba(255,255,255,0.6);
+        font-size: 1.2rem;
+        margin: 0;
+    }
+
+    .lesson-info {
+        background: var(--c-white);
+        padding: 1.5rem 2rem;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-panel);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .info-text .label {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--c-secondary);
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+        display: block;
+    }
+
+    .info-text h2 {
+        font-size: 1.6rem;
+        color: var(--c-primary);
+        margin: 0 0 0.2rem 0;
+        font-weight: 900;
+    }
+
+    .info-text p {
+        font-size: 1rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .info-icon {
+        width: 4rem;
+        height: 4rem;
+        background: rgba(175,143,66,0.1);
+        color: var(--c-secondary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        display: none;
+    }
+
+    @@media(min-width: 576px) {
+        .info-icon {
+            display: flex;
+        }
+    }
+
+    /* Sidebar Playlist */
+    .sidebar {
+        width: 100%;
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-panel);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    @@media(min-width: 992px) {
+        .sidebar {
+            width: 350px;
+            height: 100%;
+        }
+    }
+
+    .sidebar-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+        .sidebar-header h3 {
+            font-size: 1.4rem;
+            color: var(--c-primary);
+            margin: 0;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .sidebar-header h3 i {
+                color: var(--c-secondary);
+            }
+
+    .playlist-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .playlist-section h4 {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: #94a3b8;
+        margin: 0 0 1rem 0;
+        padding-right: 0.5rem;
+    }
+
+    .playlist-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .item-btn {
+        width: 100%;
+        text-align: right;
+        background: var(--c-white);
+        border: 1px solid #e2e8f0;
+        padding: 1rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        font-family: inherit;
+    }
+
+        .item-btn:hover {
+            background: #f8fafc;
+            border-color: rgba(175,143,66,0.3);
+        }
+
+        .item-btn.active {
+            background: rgba(10,50,84,0.03);
+            border-color: var(--c-primary);
+            box-shadow: 0 4px 15px rgba(10,50,84,0.05);
+        }
+
+    .item-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: #f1f5f9;
+        color: #94a3b8;
+        border-radius: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        transition: var(--transition);
+    }
+
+    .item-btn:hover .item-icon {
+        color: var(--c-secondary);
+    }
+
+    .item-btn.active .item-icon {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+    }
+
+    .item-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .item-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin: 0;
+        transition: var(--transition);
+    }
+
+    .item-btn.active .item-title {
+        color: var(--c-secondary);
+    }
+
+    .item-meta {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .tag-green {
+        background: #edf7ed;
+        color: #2e7d32;
+        padding: 0.1rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .tag-red {
+        color: #d32f2f;
+        font-size: 0.85rem;
+        direction: ltr;
+        display: inline-block;
+    }
+
+    /* Custom scrollbar for playlist */
+    .playlist-content::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .playlist-content::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="viewer-page">
+
+    <div class="main-area">
+        <div class="player-container">
+            <iframe id="mainViewer" class="player-iframe hidden" src="" allowfullscreen></iframe>
+
+            <div id="placeholder" class="player-placeholder">
+                <div class="play-icon-wrapper"><i class="fa-solid fa-play"></i></div>
+                <h3>@Model.Title</h3>
+                <p>اختر درساً من القائمة الجانبية لبدء المشاهدة</p>
+            </div>
+        </div>
+
+        <div class="lesson-info">
+            <div class="info-text">
+                <span class="label">يتم عرض الآن</span>
+                <h2 id="currentTitle">غرفة الانتظار</h2>
+                <p id="currentDesc">يرجى التركيز وتدوين الملاحظات أثناء المذاكرة.</p>
+            </div>
+            <div class="info-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fa-solid fa-bars-staggered"></i> محتويات الدورة</h3>
+        </div>
+
+        <div class="playlist-content">
+
+            @if (liveSessions != null && liveSessions.Any())
+            {
+                <div class="playlist-section">
+                    <h4>البثوث المباشرة</h4>
+                    <div class="playlist-items">
+                        @foreach (var live in liveSessions)
+                        {
+                            if (live.IsCompleted && !string.IsNullOrEmpty(live.RecordedVideoUrl))
+                            {
+                                string embed = live.RecordedVideoUrl.Replace("watch?v=", "embed/");
+                                <button onclick="loadContent('@embed', '@live.Title', 'YouTube', this)" class="item-btn">
+                                    <div class="item-icon"><i class="fa-solid fa-video"></i></div>
+                                    <div class="item-text">
+                                        <p class="item-title">@live.Title</p>
+                                        <span class="tag-green">تسجيل متاح</span>
+                                    </div>
+                                </button>
+                            }
+                            else if (!live.IsCompleted)
+                            {
+                                <a href="@live.LiveUrl" target="_blank" class="item-btn" style="border-color:#ffcdd2;">
+                                    <div class="item-icon" style="color:#d32f2f; background:#fdeded;"><i class="fa-solid fa-satellite-dish animate-pulse"></i></div>
+                                    <div class="item-text">
+                                        <p class="item-title" style="color:#c62828;">@live.Title</p>
+                                        <p class="tag-red">@live.ScheduledDate.ToString("MM/dd hh:mm tt")</p>
+                                    </div>
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.Materials != null && Model.Materials.Any())
+            {
+                <div class="playlist-section">
+                    <h4>الدروس والمذكرات</h4>
+                    <div class="playlist-items">
+                        @foreach (var item in Model.Materials.OrderBy(m => m.OrderIndex))
+                        {
+                            string icon = item.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play";
+                            string embedUrl = item.MaterialType == "YouTube" ? item.UrlOrPath.Replace("watch?v=", "embed/") : item.UrlOrPath;
+
+                            <button onclick="loadContent('@embedUrl', '@item.Title', '@item.MaterialType', this)" class="item-btn">
+                                <div class="item-icon"><i class="fa-solid @icon"></i></div>
+                                <div class="item-text">
+                                    <p class="item-title">@item.Title</p>
+                                    <p class="item-meta">@item.MaterialType</p>
+                                </div>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.Quizzes != null && Model.Quizzes.Any())
+            {
+                <div class="playlist-section">
+                    <h4>التطبيقات والاختبارات</h4>
+                    <div class="playlist-items">
+                        @foreach (var quiz in Model.Quizzes)
+                        {
+                            <a href="/Student/TakeQuiz/@quiz.Id" class="item-btn">
+                                <div class="item-icon" style="color:#2e7d32; background:#edf7ed;"><i class="fa-solid fa-clipboard-check"></i></div>
+                                <div class="item-text">
+                                    <p class="item-title" style="color:#1b5e20;">@quiz.Title</p>
+                                    <p class="item-meta"><i class="fa-regular fa-clock"></i> @quiz.DurationInMinutes دقيقة</p>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function loadContent(url, title, type, btnElement) {
+        document.getElementById('placeholder').style.display = 'none';
+        var viewer = document.getElementById('mainViewer');
+        viewer.classList.remove('hidden');
+
+        if(type === 'PDF') {
+            viewer.src = url;
+            document.getElementById('currentDesc').innerText = "تلميح: يمكنك قراءة المذكرة من داخل الشاشة، أو تحميلها.";
+        } else {
+            viewer.src = url + "?rel=0&modestbranding=1&autoplay=1";
+            document.getElementById('currentDesc').innerText = "تلميح: يمكنك تكبير الشاشة (Fullscreen).";
+        }
+
+        document.getElementById('currentTitle').innerText = title;
+
+        document.querySelectorAll('.item-btn').forEach(el => el.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+    }
+</script>

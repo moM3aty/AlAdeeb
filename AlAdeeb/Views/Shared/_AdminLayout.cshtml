@@ -1,0 +1,537 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - إدارة الأديب</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        @@font-face {
+            font-family: 'Hayah';
+            src: url('/fonts/Hayah.otf') format('opentype');
+        }
+
+        :root {
+            --c-primary: #0a3254;
+            --c-secondary: #af8f42;
+            --c-bg: #f4f7f9;
+            --c-white: #ffffff;
+            --c-text: #1e293b;
+            --shadow-soft: 0 10px 25px rgba(10, 50, 84, 0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            font-family: 'Hayah', sans-serif;
+            background-color: var(--c-bg);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--c-text);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--c-primary);
+            color: var(--c-white);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 100;
+            position: relative;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        }
+
+            .sidebar::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background-image: radial-gradient(rgba(175,143,66,0.1) 1px, transparent 1px);
+                background-size: 15px 15px;
+                z-index: 0;
+                opacity: 0.5;
+                pointer-events: none;
+            }
+
+        .sidebar-header {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-logo {
+            width: 45px;
+            height: 45px;
+            background: var(--c-white);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(175,143,66,0.3);
+        }
+
+        .sidebar-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--c-white);
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+            .sidebar-title span {
+                color: var(--c-secondary);
+            }
+
+        .nav-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+            .nav-menu::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .nav-menu::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.2);
+                border-radius: 10px;
+            }
+
+        .nav-group {
+            font-size: 0.9rem;
+            color: rgba(175,143,66,0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 1.5rem 0 0.5rem 0;
+            font-weight: 900;
+        }
+
+            .nav-group:first-child {
+                margin-top: 0;
+            }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .nav-item-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(175,143,66,0.1);
+            border-color: rgba(175,143,66,0.3);
+            color: var(--c-white);
+        }
+
+            .nav-item:hover i, .nav-item.active i {
+                color: var(--c-secondary);
+                transform: scale(1.1);
+            }
+
+        .badge-pulse {
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.8rem;
+            font-family: Arial, sans-serif;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            animation: pulse 2s infinite;
+            font-weight: 900;
+        }
+
+        .nav-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            background: rgba(239,68,68,0.1);
+            color: #ef4444;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: 900;
+            transition: var(--transition);
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+
+            .logout-btn:hover {
+                background: #ef4444;
+                color: var(--c-white);
+            }
+
+        /* Main Wrapper */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            position: relative;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 90px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid rgba(10,50,84,0.05);
+            z-index: 50;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .menu-toggle {
+            background: var(--c-bg);
+            border: 1px solid rgba(10,50,84,0.1);
+            border-radius: 0.8rem;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            color: var(--c-primary);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+            .menu-toggle:hover {
+                background: var(--c-primary);
+                color: var(--c-secondary);
+            }
+
+        .page-title {
+            margin: 0;
+        }
+
+            .page-title h1 {
+                font-size: 1.8rem;
+                font-weight: 900;
+                color: var(--c-primary);
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .page-title p {
+                font-size: 0.9rem;
+                color: #64748b;
+                margin: 0;
+                font-weight: bold;
+            }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .view-site-btn {
+            background: var(--c-bg);
+            color: var(--c-primary);
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.8rem;
+            font-weight: 900;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            border: 1px solid rgba(10,50,84,0.1);
+        }
+
+            .view-site-btn:hover {
+                background: var(--c-secondary);
+                color: var(--c-white);
+                border-color: var(--c-secondary);
+            }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--c-bg);
+            padding: 0.4rem 0.4rem 0.4rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(10,50,84,0.1);
+            cursor: default;
+        }
+
+            .admin-profile img {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid var(--c-secondary);
+            }
+
+        .admin-info h4 {
+            margin: 0 0 0.2rem 0;
+            font-size: 1.1rem;
+            color: var(--c-primary);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .admin-info p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--c-secondary);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+            .content-area::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .content-area::-webkit-scrollbar-thumb {
+                background: var(--c-secondary);
+                border-radius: 10px;
+            }
+
+        /* Global Alert */
+        .admin-alert {
+            background: #edf7ed;
+            color: #2e7d32;
+            padding: 1.2rem 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #c8e6c9;
+            border-right: 5px solid #2e7d32;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            animation: slideDown 0.5s ease;
+        }
+
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10,50,84,0.6);
+            backdrop-filter: blur(3px);
+            z-index: 90;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @@media(max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                right: -280px;
+                top: 0;
+                bottom: 0;
+            }
+
+                .sidebar.open {
+                    right: 0;
+                }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .page-title p {
+                display: none;
+            }
+
+            .topbar-right .view-site-btn span, .topbar-right .admin-info {
+                display: none;
+            }
+
+            .content-area {
+                padding: 1.5rem;
+            }
+        }
+
+        @@keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <img src="~/images/logo.png" alt="Logo" class="sidebar-logo" />
+            <h2 class="sidebar-title">إدارة <span>الأديب</span></h2>
+        </div>
+
+        <div class="nav-menu">
+            <div class="nav-group">نظرة عامة</div>
+            <a href="/Admin/Index" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
+                <div class="nav-item-content"><i class="fa-solid fa-chart-pie"></i> لوحة القيادة</div>
+            </a>
+            <a href="/Admin/SubscriptionRequests" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "SubscriptionRequests" ? "active" : "")">
+                <div class="nav-item-content"><i class="fa-solid fa-file-invoice-dollar"></i> الاشتراكات المالية</div>
+                @if (ViewBag.PendingRequestsCount > 0)
+                {
+                    <span class="badge-pulse">@ViewBag.PendingRequestsCount</span>
+                }
+            </a>
+
+            <div class="nav-group">المنظومة التعليمية</div>
+            <a href="/Admin/CreateCourse" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "CreateCourse" ? "active" : "")">
+                <div class="nav-item-content"><i class="fa-solid fa-folder-plus"></i> إضافة دورة</div>
+            </a>
+            <a href="/Live/ManageLiveSessions" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Live" ? "active" : "")">
+                <div class="nav-item-content"><i class="fa-solid fa-satellite-dish"></i> البث المباشر</div>
+            </a>
+
+            <div class="nav-group">المجتمع</div>
+            <a href="/Admin/StudentsList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "StudentsList" ? "active" : "")">
+                <div class="nav-item-content"><i class="fa-solid fa-users-gear"></i> إدارة الطلاب</div>
+            </a>
+        </div>
+
+        <div class="nav-footer">
+            <a href="/Account/Logout" class="logout-btn"><i class="fa-solid fa-power-off"></i> تسجيل الخروج</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                <div class="page-title">
+                    <h1>@ViewData["Title"]</h1>
+                    <p>مرحباً بعودتك، دعنا نرى ما الجديد اليوم.</p>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <a href="/" target="_blank" class="view-site-btn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>عرض المنصة</span>
+                </a>
+                <div class="admin-profile">
+                    <div class="admin-info">
+                        <h4>أ. صلاح عبد العال</h4>
+                        <p>المدير العام</p>
+                    </div>
+                    <img src="~/images/Salah.jpg" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=صلاح+عبدالعال&background=0a3254&color=af8f42';" />
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="admin-alert">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            if (sidebar.classList.contains('open')) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

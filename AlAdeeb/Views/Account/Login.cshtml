@@ -1,0 +1,328 @@
+﻿@model AlAdeeb.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-card: 0 25px 50px -12px rgba(10, 50, 84, 0.25);
+        --transition: all 0.3s ease;
+    }
+
+    .auth-page {
+        font-family: 'Hayah', sans-serif;
+        background-color: var(--c-bg);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        direction: rtl;
+        padding: 2rem;
+    }
+
+    /* Abstract Shapes */
+    .bg-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        z-index: 0;
+        animation: floatY 10s infinite alternate;
+    }
+
+    .blob-1 {
+        width: 400px;
+        height: 400px;
+        background: rgba(175, 143, 66, 0.2);
+        top: -10%;
+        right: -5%;
+    }
+
+    .blob-2 {
+        width: 500px;
+        height: 500px;
+        background: rgba(10, 50, 84, 0.15);
+        bottom: -15%;
+        left: -10%;
+        animation-delay: -5s;
+    }
+
+    /* Auth Card */
+    .auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        width: 100%;
+        max-width: 480px;
+        padding: 3.5rem 3rem;
+        border-radius: 2.5rem;
+        box-shadow: var(--shadow-card);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-top: 5px solid var(--c-secondary);
+        position: relative;
+        z-index: 10;
+        animation: fadeUp 0.6s ease-out;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .auth-logo {
+        width: 5rem;
+        height: 5rem;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin: 0 auto 1.5rem auto;
+        box-shadow: 0 10px 25px rgba(10, 50, 84, 0.2);
+        transform: rotate(5deg);
+    }
+
+    .auth-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .auth-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2rem;
+        transition: var(--transition);
+    }
+
+    .form-control {
+        width: 100%;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1.2rem;
+        padding: 1.2rem 1.2rem 1.2rem 3rem;
+        font-size: 1.1rem;
+        font-family: Arial, sans-serif; /* For numbers/passwords */
+        font-weight: bold;
+        color: var(--c-primary);
+        transition: var(--transition);
+        box-sizing: border-box;
+    }
+
+        .form-control:focus {
+            outline: none;
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
+        }
+
+            .form-control:focus + .input-icon {
+                color: var(--c-secondary);
+            }
+
+    .form-error {
+        color: #ef4444;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .validation-summary {
+        background: #fef2f2;
+        color: #ef4444;
+        padding: 1rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+        font-size: 1rem;
+        border: 1px solid #fecaca;
+    }
+
+    .options-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+        .remember-me input {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--c-secondary);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-size: 1.1rem;
+            color: var(--c-text-muted);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border: none;
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-family: 'Hayah', sans-serif;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(10, 50, 84, 0.2);
+    }
+
+        .btn-submit:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(175, 143, 66, 0.3);
+        }
+
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        font-size: 1.1rem;
+        color: #64748b;
+        font-weight: bold;
+    }
+
+        .auth-footer a {
+            color: var(--c-secondary);
+            text-decoration: none;
+            font-weight: 900;
+            margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+            .auth-footer a:hover {
+                color: var(--c-primary);
+            }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes floatY {
+        0% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(-30px);
+        }
+    }
+</style>
+
+<div class="auth-page">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">أ</div>
+            <h2 class="auth-title">مرحباً بعودتك</h2>
+            <p class="auth-subtitle">قم بتسجيل الدخول لمواصلة رحلة التفوق</p>
+        </div>
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="Username" class="form-label">رقم الجوال</label>
+                <div class="input-wrapper">
+                    <input asp-for="Username" class="form-control" dir="ltr" placeholder="05xxxxxxxx" />
+                    <i class="fa-solid fa-phone input-icon"></i>
+                </div>
+                <span asp-validation-for="Username" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">كلمة المرور</label>
+                <div class="input-wrapper">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <i class="fa-solid fa-lock input-icon"></i>
+                </div>
+                <span asp-validation-for="Password" class="form-error"></span>
+            </div>
+
+            <div class="options-row">
+                <div class="remember-me">
+                    <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
+                    <label for="RememberMe">تذكر بياناتي</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">دخول للمنصة</button>
+        </form>
+
+        <div class="auth-footer">
+            طالب جديد معنا؟
+            <a href="/Account/Register">قم بإنشاء حساب الآن</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

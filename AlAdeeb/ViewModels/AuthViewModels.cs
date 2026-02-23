@@ -1,0 +1,43 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AlAdeeb.ViewModels
+{
+    // 1. نموذج بيانات تسجيل الدخول
+    public class LoginViewModel
+    {
+        [Required(ErrorMessage = "رقم الجوال أو اسم المستخدم مطلوب")]
+        [Display(Name = "رقم الجوال")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "كلمة المرور مطلوبة")]
+        [DataType(DataType.Password)]
+        [Display(Name = "كلمة المرور")]
+        public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
+    }
+
+    // 2. نموذج بيانات إنشاء حساب جديد (للطالب)
+    public class RegisterViewModel
+    {
+        [Required(ErrorMessage = "الاسم الكامل مطلوب")]
+        [Display(Name = "الاسم الثلاثي")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "رقم الجوال مطلوب")]
+        [Phone(ErrorMessage = "صيغة رقم الجوال غير صحيحة")]
+        [Display(Name = "رقم الجوال (واتساب)")]
+        public string PhoneNumber { get; set; }
+
+        [Required(ErrorMessage = "كلمة المرور مطلوبة")]
+        [StringLength(100, ErrorMessage = "يجب أن تكون كلمة المرور 6 أحرف على الأقل.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "كلمة المرور")]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "تأكيد كلمة المرور")]
+        [Compare("Password", ErrorMessage = "كلمة المرور غير متطابقة.")]
+        public string ConfirmPassword { get; set; }
+    }
+}

@@ -1,0 +1,366 @@
+﻿@model IEnumerable<AlAdeeb.Models.StudentScore>
+@{
+    ViewData["Title"] = "سجل الإنجاز";
+}
+
+<style>
+    @@font-face {
+        font-family: 'Hayah';
+        src: url('/fonts/Hayah.otf') format('opentype');
+    }
+
+    :root {
+        --c-primary: #0a3254;
+        --c-secondary: #af8f42;
+        --c-bg: #f4f7f9;
+        --c-white: #ffffff;
+        --shadow-card: 0 15px 35px rgba(10, 50, 84, 0.08);
+        --radius-lg: 2rem;
+        --transition: all 0.3s ease;
+    }
+
+    .results-page {
+        font-family: 'Hayah', sans-serif;
+        padding: 4rem 1.5rem;
+        max-width: 1280px;
+        margin: 0 auto;
+        direction: rtl;
+    }
+
+    .results-header {
+        background: var(--c-primary);
+        border-radius: var(--radius-lg);
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-card);
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    @@media(min-width: 768px) {
+        .results-header {
+            flex-direction: row;
+            text-align: right;
+        }
+    }
+
+    .header-bg {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(175,143,66,0.15) 2px, transparent 2px);
+        background-size: 20px 20px;
+        z-index: 0;
+    }
+
+    .trophy-icon {
+        width: 6rem;
+        height: 6rem;
+        background: var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--c-white);
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 15px 30px rgba(175,143,66,0.3);
+        transform: rotate(-5deg);
+    }
+
+    .header-text {
+        position: relative;
+        z-index: 1;
+    }
+
+        .header-text h2 {
+            font-size: 2.5rem;
+            color: var(--c-white);
+            font-weight: 900;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .header-text p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.7);
+            margin: 0;
+        }
+
+    .table-container {
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        border: 1px solid rgba(10,50,84,0.05);
+        animation: fadeUp 0.6s ease;
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+    }
+
+        .results-table th {
+            background: #f8fafc;
+            padding: 1.5rem;
+            font-size: 1rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .results-table td {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table tr:hover td {
+            background: rgba(175,143,66,0.03);
+        }
+
+    .quiz-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin: 0;
+    }
+
+    .quiz-date {
+        font-size: 1rem;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        color: #94a3b8;
+        background: #f1f5f9;
+        padding: 0.3rem 0.8rem;
+        border-radius: 0.5rem;
+        display: inline-block;
+    }
+
+    .quiz-score {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--c-primary);
+    }
+
+        .quiz-score span {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+    .percentage-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        font-family: Arial, sans-serif;
+        border: 1px solid transparent;
+    }
+
+    .badge-excellent {
+        background: #edf7ed;
+        color: #2e7d32;
+        border-color: #c8e6c9;
+    }
+
+    .badge-good {
+        background: #fff8e1;
+        color: #f57f17;
+        border-color: #ffecb3;
+    }
+
+    .badge-poor {
+        background: #fdeded;
+        color: #c62828;
+        border-color: #ffcdd2;
+    }
+
+    .emoji-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto;
+    }
+
+    .emoji-excellent {
+        background: #edf7ed;
+        color: #2e7d32;
+    }
+
+    .emoji-good {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+
+    .emoji-poor {
+        background: #fdeded;
+        color: #c62828;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 2rem;
+            color: var(--c-primary);
+            margin: 0 0 1rem 0;
+            font-weight: 900;
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+    /* Responsive Table for Mobile */
+    @@media (max-width: 768px) {
+        .results-table thead {
+            display: none;
+        }
+
+        .results-table, .results-table tbody, .results-table tr, .results-table td {
+            display: block;
+            width: 100%;
+        }
+
+            .results-table tr {
+                margin-bottom: 1rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 1rem;
+                overflow: hidden;
+            }
+
+            .results-table td {
+                text-align: right;
+                padding: 1rem;
+                position: relative;
+            }
+
+                .results-table td::before {
+                    content: attr(data-label);
+                    font-weight: 900;
+                    color: #94a3b8;
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                }
+
+        .emoji-icon {
+            margin: 0;
+        }
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="results-page">
+
+    <div class="results-header">
+        <div class="header-bg"></div>
+        <div class="trophy-icon"><i class="fa-solid fa-trophy"></i></div>
+        <div class="header-text">
+            <h2>سجل التميز والدرجات</h2>
+            <p>تابع تطور مستواك بدقة في اختبارات القدرات اللفظي.</p>
+        </div>
+    </div>
+
+    <div class="table-container">
+        @if (Model != null && Model.Any())
+        {
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>الاختبار التطبيقي</th>
+                        <th style="text-align: center;">التاريخ</th>
+                        <th style="text-align: center;">الإجابات الصحيحة</th>
+                        <th style="text-align: center;">النسبة المئوية</th>
+                        <th style="text-align: center;">التقييم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var score in Model)
+                    {
+                        <tr>
+                            <td data-label="الاختبار التطبيقي">
+                                <p class="quiz-title">@score.Quiz.Title</p>
+                            </td>
+                            <td data-label="التاريخ" style="text-align: center;">
+                                <span class="quiz-date" dir="ltr">@score.DateTaken.ToString("yyyy-MM-dd")</span>
+                            </td>
+                            <td data-label="الإجابات الصحيحة" style="text-align: center;">
+                                <div class="quiz-score">@score.CorrectAnswers <span>/ @score.TotalQuestions</span></div>
+                            </td>
+                            <td data-label="النسبة المئوية" style="text-align: center;">
+                                @{
+                                    string badgeClass = score.ScorePercentage >= 85 ? "badge-excellent" :
+                                    (score.ScorePercentage >= 65 ? "badge-good" : "badge-poor");
+                                }
+                                <span class="percentage-badge @badgeClass">@score.ScorePercentage%</span>
+                            </td>
+                            <td data-label="التقييم" style="text-align: center;">
+                                @if (score.ScorePercentage >= 85)
+                                {
+                                    <div class="emoji-icon emoji-excellent"><i class="fa-solid fa-face-smile-beam"></i></div>
+                                }
+                                else if (score.ScorePercentage >= 65)
+                                {
+                                    <div class="emoji-icon emoji-good"><i class="fa-solid fa-face-meh"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="emoji-icon emoji-poor"><i class="fa-solid fa-face-frown"></i></div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-file-circle-question"></i>
+                <h3>لا توجد سجلات بعد!</h3>
+                <p>قم بإجراء الاختبارات التدريبية من داخل دوراتك لتظهر تقييماتك هنا.</p>
+            </div>
+        }
+    </div>
+</div>

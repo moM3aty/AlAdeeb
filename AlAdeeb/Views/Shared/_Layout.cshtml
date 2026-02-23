@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - منصة الأديب</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        /* تعريف خط حياة ملكي */
+        @@font-face {
+            font-family: 'Hayah';
+            src: url('/fonts/Hayah.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --c-primary: #0a3254;
+            --c-primary-dark: #061c33;
+            --c-secondary: #af8f42;
+            --c-secondary-light: #cfa858;
+            --c-bg: #f8f9fc;
+            --c-white: #ffffff;
+            --shadow-nav: 0 10px 40px rgba(10, 50, 84, 0.1);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            font-family: 'Hayah', sans-serif;
+            background-color: var(--c-bg);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1a202c;
+            overflow-x: hidden;
+            font-size: 1.1rem; /* تكبير الخط الافتراضي */
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        a {
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        /* Navbar الفخم */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(175, 143, 66, 0.2);
+            box-shadow: var(--shadow-nav);
+            height: 100px;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+            .nav-logo img {
+                height: 75px;
+                width: auto;
+                filter: drop-shadow(0 4px 10px rgba(10,50,84,0.1));
+            }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--c-primary);
+            line-height: 1;
+        }
+
+        .logo-subtitle {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--c-secondary);
+            letter-spacing: 1.5px;
+        }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        @@media(min-width: 1024px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        .nav-link {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--c-primary);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 0;
+                height: 3px;
+                background: var(--c-secondary);
+                transition: var(--transition);
+                border-radius: 5px;
+            }
+
+            .nav-link:hover {
+                color: var(--c-secondary);
+            }
+
+                .nav-link:hover::after {
+                    width: 100%;
+                }
+
+        .nav-btns {
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        @@media(min-width: 1024px) {
+            .nav-btns {
+                display: flex;
+            }
+        }
+
+        .btn-auth-login {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--c-primary);
+        }
+
+            .btn-auth-login:hover {
+                color: var(--c-secondary);
+            }
+
+        .btn-auth-reg {
+            background: var(--c-primary);
+            color: var(--c-secondary);
+            padding: 0.9rem 2rem;
+            border-radius: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: 900;
+            border: 2px solid transparent;
+            box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+        }
+
+            .btn-auth-reg:hover {
+                background: var(--c-secondary);
+                color: var(--c-primary);
+                transform: translateY(-3px);
+            }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(10,50,84,0.03);
+            padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(10,50,84,0.1);
+        }
+
+            .user-pill img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 2px solid var(--c-secondary);
+            }
+
+            .user-pill span {
+                font-weight: 900;
+                font-size: 1.2rem;
+                color: var(--c-primary);
+            }
+
+        .mobile-toggle {
+            display: block;
+            background: var(--c-bg);
+            border: 1px solid rgba(175,143,66,0.3);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            color: var(--c-primary);
+            cursor: pointer;
+        }
+
+        @@media(min-width: 1024px) {
+            .mobile-toggle {
+                display: none;
+            }
+        }
+
+        /* Footer الفخم */
+        .main-footer {
+            background: var(--c-primary-dark);
+            padding: 5rem 2rem 2rem 2rem;
+            border-top: 5px solid var(--c-secondary);
+            color: rgba(255,255,255,0.7);
+        }
+
+        .footer-grid {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-col h4 {
+            color: var(--c-secondary);
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+            .footer-col h4::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 40px;
+                height: 3px;
+                background: var(--c-white);
+                border-radius: 5px;
+            }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links li {
+                margin-bottom: 1rem;
+            }
+
+            .footer-links a {
+                color: rgba(255,255,255,0.7);
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
+
+                .footer-links a:hover {
+                    color: var(--c-secondary);
+                    padding-right: 10px;
+                }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 2rem;
+            text-align: center;
+        }
+
+            .footer-bottom p {
+                font-size: 1rem;
+                font-weight: bold;
+                margin: 0;
+            }
+    </style>
+</head>
+<body>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/Home/Index" class="nav-logo">
+                <img src="~/images/logo.png" alt="الأديب" />
+                <div class="logo-text-group">
+                    <span class="logo-title">الأديب</span>
+                    <span class="logo-subtitle">للقدرات اللفظي</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="/Home/Index" class="nav-link">الرئيسية</a>
+                <a href="/Home/About" class="nav-link">عن المنصة</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a href="/Admin/Index" class="nav-link">لوحة الإدارة</a>
+                    }
+                    else
+                    {
+
+                        <a href="/Student/Dashboard" class="nav-link">منصتي التعليمية</a>
+                    }
+                }
+            </div>
+
+            <div class="nav-btns">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="user-pill">
+                        <img src="~/images/Salah.jpg" onerror="this.src='https://ui-avatars.com/api/?name=@User.Identity.Name&background=0a3254&color=af8f42';" />
+                        <span>@User.Identity.Name</span>
+                    </div>
+                    <a href="/Account/Logout" class="btn-auth-login" style="color: #ef4444; margin-right: 1rem;"><i class="fa-solid fa-power-off"></i></a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn-auth-login">دخول الطلاب</a>
+                    <a href="/Account/Register" class="btn-auth-reg">ابدأ الآن</a>
+                }
+            </div>
+
+            <button class="mobile-toggle"><i class="fa-solid fa-bars-staggered"></i></button>
+        </div>
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <img src="~/images/logo.png" style="height: 80px; margin-bottom: 1.5rem;" />
+                <p style="font-size: 1.2rem; line-height: 1.8;">منصة الأديب التعليمية، شريكك الأول للوصول للدرجة النهائية في اختبارات القدرات اللفظي بأحدث الأساليب.</p>
+            </div>
+            <div class="footer-col">
+                <h4>روابط سريعة</h4>
+                <ul class="footer-links">
+                    <li><a href="/">الرئيسية</a></li>
+                    <li><a href="/Home/About">عن المدرب</a></li>
+                    <li><a href="/Account/Login">دخول الطلاب</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>تواصل معنا</h4>
+                <ul class="footer-links">
+                    <li><a href="https://wa.me/966540091992" target="_blank"><i class="fa-brands fa-whatsapp"></i> واتساب الدعم</a></li>
+                    <li><a href="mailto:support@aladib.com"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة &copy; @DateTime.Now.Year | منصة الأديب - أ. صلاح عبد العال</p>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

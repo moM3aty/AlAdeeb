@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "AlAdeeb.Controllers.QuizController",
+    "Method": "SubmitQuiz",
+    "RelativePath": "api/Quiz/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "submission",
+        "Type": "AlAdeeb.Controllers.QuizController\u002BQuizSubmissionModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.ZoomWebhookController",
+    "Method": "RecordingCompleted",
+    "RelativePath": "api/ZoomWebhook/recording-completed",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

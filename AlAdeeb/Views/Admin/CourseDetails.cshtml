@@ -1,0 +1,230 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "غرفة تحكم الدورة";
+    Layout = "_AdminLayout";
+}
+
+<div class="max-w-7xl mx-auto space-y-8 animate-fade-in pb-24">
+
+    <!-- هيدر الكورس (Modern Dashboard Style) -->
+    <div class="bg-dark text-white p-8 md:p-10 rounded-[2rem] shadow-xl flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-indigo-900/90 z-10"></div>
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 blur-3xl rounded-full pointer-events-none z-0"></div>
+
+        <div class="relative z-20 flex items-center gap-6 w-full md:w-auto">
+            <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-4xl border border-white/20 shadow-lg shrink-0">
+                <i class="fa-solid fa-laptop-code text-white"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <h2 class="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">@Model.Title</h2>
+                    @if (Model.IsActive)
+                    {
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest">مفعل ونشط</span>
+                    }
+                    else
+                    {
+
+                        <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest">غير مفعل</span>
+                    }
+                </div>
+                <p class="text-indigo-100 text-sm font-medium">أضف الفيديوهات، المذكرات، وبناء الاختبارات لتنظيم رحلة الطالب.</p>
+            </div>
+        </div>
+        <div class="relative z-20 bg-white/10 backdrop-blur-md border border-white/20 px-8 py-5 rounded-2xl text-center shrink-0 w-full md:w-auto">
+            <p class="text-indigo-200 text-xs font-black uppercase tracking-widest mb-1">الدروس الحالية</p>
+            <p class="text-4xl font-black text-white font-mono leading-none">@(Model.Materials?.Count ?? 0)</p>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم السريعة: أزرار الإضافة (Glassmorphism Cards) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- إضافة فيديو -->
+        <button onclick="document.getElementById('videoModal').classList.remove('hidden')" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden text-right">
+            <div class="absolute right-0 top-0 w-1.5 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors duration-300">
+                <i class="fa-brands fa-youtube text-2xl text-blue-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">إضافة درس مسجل</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">أضف رابط يوتيوب للدرس ليظهر مدمجاً بداخل المنصة للطالب.</p>
+            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                <i class="fa-solid fa-plus text-slate-400 group-hover:text-blue-600 transition-colors"></i>
+            </div>
+        </button>
+
+        <!-- إضافة PDF -->
+        <button onclick="document.getElementById('pdfModal').classList.remove('hidden')" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-rose-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden text-right">
+            <div class="absolute right-0 top-0 w-1.5 h-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="w-14 h-14 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-rose-500 transition-colors duration-300">
+                <i class="fa-solid fa-file-pdf text-2xl text-rose-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">رفع مذكرة (PDF)</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">ارفع ملف ملزمة أو واجب من جهازك ليتمكن الطلاب من تصفحه.</p>
+            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-rose-50 transition-colors">
+                <i class="fa-solid fa-plus text-slate-400 group-hover:text-rose-600 transition-colors"></i>
+            </div>
+        </button>
+
+        <!-- بناء اختبار -->
+        <a href="/Admin/AddQuiz?courseId=@Model.Id" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-emerald-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden block">
+            <div class="absolute right-0 top-0 w-1.5 h-full bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-emerald-500 transition-colors duration-300">
+                <i class="fa-solid fa-list-check text-2xl text-emerald-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">بناء اختبار ذكي</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">أنشئ اختباراً يحاكي القدرات وأضف أسئلة مع تايمر للحل.</p>
+            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-emerald-50 transition-colors">
+                <i class="fa-solid fa-arrow-left text-slate-400 group-hover:text-emerald-600 transition-colors"></i>
+            </div>
+        </a>
+    </div>
+
+    <!-- المحتوى الحالي للدورة (تقسيم المحتوى) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- 1. قائمة الدروس والمذكرات -->
+        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-play-circle text-primary"></i> الفيديوهات والمذكرات</h3>
+            </div>
+            <div class="p-6 flex-grow">
+                @if (Model.Materials != null && Model.Materials.Any())
+                {
+                    <div class="space-y-4">
+                        @foreach (var material in Model.Materials.OrderBy(m => m.OrderIndex))
+                        {
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center hover:shadow-md hover:border-slate-200 transition-all group">
+                                <div class="flex items-center gap-4">
+                                    @if (material.MaterialType == "PDF")
+                                    {
+                                        <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-brands fa-youtube"></i></div>
+                                    }
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">@material.Title</h4>
+                                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md @(material.MaterialType == "PDF" ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600")">@material.MaterialType</span>
+                                    </div>
+                                </div>
+                                <form asp-action="DeleteMaterial" asp-route-id="@material.Id" method="post" class="shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity" onsubmit="return confirm('حذف هذا المحتوى؟');">
+                                    <button type="submit" class="w-10 h-10 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-colors flex items-center justify-center shadow-sm" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-10">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-photo-film text-2xl text-slate-300"></i></div>
+                        <p class="text-slate-500 font-medium text-sm">لا يوجد محتوى مرئي أو مقروء بعد.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- 2. قائمة الاختبارات -->
+        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clipboard-question text-emerald-500"></i> الاختبارات والتطبيقات</h3>
+            </div>
+            <div class="p-6 flex-grow">
+                @if (Model.Quizzes != null && Model.Quizzes.Any())
+                {
+                    <div class="space-y-4">
+                        @foreach (var quiz in Model.Quizzes)
+                        {
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center hover:shadow-md hover:border-slate-200 transition-all group">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-list-check"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">@quiz.Title</h4>
+                                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 flex items-center w-fit gap-1"><i class="fa-regular fa-clock"></i> @quiz.DurationInMinutes دقيقة</span>
+                                    </div>
+                                </div>
+                                <form asp-action="DeleteQuiz" asp-route-id="@quiz.Id" method="post" class="shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity" onsubmit="return confirm('حذف الاختبار سيحذف نتائج الطلاب المرتبطة به، متأكد؟');">
+                                    <button type="submit" class="w-10 h-10 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-colors flex items-center justify-center shadow-sm" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-10">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-clipboard-list text-2xl text-slate-300"></i></div>
+                        <p class="text-slate-500 font-medium text-sm">لم تقم ببناء أي اختبارات لهذه الدورة.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal 1: إضافة فيديو يوتيوب (Modern Glassmorphism) -->
+<div id="videoModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-transform">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50/30">
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-brands fa-youtube text-blue-600 text-2xl"></i> إضافة درس يوتيوب</h3>
+            <button onclick="document.getElementById('videoModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form asp-controller="Course" asp-action="AddMaterial" method="post" class="p-8 space-y-6">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <input type="hidden" name="materialType" value="YouTube" />
+
+            <div>
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">عنوان الدرس <span class="text-rose-500">*</span></label>
+                <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-bold text-sm" placeholder="مثال: التناظر اللفظي - الجزء الأول" />
+            </div>
+            <div>
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">رابط اليوتيوب <span class="text-rose-500">*</span></label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-link text-slate-400"></i></div>
+                    <input type="url" name="youtubeUrl" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pr-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-left font-mono text-sm" dir="ltr" placeholder="https://www.youtube.com/watch?v=..." />
+                </div>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-0.5">حفظ وإضافة</button>
+                <button type="button" onclick="document.getElementById('videoModal').classList.add('hidden')" class="px-6 bg-slate-100 text-slate-600 py-3.5 rounded-xl font-bold hover:bg-slate-200 transition-all">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 2: رفع ملف PDF (Modern Glassmorphism) -->
+<div id="pdfModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-transform">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-rose-50/30">
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-pdf text-rose-600 text-2xl"></i> رفع مذكرة (PDF)</h3>
+            <button onclick="document.getElementById('pdfModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form asp-controller="Course" asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <input type="hidden" name="materialType" value="PDF" />
+
+            <div>
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">عنوان المذكرة/الواجب <span class="text-rose-500">*</span></label>
+                <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all font-bold text-sm" placeholder="مثال: ملزمة التأسيس - الوحدة الأولى" />
+            </div>
+
+            <div>
+                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">اختر ملف الـ PDF <span class="text-rose-500">*</span></label>
+                <div class="relative w-full h-32 border-2 border-dashed border-slate-300 rounded-2xl hover:border-rose-500 hover:bg-rose-50/50 transition-colors flex flex-col items-center justify-center cursor-pointer overflow-hidden group bg-slate-50">
+                    <input type="file" name="pdfFile" accept="application/pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 group-hover:text-rose-500 mb-2 transition-colors"></i>
+                    <span class="text-sm font-bold text-slate-600 group-hover:text-rose-600 transition-colors">اضغط لاختيار الملف من جهازك</span>
+                </div>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="submit" class="flex-1 bg-rose-600 text-white py-3.5 rounded-xl font-bold hover:bg-rose-700 shadow-lg shadow-rose-600/30 transition-all hover:-translate-y-0.5">رفع الملف</button>
+                <button type="button" onclick="document.getElementById('pdfModal').classList.add('hidden')" class="px-6 bg-slate-100 text-slate-600 py-3.5 rounded-xl font-bold hover:bg-slate-200 transition-all">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
