@@ -44,11 +44,21 @@ namespace AlAdeeb.Controllers
 
                     if (result == PasswordVerificationResult.Success)
                     {
+                        // 1. توليد معرّف جلسة فريد جديد
+                        string newSessionId = Guid.NewGuid().ToString();
+
+                        // 2. تحديث قاعدة البيانات بالمعرّف الجديد (هذا سيلغي الجلسة القديمة)
+                        user.CurrentSessionId = newSessionId;
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
+
                         var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                             new Claim(ClaimTypes.Name, user.FullName),
-                            new Claim(ClaimTypes.Role, user.Role)
+                            new Claim(ClaimTypes.Role, user.Role),
+                            // 3. تخزين معرّف الجلسة داخل الكوكيز للمقارنة لاحقاً
+                            new Claim("SessionId", newSessionId)
                         };
 
                         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

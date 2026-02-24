@@ -12,10 +12,12 @@ namespace AlAdeeb.Models
         public int Id { get; set; }
         public string FullName { get; set; }
         public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string Role { get; set; } // "Student" or "Admin"
         public string PhoneNumber { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public string PasswordHash { get; set; }
+        public string Role { get; set; } // Admin, Student
+        public DateTime CreatedAt { get; set; }
+
+        public string? CurrentSessionId { get; set; }
     }
 
     // 2. الكورس الأساسي

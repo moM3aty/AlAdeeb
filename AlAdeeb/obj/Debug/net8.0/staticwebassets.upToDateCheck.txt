@@ -1,8 +1,6 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\fonts\Hayah.otf
-wwwroot\images\1.jpg
-wwwroot\images\2.jpg
 wwwroot\images\logo-transparent.png
 wwwroot\images\logo.png
 wwwroot\images\Salah.jpg
@@ -65,11 +63,13 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\uploads\courses\393e8175-4d69-44b9-a79e-bc1e61edab8f_1.jpg
+wwwroot\images\1.jpg
+wwwroot\images\2.jpg
 wwwroot\uploads\courses\761dadbc-ac93-4012-850b-e8abc29b6d85_1.jpg
-wwwroot\uploads\courses\b4458913-48f1-4b61-b822-2fd3647e7244_Agenda.png
 wwwroot\uploads\pdfs\1f5ebb48-0f66-474f-bc19-f0076702f6fb_Mohamed Ibrahim Mohamed AboElmaaty AbdElrazik Volunteering.pdf
-wwwroot\uploads\pdfs\80326dd4-c43c-4e20-84ac-fdf902a594f3_Mohamed Ibrahim Mohamed AboElmaaty AbdElrazik Volunteering.pdf
-wwwroot\uploads\pdfs\e223ac19-1fde-4d22-87aa-24c554721fff_Mohamed Ibrahim Mohamed AboElmaaty AbdElrazik Volunteering.pdf
+wwwroot\uploads\courses\393e8175-4d69-44b9-a79e-bc1e61edab8f_1.jpg
 wwwroot\uploads\questions\9e6e3992-604d-4a30-9d08-576ce29cd3d1_1.jpg
+wwwroot\uploads\pdfs\80326dd4-c43c-4e20-84ac-fdf902a594f3_Mohamed Ibrahim Mohamed AboElmaaty AbdElrazik Volunteering.pdf
+wwwroot\uploads\courses\b4458913-48f1-4b61-b822-2fd3647e7244_Agenda.png
+wwwroot\uploads\pdfs\e223ac19-1fde-4d22-87aa-24c554721fff_Mohamed Ibrahim Mohamed AboElmaaty AbdElrazik Volunteering.pdf
 wwwroot\uploads\receipts\71ddbcf7-b259-4626-9f09-8be1e8580f4e_1.jpg
