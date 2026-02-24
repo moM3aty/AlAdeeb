@@ -1,4 +1,4 @@
-namespace AlAdeeb.Models
+namespace AlAdeeb.ViewModels
 {
     public class ErrorViewModel
     {

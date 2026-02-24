@@ -3,10 +3,8 @@
 }
 
 <style>
-    /* استدعاء فونت Hayah المخصص (مع استخدام @@ لبيئة Razor) */
     @@font-face {
         font-family: 'Hayah';
-        /* قم بتغيير المسار التالي ليتطابق مع مسار ملف الفونت في مجلد wwwroot لديك */
         src: url('/fonts/Hayah.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
@@ -27,7 +25,6 @@
         --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Base Setup */
     .premium-about-page {
         font-family: 'Hayah', sans-serif;
         background-color: var(--c-bg);
@@ -38,7 +35,6 @@
         padding: 5rem 0;
     }
 
-    /* Abstract Background Graphics */
     .bg-shape {
         position: absolute;
         border-radius: 50%;
@@ -66,7 +62,6 @@
         opacity: 0.15;
     }
 
-    /* Container */
     .container {
         max-width: 1280px;
         margin: 0 auto;
@@ -75,7 +70,6 @@
         z-index: 10;
     }
 
-    /* Section Header */
     .section-header {
         text-align: center;
         margin-bottom: 5rem;
@@ -91,18 +85,18 @@
         padding: 0.5rem 1.5rem;
         border-radius: 50px;
         font-weight: 700;
-        font-size: 1.1rem; /* تم التكبير */
+        font-size: 1.1rem;
         letter-spacing: 1px;
         margin-bottom: 1.5rem;
         border: 1px solid rgba(175, 143, 66, 0.2);
     }
 
         .subtitle-badge i {
-            font-size: 1.2rem; /* تم التكبير */
+            font-size: 1.2rem;
         }
 
     .main-title {
-        font-size: clamp(3rem, 6vw, 4.5rem); /* تم التكبير */
+        font-size: clamp(3rem, 6vw, 4.5rem);
         font-weight: 900;
         color: var(--c-primary);
         line-height: 1.3;
@@ -114,7 +108,6 @@
             position: relative;
         }
 
-    /* The Grid Layout */
     .about-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -128,7 +121,6 @@
         }
     }
 
-    /* ---------------- Image Side (Left visual weight) ---------------- */
     .image-showcase {
         position: relative;
         border-radius: 2rem;
@@ -166,7 +158,6 @@
             z-index: 1;
         }
 
-    /* Decorative Elements around image */
     .gold-border {
         position: absolute;
         inset: -20px 20px 20px -20px;
@@ -198,19 +189,19 @@
     }
 
         .floating-card .icon-box {
-            width: 4rem; /* تم التكبير */
-            height: 4rem; /* تم التكبير */
+            width: 4rem;
+            height: 4rem;
             background: var(--c-secondary);
             color: var(--c-white);
             border-radius: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.8rem; /* تم التكبير */
+            font-size: 1.8rem;
         }
 
         .floating-card .text h4 {
-            font-size: 1.8rem; /* تم التكبير */
+            font-size: 1.8rem;
             font-weight: 900;
             color: var(--c-primary);
             margin: 0;
@@ -218,20 +209,19 @@
         }
 
         .floating-card .text p {
-            font-size: 1.1rem; /* تم التكبير */
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--c-secondary);
             margin: 0;
             margin-top: 0.25rem;
         }
 
-    /* ---------------- Content Side (Right visual weight) ---------------- */
     .content-showcase {
         animation: fadeLeft 1s ease forwards;
     }
 
     .intro-text {
-        font-size: 1.4rem; /* تم التكبير */
+        font-size: 1.4rem;
         color: var(--c-text-muted);
         line-height: 1.8;
         margin-bottom: 3rem;
@@ -253,10 +243,9 @@
         .intro-text strong {
             color: var(--c-primary);
             font-weight: 900;
-            font-size: 1.5rem; /* تم التكبير */
+            font-size: 1.5rem;
         }
 
-    /* Features Layout */
     .features-wrapper {
         display: grid;
         grid-template-columns: 1fr;
@@ -299,15 +288,15 @@
             }
 
     .f-icon {
-        width: 4.5rem; /* تم التكبير */
-        height: 4.5rem; /* تم التكبير */
+        width: 4.5rem;
+        height: 4.5rem;
         background: rgba(10, 50, 84, 0.03);
         border: 1px solid rgba(10, 50, 84, 0.1);
         border-radius: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem; /* تم التكبير */
+        font-size: 2rem;
         color: var(--c-primary);
         flex-shrink: 0;
         transition: var(--transition);
@@ -320,20 +309,19 @@
     }
 
     .f-content h3 {
-        font-size: 1.5rem; /* تم التكبير */
+        font-size: 1.5rem;
         font-weight: 800;
         color: var(--c-primary);
         margin: 0 0 0.5rem 0;
     }
 
     .f-content p {
-        font-size: 1.15rem; /* تم التكبير */
+        font-size: 1.15rem;
         color: var(--c-text-muted);
         line-height: 1.6;
         margin: 0;
     }
 
-    /* Animations (مع استخدام @@ لبيئة Razor) */
     @@keyframes shapeFloat {
         0% {
             transform: translate(0, 0) scale(1);
@@ -390,7 +378,6 @@
         }
     }
 
-    /* Responsive Adjustments */
     @@media (max-width: 991px) {
         .floating-card {
             right: 10px;
@@ -418,13 +405,10 @@
 </style>
 
 <div class="premium-about-page">
-
-    <!-- ديكور الخلفية -->
     <div class="bg-shape shape-1"></div>
     <div class="bg-shape shape-2"></div>
 
     <div class="container">
-
         <div class="section-header">
             <div class="subtitle-badge">
                 <i class="fa-solid fa-crown"></i> ريادة في التدريب
@@ -433,15 +417,12 @@
         </div>
 
         <div class="about-grid">
-
-            <!-- القسم الأيمن (الصورة والإحصائيات) -->
             <div class="image-showcase">
                 <div class="gold-border"></div>
                 <div class="image-frame">
                     <img src="~/images/Salah.jpg" alt="أ. صلاح عبد العال" onerror="this.src='https://ui-avatars.com/api/?name=صلاح+عبدالعال&background=0a3254&color=af8f42&size=500';" />
                 </div>
 
-                <!-- بطاقة طافية للإحصائيات -->
                 <div class="floating-card">
                     <div class="icon-box">
                         <i class="fa-solid fa-bullseye"></i>
@@ -453,15 +434,12 @@
                 </div>
             </div>
 
-            <!-- القسم الأيسر (المحتوى والمميزات) -->
             <div class="content-showcase">
                 <div class="intro-text">
                     يُعد الأستاذ <strong>صلاح عبد العال</strong> من أبرز الأسماء والخبراء في مجال تدريب القدرات اللفظي. بفضل سنوات من الخبرة العميقة والتحليل الدقيق لأسئلة (قياس)، قام بتأسيس <strong>منصة الأديب</strong> لتكون المرجع الأول والأساسي لكل طالب يطمح للوصول إلى الدرجة النهائية بثقة تامة.
                 </div>
 
                 <div class="features-wrapper">
-
-                    <!-- ميزة 1 -->
                     <div class="premium-feature">
                         <div class="f-icon">
                             <i class="fa-solid fa-book-open-reader"></i>
@@ -472,7 +450,6 @@
                         </div>
                     </div>
 
-                    <!-- ميزة 2 -->
                     <div class="premium-feature">
                         <div class="f-icon">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -483,7 +460,6 @@
                         </div>
                     </div>
 
-                    <!-- ميزة 3 -->
                     <div class="premium-feature">
                         <div class="f-icon">
                             <i class="fa-solid fa-user-shield"></i>
@@ -493,10 +469,8 @@
                             <p>نحن لا نقدم شروحات فقط، بل نتابع تطور مستواك خطوة بخطوة، ونقدم لك الدعم النفسي والتقني حتى يوم اختبارك.</p>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>

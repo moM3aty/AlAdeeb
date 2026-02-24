@@ -2,7 +2,6 @@
 
 namespace AlAdeeb.ViewModels
 {
-    // 1. نموذج بيانات تسجيل الدخول
     public class LoginViewModel
     {
         [Required(ErrorMessage = "رقم الجوال أو اسم المستخدم مطلوب")]
@@ -17,7 +16,6 @@ namespace AlAdeeb.ViewModels
         public bool RememberMe { get; set; }
     }
 
-    // 2. نموذج بيانات إنشاء حساب جديد (للطالب)
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "الاسم الكامل مطلوب")]
@@ -40,4 +38,5 @@ namespace AlAdeeb.ViewModels
         [Compare("Password", ErrorMessage = "كلمة المرور غير متطابقة.")]
         public string ConfirmPassword { get; set; }
     }
+
 }

@@ -1,6 +1,6 @@
 ﻿@model AlAdeeb.Models.Course
 @{
-    ViewData["Title"] = "غرفة المشاهدة";
+    ViewData["Title"] = "قاعة المذاكرة";
     var liveSessions = ViewBag.LiveSessions as IEnumerable<AlAdeeb.Models.LiveSession>;
 }
 
@@ -24,7 +24,7 @@
     .viewer-page {
         font-family: 'Hayah', sans-serif;
         background: var(--c-bg);
-        min-height: calc(100vh - 80px);
+        min-height: calc(100vh - 100px);
         padding: 2rem;
         display: flex;
         flex-direction: column;
@@ -37,13 +37,11 @@
     @@media(min-width: 992px) {
         .viewer-page {
             flex-direction: row;
-            height: calc(100vh - 80px);
+            height: calc(100vh - 100px);
             overflow: hidden;
-            padding: 2rem;
         }
     }
 
-    /* Main Area (Player) */
     .main-area {
         flex: 1;
         display: flex;
@@ -167,7 +165,6 @@
         }
     }
 
-    /* Sidebar Playlist */
     .sidebar {
         width: 100%;
         background: var(--c-white);
@@ -181,7 +178,7 @@
 
     @@media(min-width: 992px) {
         .sidebar {
-            width: 350px;
+            width: 400px;
             height: 100%;
         }
     }
@@ -215,18 +212,45 @@
         gap: 1.5rem;
     }
 
-    .playlist-section h4 {
-        font-size: 0.9rem;
-        font-weight: 900;
-        color: #94a3b8;
-        margin: 0 0 1rem 0;
-        padding-right: 0.5rem;
+        .playlist-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .playlist-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+    /* Lesson Section Styling */
+    .lesson-group {
+        background: #fdfdfd;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 1.2rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
     }
 
-    .playlist-items {
+    .lesson-group-title {
+        background: rgba(10,50,84,0.03);
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .lesson-group-title i {
+            color: var(--c-secondary);
+        }
+
+    .lesson-items {
+        padding: 0.8rem;
         display: flex;
         flex-direction: column;
-        gap: 0.8rem;
+        gap: 0.5rem;
     }
 
     .item-btn {
@@ -234,11 +258,11 @@
         text-align: right;
         background: var(--c-white);
         border: 1px solid #e2e8f0;
-        padding: 1rem;
-        border-radius: 1rem;
+        padding: 0.8rem;
+        border-radius: 0.8rem;
         display: flex;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 0.8rem;
         cursor: pointer;
         transition: var(--transition);
         text-decoration: none;
@@ -257,15 +281,15 @@
         }
 
     .item-icon {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2.2rem;
+        height: 2.2rem;
         background: #f1f5f9;
         color: #94a3b8;
-        border-radius: 0.8rem;
+        border-radius: 0.6rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
+        font-size: 0.9rem;
         flex-shrink: 0;
         transition: var(--transition);
     }
@@ -282,11 +306,11 @@
     .item-text {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.2rem;
     }
 
     .item-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 800;
         color: var(--c-primary);
         margin: 0;
@@ -298,7 +322,7 @@
     }
 
     .item-meta {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: bold;
         color: #64748b;
         margin: 0;
@@ -309,25 +333,41 @@
         color: #2e7d32;
         padding: 0.1rem 0.5rem;
         border-radius: 4px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .tag-red {
         color: #d32f2f;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         direction: ltr;
         display: inline-block;
     }
 
-    /* Custom scrollbar for playlist */
-    .playlist-content::-webkit-scrollbar {
-        width: 4px;
+    .final-exam-btn {
+        background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
+        color: var(--c-secondary);
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 900;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+        transition: var(--transition);
+        border: 2px solid var(--c-secondary);
+        margin-top: 1rem;
     }
 
-    .playlist-content::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-    }
+        .final-exam-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(175,143,66,0.3);
+            background: var(--c-primary-dark);
+            color: var(--c-white);
+        }
 </style>
 
 <div class="viewer-page">
@@ -339,7 +379,7 @@
             <div id="placeholder" class="player-placeholder">
                 <div class="play-icon-wrapper"><i class="fa-solid fa-play"></i></div>
                 <h3>@Model.Title</h3>
-                <p>اختر درساً من القائمة الجانبية لبدء المشاهدة</p>
+                <p>اختر درساً من القائمة الجانبية لبدء المذاكرة</p>
             </div>
         </div>
 
@@ -347,7 +387,7 @@
             <div class="info-text">
                 <span class="label">يتم عرض الآن</span>
                 <h2 id="currentTitle">غرفة الانتظار</h2>
-                <p id="currentDesc">يرجى التركيز وتدوين الملاحظات أثناء المذاكرة.</p>
+                <p id="currentDesc">يرجى التركيز وتدوين الملاحظات لتجهيز نفسك للاختبار النهائي.</p>
             </div>
             <div class="info-icon"><i class="fa-solid fa-book-open-reader"></i></div>
         </div>
@@ -355,22 +395,21 @@
 
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fa-solid fa-bars-staggered"></i> محتويات الدورة</h3>
+            <h3><i class="fa-solid fa-bars-staggered"></i> المنهج الدراسي</h3>
         </div>
 
         <div class="playlist-content">
 
             @if (liveSessions != null && liveSessions.Any())
             {
-                <div class="playlist-section">
-                    <h4>البثوث المباشرة</h4>
-                    <div class="playlist-items">
+                <div class="lesson-group">
+                    <div class="lesson-group-title"><i class="fa-solid fa-satellite-dish"></i> البثوث المباشرة واللقاءات</div>
+                    <div class="lesson-items">
                         @foreach (var live in liveSessions)
                         {
                             if (live.IsCompleted && !string.IsNullOrEmpty(live.RecordedVideoUrl))
                             {
-                                string embed = live.RecordedVideoUrl.Replace("watch?v=", "embed/");
-                                <button onclick="loadContent('@embed', '@live.Title', 'YouTube', this)" class="item-btn">
+                                <button onclick="loadContent('@live.RecordedVideoUrl', '@live.Title', 'YouTube', this)" class="item-btn">
                                     <div class="item-icon"><i class="fa-solid fa-video"></i></div>
                                     <div class="item-text">
                                         <p class="item-title">@live.Title</p>
@@ -393,53 +432,78 @@
                 </div>
             }
 
-            @if (Model.Materials != null && Model.Materials.Any())
+            @if (Model.Lessons != null && Model.Lessons.Any())
             {
-                <div class="playlist-section">
-                    <h4>الدروس والمذكرات</h4>
-                    <div class="playlist-items">
-                        @foreach (var item in Model.Materials.OrderBy(m => m.OrderIndex))
-                        {
-                            string icon = item.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play";
-                            string embedUrl = item.MaterialType == "YouTube" ? item.UrlOrPath.Replace("watch?v=", "embed/") : item.UrlOrPath;
+                foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
+                {
+                    <div class="lesson-group">
+                        <div class="lesson-group-title"><i class="fa-solid fa-book"></i> @lesson.Title</div>
+                        <div class="lesson-items">
 
-                            <button onclick="loadContent('@embedUrl', '@item.Title', '@item.MaterialType', this)" class="item-btn">
-                                <div class="item-icon"><i class="fa-solid @icon"></i></div>
-                                <div class="item-text">
-                                    <p class="item-title">@item.Title</p>
-                                    <p class="item-meta">@item.MaterialType</p>
-                                </div>
-                            </button>
-                        }
+                            @if (lesson.Materials != null)
+                            {
+                                foreach (var item in lesson.Materials.OrderBy(m => m.OrderIndex))
+                                {
+                                    string icon = item.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play";
+
+                                    <button onclick="loadContent('@item.UrlOrPath', '@item.Title', '@item.MaterialType', this)" class="item-btn">
+                                        <div class="item-icon"><i class="fa-solid @icon"></i></div>
+                                        <div class="item-text">
+                                            <p class="item-title">@item.Title</p>
+                                            <p class="item-meta">@(item.MaterialType == "PDF" ? "مذكرة تفاعلية" : "فيديو مسجل")</p>
+                                        </div>
+                                    </button>
+                                }
+                            }
+
+                            @if (lesson.Quizzes != null)
+                            {
+                                foreach (var quiz in lesson.Quizzes)
+                                {
+                                    <a href="/Student/TakeQuiz/@quiz.Id" class="item-btn">
+                                        <div class="item-icon" style="color:#2e7d32; background:#edf7ed;"><i class="fa-solid fa-clipboard-check"></i></div>
+                                        <div class="item-text">
+                                            <p class="item-title" style="color:#1b5e20;">@quiz.Title</p>
+                                            <p class="item-meta"><i class="fa-regular fa-clock"></i> @quiz.DurationInMinutes دقيقة - اختبار تطبيقي</p>
+                                        </div>
+                                    </a>
+                                }
+                            }
+
+                            @if ((lesson.Materials == null || !lesson.Materials.Any()) && (lesson.Quizzes == null || !lesson.Quizzes.Any()))
+                            {
+                                <p style="text-align:center; color:#94a3b8; font-size:0.85rem; margin:0.5rem 0;">المحتوى قيد التجهيز</p>
+                            }
+
+                        </div>
                     </div>
-                </div>
+                }
             }
 
-            @if (Model.Quizzes != null && Model.Quizzes.Any())
+            @if (Model.Quizzes != null && Model.Quizzes.Any(q => q.IsFinalExam))
             {
-                <div class="playlist-section">
-                    <h4>التطبيقات والاختبارات</h4>
-                    <div class="playlist-items">
-                        @foreach (var quiz in Model.Quizzes)
-                        {
-                            <a href="/Student/TakeQuiz/@quiz.Id" class="item-btn">
-                                <div class="item-icon" style="color:#2e7d32; background:#edf7ed;"><i class="fa-solid fa-clipboard-check"></i></div>
-                                <div class="item-text">
-                                    <p class="item-title" style="color:#1b5e20;">@quiz.Title</p>
-                                    <p class="item-meta"><i class="fa-regular fa-clock"></i> @quiz.DurationInMinutes دقيقة</p>
-                                </div>
-                            </a>
-                        }
-                    </div>
-                </div>
+                var finalExam = Model.Quizzes.First(q => q.IsFinalExam);
+                <a href="/Student/TakeQuiz/@finalExam.Id" class="final-exam-btn">
+                    <i class="fa-solid fa-award"></i> الاختبار النهائي لدورة (قياس)
+                </a>
             }
 
         </div>
     </div>
-
 </div>
 
 <script>
+    // دالة ذكية تستخرج كود اليوتيوب من أي رابط (طويل، قصير، أو شورتس) لتشغيله كـ Embed
+    function getYouTubeEmbedUrl(url) {
+        if (!url) return "";
+        var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return "https://www.youtube.com/embed/" + match[2];
+        }
+        return url; // يرجع الرابط كما هو لو لم يتعرف عليه
+    }
+
     function loadContent(url, title, type, btnElement) {
         document.getElementById('placeholder').style.display = 'none';
         var viewer = document.getElementById('mainViewer');
@@ -449,12 +513,15 @@
             viewer.src = url;
             document.getElementById('currentDesc').innerText = "تلميح: يمكنك قراءة المذكرة من داخل الشاشة، أو تحميلها.";
         } else {
-            viewer.src = url + "?rel=0&modestbranding=1&autoplay=1";
+            // تحويل أي رابط يوتيوب ليعمل بداخل الإطار بسلاسة
+            var embedUrl = getYouTubeEmbedUrl(url);
+            viewer.src = embedUrl + "?rel=0&modestbranding=1&autoplay=1";
             document.getElementById('currentDesc').innerText = "تلميح: يمكنك تكبير الشاشة (Fullscreen).";
         }
 
         document.getElementById('currentTitle').innerText = title;
 
+        // إبراز العنصر المحدد في القائمة الجانبية
         document.querySelectorAll('.item-btn').forEach(el => el.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
     }

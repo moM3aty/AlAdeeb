@@ -1,91 +1,86 @@
 ﻿@model AlAdeeb.Models.Course
 @{
-    ViewData["Title"] = "إنشاء دورة جديدة";
+    ViewData["Title"] = "بناء دورة جديدة";
     Layout = "_AdminLayout";
 }
 
 <style>
-    .form-container {
-        max-width: 900px;
-        margin: 0 auto;
-        animation: fadeIn 0.5s ease;
+    .page-header {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        padding: 2rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        margin-bottom: 2rem;
+    }
+
+    @@media(min-width: 768px) {
+        .page-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon {
+        width: 4.5rem;
+        height: 4.5rem;
+        background: rgba(10,50,84,0.05);
+        color: var(--c-primary);
+        border-radius: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .header-text h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.2rem;
+        color: var(--c-primary);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-text p {
+        margin: 0;
+        color: var(--c-text-muted);
+        font-weight: 600;
+        font-size: 0.95rem;
     }
 
     .form-card {
         background: var(--c-white);
-        border-radius: 2rem;
-        box-shadow: var(--shadow-soft);
-        border: 1px solid rgba(10,50,84,0.05);
-        overflow: hidden;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        padding: 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
     }
 
-    .card-header {
-        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
-        padding: 3rem 2rem;
-        text-align: center;
-        position: relative;
-    }
-
-        .card-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(rgba(175,143,66,0.2) 2px, transparent 2px);
-            background-size: 20px 20px;
-            opacity: 0.5;
-        }
-
-    .header-icon {
-        width: 5rem;
-        height: 5rem;
-        background: var(--c-secondary);
-        color: var(--c-primary);
-        border-radius: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.2rem;
-        margin: 0 auto 1rem auto;
-        position: relative;
-        z-index: 2;
-        box-shadow: 0 10px 25px rgba(175,143,66,0.4);
-        transform: rotate(5deg);
-    }
-
-    .card-header h2 {
-        color: var(--c-white);
-        font-size: 2.2rem;
-        font-weight: 900;
-        margin: 0 0 0.5rem 0;
-        position: relative;
-        z-index: 2;
-    }
-
-    .card-header p {
-        color: rgba(255,255,255,0.7);
-        font-size: 1.1rem;
-        margin: 0;
-        position: relative;
-        z-index: 2;
-    }
-
-    .form-body {
-        padding: 3rem 2.5rem;
-    }
-
-    .input-group {
+    .form-group {
         margin-bottom: 2rem;
     }
 
-    .input-label {
+    .form-label {
         display: block;
-        font-size: 1.1rem;
-        font-weight: 900;
+        font-weight: 800;
         color: var(--c-primary);
         margin-bottom: 0.8rem;
+        font-size: 1.1rem;
     }
 
-        .input-label span {
+        .form-label span {
             color: #ef4444;
         }
 
@@ -95,9 +90,9 @@
         border: 2px solid #e2e8f0;
         border-radius: 1rem;
         padding: 1.2rem;
-        font-size: 1.1rem;
         font-family: inherit;
-        font-weight: bold;
+        font-size: 1.1rem;
+        font-weight: 600;
         color: var(--c-primary);
         transition: var(--transition);
     }
@@ -109,12 +104,11 @@
             box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
         }
 
-    /* Upload Box */
     .upload-box {
         border: 2px dashed #cbd5e1;
         border-radius: 1.5rem;
         background: #f8fafc;
-        padding: 2.5rem 2rem;
+        padding: 3rem 2rem;
         text-align: center;
         cursor: pointer;
         transition: var(--transition);
@@ -123,7 +117,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 200px;
+        min-height: 220px;
     }
 
         .upload-box:hover {
@@ -142,7 +136,7 @@
     }
 
     .upload-icon {
-        font-size: 3rem;
+        font-size: 3.5rem;
         color: #94a3b8;
         margin-bottom: 1rem;
         transition: var(--transition);
@@ -150,19 +144,14 @@
 
     .upload-box:hover .upload-icon {
         color: var(--c-secondary);
+        transform: scale(1.1);
     }
 
     .upload-text {
         font-size: 1.2rem;
-        font-weight: 900;
+        font-weight: 800;
         color: var(--c-primary);
         margin: 0 0 0.5rem 0;
-    }
-
-    .upload-hint {
-        font-size: 0.95rem;
-        color: #64748b;
-        margin: 0;
     }
 
     .img-preview {
@@ -174,7 +163,6 @@
         border-radius: 1.3rem;
         display: none;
         z-index: 5;
-        opacity: 0.8;
     }
 
     .grid-2 {
@@ -195,27 +183,28 @@
 
     .price-icon {
         position: absolute;
-        left: 1.2rem;
+        left: 1.5rem;
         top: 50%;
         transform: translateY(-50%);
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         color: #10b981;
     }
 
     .price-input {
-        padding-left: 3rem;
+        padding-left: 3.5rem;
         font-family: Arial, sans-serif;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
+        font-weight: 900;
     }
 
     .toggle-box {
         background: #f8fafc;
         border: 2px solid #e2e8f0;
         border-radius: 1rem;
-        padding: 1.5rem;
+        padding: 1.2rem 1.5rem;
         display: flex;
         align-items: center;
-        gap: 1.2rem;
+        gap: 1.5rem;
         cursor: pointer;
         transition: var(--transition);
         height: 100%;
@@ -234,45 +223,42 @@
 
     .toggle-text h4 {
         margin: 0 0 0.3rem 0;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: var(--c-primary);
-        font-weight: 900;
+        font-weight: 800;
     }
 
     .toggle-text p {
         margin: 0;
         font-size: 0.9rem;
-        color: #64748b;
-        font-weight: bold;
+        color: var(--c-text-muted);
+        font-weight: 600;
     }
 
     .form-actions {
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         margin-top: 3rem;
         border-top: 1px solid #e2e8f0;
-        padding-top: 2rem;
-        flex-wrap: wrap;
+        padding-top: 2.5rem;
     }
 
     .btn-save {
         flex: 2;
-        min-width: 200px;
         background: var(--c-primary);
         color: var(--c-secondary);
         border: none;
         padding: 1.2rem;
         border-radius: 1rem;
-        font-size: 1.4rem;
-        font-weight: 900;
-        font-family: inherit;
+        font-size: 1.3rem;
+        font-weight: 800;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.8rem;
         transition: var(--transition);
-        box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+        box-shadow: var(--shadow-md);
     }
 
         .btn-save:hover {
@@ -283,17 +269,14 @@
 
     .btn-cancel {
         flex: 1;
-        min-width: 150px;
         background: #f1f5f9;
         color: #64748b;
         text-align: center;
-        text-decoration: none;
         padding: 1.2rem;
         border-radius: 1rem;
         font-size: 1.2rem;
-        font-weight: bold;
+        font-weight: 800;
         transition: var(--transition);
-        border: 2px solid transparent;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -307,88 +290,77 @@
     .val-error {
         color: #ef4444;
         font-size: 0.9rem;
-        font-weight: bold;
+        font-weight: 700;
         display: block;
         margin-top: 0.5rem;
     }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 </style>
 
-<div class="form-container">
-    <div class="form-card">
+<div class="page-header">
+    <div class="header-info">
+        <div class="header-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="header-text">
+            <h2>بناء دورة جديدة</h2>
+            <p>أضف تفاصيل المسار التعليمي ليكون جاهزاً لاستقبال الطلاب.</p>
+        </div>
+    </div>
+</div>
 
-        <div class="card-header">
-            <div class="header-icon"><i class="fa-solid fa-folder-plus"></i></div>
-            <h2>إضافة دورة جديدة</h2>
-            <p>قم بإعداد مسار تعليمي جديد لاستقبال الطلاب.</p>
+<div class="form-card">
+    <form asp-controller="Admin" asp-action="CreateCourse" method="post" enctype="multipart/form-data">
+
+        <div class="input-group">
+            <label asp-for="Title" class="form-label">عنوان الدورة الترويجي <span>*</span></label>
+            <input asp-for="Title" required class="form-control" placeholder="مثال: دورة التأسيس الشاملة..." />
+            <span asp-validation-for="Title" class="val-error"></span>
         </div>
 
-        <form asp-controller="Admin" asp-action="CreateCourse" method="post" enctype="multipart/form-data" class="form-body">
+        <div class="input-group">
+            <label asp-for="Description" class="form-label">النبذة الوصفية <span>*</span></label>
+            <textarea asp-for="Description" rows="4" required class="form-control" placeholder="اكتب وصفاً جذاباً يشرح محتويات الكورس..."></textarea>
+            <span asp-validation-for="Description" class="val-error"></span>
+        </div>
 
-            <div class="input-group">
-                <label asp-for="Title" class="input-label">عنوان الدورة الترويجي <span>*</span></label>
-                <input asp-for="Title" required class="form-control" placeholder="مثال: دورة التأسيس الشاملة..." />
-                <span asp-validation-for="Title" class="val-error"></span>
+        <div class="input-group">
+            <label class="form-label">صورة الغلاف للمنصة (اختياري)</label>
+            <div class="upload-box">
+                <input type="file" name="courseImage" accept="image/*" class="upload-input" onchange="previewImg(this)" />
+                <img id="imgPreview" src="" class="img-preview" />
+                <div id="imgPlaceholder">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <h4 class="upload-text">اضغط لرفع صورة الغلاف</h4>
+                    <p class="upload-hint">مستحسن أبعاد 16:9 (JPG, PNG)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="input-group" style="margin: 0;">
+                <label asp-for="Price" class="form-label">تكلفة الاشتراك (ريال) <span>*</span></label>
+                <div class="price-wrapper">
+                    <input asp-for="Price" type="number" step="0.01" required class="form-control price-input" placeholder="0.00" />
+                    <i class="fa-solid fa-money-bill-wave price-icon"></i>
+                </div>
+                <span asp-validation-for="Price" class="val-error"></span>
             </div>
 
-            <div class="input-group">
-                <label asp-for="Description" class="input-label">النبذة الوصفية <span>*</span></label>
-                <textarea asp-for="Description" rows="4" required class="form-control" placeholder="اكتب وصفاً جذاباً يشرح محتويات الكورس..."></textarea>
-                <span asp-validation-for="Description" class="val-error"></span>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">صورة الغلاف للمنصة (اختياري)</label>
-                <div class="upload-box">
-                    <input type="file" name="courseImage" accept="image/*" class="upload-input" onchange="previewImg(this)" />
-                    <img id="imgPreview" src="" class="img-preview" />
-                    <div id="imgPlaceholder">
-                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                        <h4 class="upload-text">اضغط لرفع صورة الغلاف</h4>
-                        <p class="upload-hint">مستحسن أبعاد 16:9 (JPG, PNG)</p>
+            <div class="input-group" style="margin: 0;">
+                <label class="form-label" style="visibility: hidden;">التفعيل</label>
+                <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
+                    <input asp-for="IsActive" type="checkbox" checked id="IsActive" style="pointer-events: none;" />
+                    <div class="toggle-text">
+                        <h4>تفعيل ونشر الدورة فوراً</h4>
+                        <p>ستظهر للطلاب للتسجيل المباشر.</p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="grid-2">
-                <div class="input-group" style="margin: 0;">
-                    <label asp-for="Price" class="input-label">تكلفة الاشتراك (ريال) <span>*</span></label>
-                    <div class="price-wrapper">
-                        <input asp-for="Price" type="number" step="0.01" required class="form-control price-input" placeholder="0.00" />
-                        <i class="fa-solid fa-money-bill-wave price-icon"></i>
-                    </div>
-                    <span asp-validation-for="Price" class="val-error"></span>
-                </div>
-
-                <div class="input-group" style="margin: 0;">
-                    <label class="input-label" style="visibility: hidden;">التفعيل</label>
-                    <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
-                        <input asp-for="IsActive" type="checkbox" checked id="IsActive" style="pointer-events: none;" />
-                        <div class="toggle-text">
-                            <h4>تفعيل ونشر الدورة فوراً</h4>
-                            <p>ستظهر للطلاب للتسجيل المباشر.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn-save"><i class="fa-solid fa-check-double"></i> اعتماد وحفظ الدورة</button>
-                <a href="/Admin/Index" class="btn-cancel">إلغاء</a>
-            </div>
-        </form>
-    </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-save"><i class="fa-solid fa-check-double"></i> اعتماد وحفظ الدورة</button>
+            <a href="/Admin/Index" class="btn-cancel">إلغاء وتراجع</a>
+        </div>
+    </form>
 </div>
 
 <script>

@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using AlAdeeb.Data;
+using AlAdeeb.Models;
+using System.Linq;
 
 namespace AlAdeeb.Controllers
 {
-    // هذا الكنترولر يستقبل الطلبات من سيرفرات Zoom تلقائياً
     [Route("api/[controller]")]
     [ApiController]
     public class ZoomWebhookController : ControllerBase
@@ -22,17 +23,14 @@ namespace AlAdeeb.Controllers
         [HttpPost("recording-completed")]
         public async Task<IActionResult> RecordingCompleted()
         {
-            // 1. قراءة البيانات القادمة من زووم
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
 
             using var jsonDoc = JsonDocument.Parse(body);
             var root = jsonDoc.RootElement;
 
-            // التحقق من نوع الحدث
             if (root.GetProperty("event").GetString() == "endpoint.url_validation")
             {
-                // هذا الجزء خاص بتأكيد حساب زووم للمرة الأولى
                 return Ok();
             }
 
@@ -41,10 +39,7 @@ namespace AlAdeeb.Controllers
                 var payload = root.GetProperty("payload");
                 var objectData = payload.GetProperty("object");
 
-                // استخراج رابط الاجتماع (للبحث عنه في قاعدة البيانات)
                 var joinUrl = objectData.GetProperty("join_url").GetString();
-
-                // استخراج روابط التسجيل
                 var recordingFiles = objectData.GetProperty("recording_files");
                 string playUrl = "";
 
@@ -57,7 +52,6 @@ namespace AlAdeeb.Controllers
                     }
                 }
 
-                // 2. تحديث قاعدة البيانات تلقائياً
                 var session = await _context.LiveSessions
                     .FirstOrDefaultAsync(l => l.LiveUrl.Contains(joinUrl) && !l.IsCompleted);
 
@@ -65,6 +59,31 @@ namespace AlAdeeb.Controllers
                 {
                     session.RecordedVideoUrl = playUrl;
                     session.IsCompleted = true;
+
+                    // 1. إنشاء درس جديد بشكل آلي فور وصول الـ Webhook
+                    int currentLessonCount = await _context.Lessons.CountAsync(l => l.CourseId == session.CourseId);
+                    var newLesson = new Lesson
+                    {
+                        CourseId = session.CourseId,
+                        Title = "تسجيل بث: " + session.Title,
+                        OrderIndex = currentLessonCount + 1
+                    };
+
+                    _context.Lessons.Add(newLesson);
+                    await _context.SaveChangesAsync();
+
+                    // 2. إضافة التسجيل داخل هذا الدرس
+                    var newMaterial = new LessonMaterial
+                    {
+                        LessonId = newLesson.Id,
+                        Title = session.Title,
+                        MaterialType = "RecordedLive",
+                        UrlOrPath = playUrl,
+                        OrderIndex = 1
+                    };
+
+                    _context.LessonMaterials.Add(newMaterial);
+
                     await _context.SaveChangesAsync();
                 }
             }

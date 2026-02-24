@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity; // لدعم التشفير
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace AlAdeeb.Controllers
         public AccountController(AppDbContext context)
         {
             _context = context;
-            _passwordHasher = new PasswordHasher<ApplicationUser>(); // مهيئ التشفير
+            _passwordHasher = new PasswordHasher<ApplicationUser>();
         }
 
         [HttpGet]
@@ -36,12 +36,10 @@ namespace AlAdeeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. البحث عن المستخدم برقم الجوال أو اسم المستخدم
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username || u.PhoneNumber == model.Username);
 
                 if (user != null)
                 {
-                    // 2. التحقق من كلمة المرور المشفرة
                     var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
 
                     if (result == PasswordVerificationResult.Success)
@@ -50,7 +48,7 @@ namespace AlAdeeb.Controllers
                         {
                             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                             new Claim(ClaimTypes.Name, user.FullName),
-                            new Claim(ClaimTypes.Role, user.Role) // تحديد الـ Role
+                            new Claim(ClaimTypes.Role, user.Role)
                         };
 
                         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -93,7 +91,6 @@ namespace AlAdeeb.Controllers
                     CreatedAt = DateTime.Now
                 };
 
-                // تشفير كلمة المرور قبل الحفظ
                 newUser.PasswordHash = _passwordHasher.HashPassword(newUser, model.Password);
 
                 _context.Users.Add(newUser);

@@ -6,9 +6,9 @@
     <title>@ViewData["Title"] - منصة الأديب</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link type="image/x-icon" rel="icon" href="~/images/logo.png" />
 
     <style>
-        /* تعريف خط حياة ملكي */
         @@font-face {
             font-family: 'Hayah';
             src: url('/fonts/Hayah.otf') format('opentype');
@@ -37,7 +37,8 @@
             min-height: 100vh;
             color: #1a202c;
             overflow-x: hidden;
-            font-size: 1.1rem; /* تكبير الخط الافتراضي */
+            font-size: 1.1rem;
+            scroll-behavior: smooth;
         }
 
         * {
@@ -49,7 +50,6 @@
             transition: var(--transition);
         }
 
-        /* Navbar الفخم */
         .main-nav {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
@@ -105,7 +105,7 @@
         .nav-links {
             display: none;
             align-items: center;
-            gap: 2.5rem;
+            gap: 2rem;
         }
 
         @@media(min-width: 1024px) {
@@ -115,12 +115,20 @@
         }
 
         .nav-link {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 900;
             color: var(--c-primary);
             position: relative;
             padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
+
+            .nav-link i {
+                font-size: 1rem;
+                color: var(--c-secondary);
+            }
 
             .nav-link::after {
                 content: '';
@@ -158,6 +166,9 @@
             font-size: 1.3rem;
             font-weight: 900;
             color: var(--c-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
             .btn-auth-login:hover {
@@ -173,6 +184,9 @@
             font-weight: 900;
             border: 2px solid transparent;
             box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
             .btn-auth-reg:hover {
@@ -222,22 +236,98 @@
             }
         }
 
-        /* Footer الفخم */
+        main {
+            flex: 1;
+        }
+
         .main-footer {
             background: var(--c-primary-dark);
-            padding: 5rem 2rem 2rem 2rem;
+            padding: 6rem 2rem 2rem 2rem;
             border-top: 5px solid var(--c-secondary);
             color: rgba(255,255,255,0.7);
+            position: relative;
+            overflow: hidden;
         }
+
+            .main-footer::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(rgba(175,143,66,0.05) 2px, transparent 2px);
+                background-size: 30px 30px;
+                pointer-events: none;
+            }
 
         .footer-grid {
             max-width: 1300px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 2fr 1fr 1.5fr;
             gap: 4rem;
             margin-bottom: 4rem;
+            position: relative;
+            z-index: 10;
         }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        @@media(max-width: 992px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+        }
+
+        .footer-col.info-col img {
+            height: 90px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+
+        .footer-col.info-col p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        @@media(max-width: 992px) {
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.05);
+            color: var(--c-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            border: 1px solid rgba(175, 143, 66, 0.2);
+            transition: var(--transition);
+        }
+
+            .social-links a:hover {
+                background: var(--c-secondary);
+                color: var(--c-primary-dark);
+                transform: translateY(-5px) rotate(8deg);
+                box-shadow: 0 10px 20px rgba(175, 143, 66, 0.3);
+            }
 
         .footer-col h4 {
             color: var(--c-secondary);
@@ -246,6 +336,7 @@
             margin-bottom: 2rem;
             position: relative;
             padding-bottom: 0.8rem;
+            display: inline-block;
         }
 
             .footer-col h4::after {
@@ -253,43 +344,101 @@
                 position: absolute;
                 bottom: 0;
                 right: 0;
-                width: 40px;
+                width: 50%;
                 height: 3px;
-                background: var(--c-white);
+                background: var(--c-secondary);
                 border-radius: 5px;
             }
+
+        @@media(max-width: 992px) {
+            .footer-col h4::after {
+                left: 0;
+                margin: auto;
+            }
+        }
 
         .footer-links {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
             .footer-links li {
-                margin-bottom: 1rem;
+                margin-bottom: 1.2rem;
             }
 
             .footer-links a {
                 color: rgba(255,255,255,0.7);
-                font-size: 1.25rem;
-                font-weight: 700;
+                font-size: 1.2rem;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
             }
 
-                .footer-links a:hover {
-                    color: var(--c-secondary);
-                    padding-right: 10px;
-                }
+        @@media(max-width: 992px) {
+            .footer-links a {
+                justify-content: center;
+            }
+        }
+
+        .footer-links a i {
+            color: var(--c-secondary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--c-white);
+            padding-right: 8px;
+        }
+
+        .contact-list a {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1rem;
+            border-radius: 1rem;
+            transition: var(--transition);
+        }
+
+            .contact-list a:hover {
+                background: rgba(37, 211, 102, 0.1);
+                border-color: #25D366;
+                padding-right: 1rem;
+                transform: translateX(-5px);
+            }
+
+            .contact-list a i {
+                color: #25D366;
+                font-size: 1.5rem;
+            }
+
+            .contact-list a span {
+                direction: ltr;
+                font-family: Arial, sans-serif;
+                font-weight: 900;
+                letter-spacing: 1px;
+                color: var(--c-white);
+            }
 
         .footer-bottom {
             border-top: 1px solid rgba(255,255,255,0.05);
             padding-top: 2rem;
             text-align: center;
+            position: relative;
+            z-index: 10;
         }
 
             .footer-bottom p {
-                font-size: 1rem;
+                font-size: 1.1rem;
                 font-weight: bold;
                 margin: 0;
+                color: rgba(255,255,255,0.5);
             }
+
+                .footer-bottom p span {
+                    color: var(--c-secondary);
+                }
     </style>
 </head>
 <body>
@@ -297,28 +446,16 @@
     <nav class="main-nav">
         <div class="nav-container">
             <a href="/Home/Index" class="nav-logo">
-                <img src="~/images/logo.png" alt="الأديب" />
-                <div class="logo-text-group">
-                    <span class="logo-title">الأديب</span>
-                    <span class="logo-subtitle">للقدرات اللفظي</span>
-                </div>
+                <img src="~/images/logo-transparent.png" alt="الأديب" />
+                
             </a>
 
             <div class="nav-links">
-                <a href="/Home/Index" class="nav-link">الرئيسية</a>
-                <a href="/Home/About" class="nav-link">عن المنصة</a>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    if (User.IsInRole("Admin"))
-                    {
-                        <a href="/Admin/Index" class="nav-link">لوحة الإدارة</a>
-                    }
-                    else
-                    {
-
-                        <a href="/Student/Dashboard" class="nav-link">منصتي التعليمية</a>
-                    }
-                }
+                <a href="/Home/Index" class="nav-link"><i class="fa-solid fa-house"></i> الرئيسية</a>
+                <a href="/Student/BrowseCourses" class="nav-link"><i class="fa-solid fa-compass"></i> الدورات التدريبية</a>
+                <a href="/Home/About" class="nav-link"><i class="fa-solid fa-chalkboard-user"></i> عن المدرب</a>
+                <a href="/Home/Index#testimonials" class="nav-link"><i class="fa-solid fa-star"></i> آراء الطلاب</a>
+                <a href="#contact" class="nav-link"><i class="fa-solid fa-headset"></i> تواصل معنا</a>
             </div>
 
             <div class="nav-btns">
@@ -328,12 +465,22 @@
                         <img src="~/images/Salah.jpg" onerror="this.src='https://ui-avatars.com/api/?name=@User.Identity.Name&background=0a3254&color=af8f42';" />
                         <span>@User.Identity.Name</span>
                     </div>
-                    <a href="/Account/Logout" class="btn-auth-login" style="color: #ef4444; margin-right: 1rem;"><i class="fa-solid fa-power-off"></i></a>
+
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a href="/Admin/Index" class="btn-auth-reg" style="padding: 0.6rem 1.5rem; font-size: 1.1rem;">لوحة الإدارة</a>
+                    }
+                    else
+                    {
+                        <a href="/Student/Dashboard" class="btn-auth-reg" style="padding: 0.6rem 1.5rem; font-size: 1.1rem;">منصتي التعليمية</a>
+                    }
+
+                    <a href="/Account/Logout" class="btn-auth-login" style="color: #ef4444; margin-right: 0.5rem;" title="تسجيل الخروج"><i class="fa-solid fa-power-off"></i></a>
                 }
                 else
                 {
-                    <a href="/Account/Login" class="btn-auth-login">دخول الطلاب</a>
-                    <a href="/Account/Register" class="btn-auth-reg">ابدأ الآن</a>
+                    <a href="/Account/Login" class="btn-auth-login"><i class="fa-solid fa-user-lock"></i> دخول الطلاب</a>
+                    <a href="/Account/Register" class="btn-auth-reg"><i class="fa-solid fa-rocket"></i> ابدأ الآن</a>
                 }
             </div>
 
@@ -345,30 +492,51 @@
         @RenderBody()
     </main>
 
-    <footer class="main-footer">
+    <footer class="main-footer" id="contact">
         <div class="footer-grid">
-            <div class="footer-col">
-                <img src="~/images/logo.png" style="height: 80px; margin-bottom: 1.5rem;" />
-                <p style="font-size: 1.2rem; line-height: 1.8;">منصة الأديب التعليمية، شريكك الأول للوصول للدرجة النهائية في اختبارات القدرات اللفظي بأحدث الأساليب.</p>
+            <div class="footer-col info-col">
+                <img src="~/images/logo-transparent.png" style="padding:10px;background:#FFF; border-radius:10px;" alt="منصة الأديب" />
+                <p>منصة الأديب التعليمية، خيارك الأول للوصول للدرجة النهائية في اختبارات القدرات اللفظي بأحدث الأساليب وتأسيس قوي يضمن لك التفوق.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/share/1BFCrvjvAz/" target="_blank" title="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/aladib100?igsh=bTUyYW81Nm1qdHpj" target="_blank" title="إنستجرام"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://youtube.com/@@salahabdel-aal6246?si=-_7tk8FV-D7j0mPK" target="_blank" title="يوتيوب"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://www.tiktok.com/@@salahabdelaal100?_r=1&_t=ZS-9494QSQYoJY" target="_blank" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
             </div>
+
             <div class="footer-col">
                 <h4>روابط سريعة</h4>
                 <ul class="footer-links">
-                    <li><a href="/">الرئيسية</a></li>
-                    <li><a href="/Home/About">عن المدرب</a></li>
-                    <li><a href="/Account/Login">دخول الطلاب</a></li>
+                    <li><a href="/"><i class="fa-solid fa-angle-left"></i> الرئيسية</a></li>
+                    <li><a href="/Home/About"><i class="fa-solid fa-angle-left"></i> عن المدرب</a></li>
+                    <li><a href="/Student/BrowseCourses"><i class="fa-solid fa-angle-left"></i> استكشاف الدورات</a></li>
+                    <li><a href="/Home/Index#testimonials"><i class="fa-solid fa-angle-left"></i> آراء الطلاب</a></li>
+                    <li><a href="/Home/Privacy"><i class="fa-solid fa-angle-left"></i> سياسة الخصوصيه</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
-                <h4>تواصل معنا</h4>
-                <ul class="footer-links">
-                    <li><a href="https://wa.me/966540091992" target="_blank"><i class="fa-brands fa-whatsapp"></i> واتساب الدعم</a></li>
-                    <li><a href="mailto:support@aladib.com"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني</a></li>
+                <h4>الدعم الفني والاشتراكات</h4>
+                <ul class="footer-links contact-list">
+                    <li>
+                        <a href="https://wa.me/966540091992" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>+966 54 009 1992</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://wa.me/966510164354" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>+966 51 016 4354</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; @DateTime.Now.Year | منصة الأديب - أ. صلاح عبد العال</p>
+        <div class="footer-bottom" style="font-size:18px !important;">
+            <p style="font-weight:100;">جميع الحقوق محفوظة &copy; @DateTime.Now.Year | منصة <span>الأديب</span> - أ. صلاح عبد العال</p>
+            <p style="font-weight:100;" class="my-3">تم التصميم بواسطة <a href="https://gmtweb.online/" style="color:#af8f42;font-weight:100;">GMTWEB</a></p>
         </div>
     </footer>
 

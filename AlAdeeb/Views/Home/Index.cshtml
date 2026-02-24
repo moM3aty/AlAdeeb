@@ -3,7 +3,6 @@
 }
 
 <style>
-    /* استدعاء خط Hayah */
     @@font-face {
         font-family: 'Hayah';
         src: url('/fonts/Hayah.otf') format('opentype');
@@ -33,7 +32,6 @@
         overflow-x: hidden;
     }
 
-    /* ---------------- Hero Section ---------------- */
     .hero-section {
         position: relative;
         background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary) 100%);
@@ -92,7 +90,7 @@
 
     @@media (min-width: 992px) {
         .hero-container {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.2fr 1fr;
         }
     }
 
@@ -106,10 +104,10 @@
         gap: 0.75rem;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(175, 143, 66, 0.3);
-        padding: 0.5rem 1.5rem;
+        padding: 0.6rem 1.8rem;
         border-radius: 50px;
         color: var(--c-secondary-light);
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 700;
         margin-bottom: 2rem;
         backdrop-filter: blur(10px);
@@ -120,7 +118,7 @@
         }
 
     .hero-title {
-        font-size: clamp(3rem, 6vw, 4.5rem);
+        font-size: clamp(3.5rem, 6vw, 5rem);
         font-weight: 900;
         color: var(--c-white);
         line-height: 1.2;
@@ -135,11 +133,11 @@
         }
 
     .hero-description {
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.4rem;
+        color: rgba(255, 255, 255, 0.85);
         line-height: 1.8;
         margin-bottom: 3rem;
-        max-width: 600px;
+        max-width: 650px;
     }
 
     .hero-actions {
@@ -151,9 +149,9 @@
     .btn-primary {
         background: var(--c-secondary);
         color: var(--c-primary-dark);
-        padding: 1.2rem 2.5rem;
+        padding: 1.2rem 2.8rem;
         border-radius: 1.2rem;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 900;
         text-decoration: none;
         display: inline-flex;
@@ -174,9 +172,9 @@
     .btn-outline {
         background: rgba(255, 255, 255, 0.05);
         color: var(--c-white);
-        padding: 1.2rem 2.5rem;
+        padding: 1.2rem 2.8rem;
         border-radius: 1.2rem;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 700;
         text-decoration: none;
         display: inline-flex;
@@ -193,7 +191,6 @@
             color: var(--c-secondary);
         }
 
-    /* Hero Visual */
     .hero-visual {
         position: relative;
         animation: fadeLeft 1s ease forwards;
@@ -210,41 +207,43 @@
         position: relative;
         width: 100%;
         aspect-ratio: 1;
-        border-radius: 3rem;
+        border-radius: 50%;
         background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 4px solid rgba(175, 143, 66, 0.3);
         backdrop-filter: blur(20px);
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-        transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+        transform: perspective(1000px) rotateY(-10deg);
         transform-style: preserve-3d;
         transition: var(--transition);
+        padding: 1rem;
     }
 
     .hero-visual:hover .visual-frame {
-        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        transform: perspective(1000px) rotateY(0deg);
+        border-color: var(--c-secondary);
     }
 
-    .visual-icon {
-        font-size: 10rem;
-        color: var(--c-secondary);
-        opacity: 0.8;
-        transform: translateZ(50px);
+    .visual-frame img {
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .float-card-1 {
         position: absolute;
-        top: 20%;
-        right: -10%;
+        top: 10%;
+        right: -20px;
         background: var(--c-white);
-        padding: 1.5rem;
+        padding: 0.5rem 1rem;
         border-radius: 1.5rem;
         box-shadow: var(--shadow-card);
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.2rem;
         transform: translateZ(80px);
         animation: floatY 5s infinite ease-in-out;
     }
@@ -257,16 +256,43 @@
         .float-card-1 span {
             color: var(--c-primary);
             font-weight: 900;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
-    /* ---------------- Stats Section ---------------- */
+    .float-card-2 {
+        position: absolute;
+        bottom: 15%;
+        left: -30px;
+        background: var(--c-primary);
+        padding: 0.5rem 1rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 40px rgba(10,50,84,0.4);
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        transform: translateZ(60px);
+        animation: floatY 6s infinite ease-in-out reverse;
+        border: 1px solid rgba(175,143,66,0.3);
+    }
+
+        .float-card-2 i {
+            color: var(--c-white);
+            font-size: 1.5rem;
+        }
+
+        .float-card-2 span {
+            color: var(--c-white);
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+
+    /* Stats Section */
     .stats-section {
         position: relative;
         z-index: 20;
-        margin-top: -5rem;
+        margin-top: -6rem;
         padding: 0 2rem;
-        max-width: 1200px;
+        max-width: 1250px;
         margin-left: auto;
         margin-right: auto;
     }
@@ -276,9 +302,9 @@
         grid-template-columns: repeat(2, 1fr);
         background: var(--c-white);
         border-radius: 2rem;
-        box-shadow: var(--shadow-card);
+        box-shadow: 0 20px 50px rgba(10, 50, 84, 0.15);
         border: 1px solid rgba(10, 50, 84, 0.05);
-        padding: 3rem;
+        padding: 3rem 2rem;
         gap: 2rem;
     }
 
@@ -306,22 +332,23 @@
     }
 
     .stat-value {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 900;
         color: var(--c-primary);
-        font-family: Arial, sans-serif; /* For numbers */
+        font-family: Arial, sans-serif;
         margin-bottom: 0.5rem;
+        line-height: 1;
     }
 
     .stat-label {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         color: var(--c-secondary);
-        font-weight: 700;
+        font-weight: 900;
     }
 
-    /* ---------------- Features Section ---------------- */
+    /* Features Section */
     .features-section {
-        padding: 8rem 2rem;
+        padding: 10rem 2rem 6rem;
         background: var(--c-bg);
         direction: rtl;
         max-width: 1280px;
@@ -334,17 +361,18 @@
     }
 
     .section-title {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 900;
         color: var(--c-primary);
         margin-bottom: 1rem;
     }
 
     .section-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         color: var(--c-text-muted);
-        max-width: 600px;
+        max-width: 700px;
         margin: 0 auto;
+        line-height: 1.6;
     }
 
     .features-grid {
@@ -362,22 +390,41 @@
     .feature-card {
         background: var(--c-white);
         border-radius: 2rem;
-        padding: 3rem 2rem;
+        padding: 3.5rem 2rem;
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.02);
         border: 1px solid transparent;
         transition: var(--transition);
+        position: relative;
+        overflow: hidden;
     }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-card);
-            border-color: rgba(175, 143, 66, 0.2);
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--c-secondary);
+            transform: scaleX(0);
+            transition: var(--transition);
+            transform-origin: right;
         }
 
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--shadow-card);
+            border-color: rgba(175, 143, 66, 0.1);
+        }
+
+            .feature-card:hover::before {
+                transform: scaleX(1);
+            }
+
     .f-icon-wrapper {
-        width: 5rem;
-        height: 5rem;
+        width: 6rem;
+        height: 6rem;
         background: rgba(10, 50, 84, 0.03);
         border-radius: 1.5rem;
         display: flex;
@@ -385,30 +432,234 @@
         justify-content: center;
         margin: 0 auto 2rem auto;
         color: var(--c-primary);
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         transition: var(--transition);
     }
 
     .feature-card:hover .f-icon-wrapper {
-        background: var(--c-secondary);
-        color: var(--c-white);
-        transform: scale(1.1) rotate(5deg);
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        transform: rotate(10deg);
     }
 
     .feature-card h3 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 900;
         color: var(--c-primary);
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
     }
 
     .feature-card p {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         color: var(--c-text-muted);
-        line-height: 1.7;
+        line-height: 1.8;
     }
 
-    /* Animations */
+    /* Steps Section */
+    .steps-section {
+        background: var(--c-white);
+        padding: 8rem 2rem;
+    }
+
+    .steps-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 5rem;
+        align-items: center;
+    }
+
+    @@media (min-width: 992px) {
+        .steps-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .steps-content h2 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 3rem;
+    }
+
+    .step-item {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .step-number {
+        width: 4.5rem;
+        height: 4.5rem;
+        background: var(--c-secondary);
+        color: var(--c-white);
+        border-radius: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        font-family: Arial, sans-serif;
+        flex-shrink: 0;
+        box-shadow: 0 10px 20px rgba(175,143,66,0.3);
+    }
+
+    .step-text h3 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .step-text p {
+        font-size: 1.2rem;
+        color: var(--c-text-muted);
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .steps-image {
+        position: relative;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+    }
+
+        .steps-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 8rem 2rem;
+        background: var(--c-bg);
+        text-align: center;
+    }
+
+    .testi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        max-width: 1280px;
+        margin: 4rem auto 0;
+    }
+
+    .testi-card {
+        background: var(--c-white);
+        padding: 3rem 2rem;
+        border-radius: 2rem;
+        border: 1px solid rgba(175,143,66,0.1);
+        position: relative;
+        box-shadow: var(--shadow-card);
+        text-align: right;
+        transition: var(--transition);
+    }
+
+        .testi-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--c-secondary);
+        }
+
+    .quote-icon {
+        position: absolute;
+        top: -25px;
+        right: 40px;
+        background: var(--c-secondary);
+        color: var(--c-white);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 10px 20px rgba(175,143,66,0.3);
+    }
+
+    .testi-text {
+        font-size: 1.3rem;
+        color: var(--c-primary);
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        font-weight: bold;
+    }
+
+    .testi-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1.5rem;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        background: rgba(10,50,84,0.05);
+        color: var(--c-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
+
+    .author-info h4 {
+        font-size: 1.2rem;
+        color: var(--c-primary);
+        font-weight: 900;
+        margin: 0 0 0.2rem 0;
+    }
+
+    .author-info span {
+        font-size: 1rem;
+        color: var(--c-secondary);
+        font-weight: bold;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
+        padding: 6rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(175,143,66,0.2) 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+
+    .cta-content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+        .cta-content h2 {
+            font-size: 3.5rem;
+            color: var(--c-white);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-content p {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
     @@keyframes fadeUp {
         from {
             opacity: 0;
@@ -486,12 +737,12 @@
                 </h1>
 
                 <p class="hero-description">
-                    منصة تعليمية متكاملة تضمن لك تأسيساً قوياً وتدريباً مكثفاً على كافة مهارات القدرات اللفظي بأحدث الاستراتيجيات مع خبير القدرات أ. صلاح عبد العال.
+                    أقوى منصة تعليمية تضمن لك تأسيساً صلباً وتدريباً مكثفاً على كافة مهارات القدرات اللفظي بأحدث استراتيجيات الحل السريع مع خبير القدرات أ. صلاح عبد العال.
                 </p>
 
                 <div class="hero-actions">
                     <a href="/Account/Register" class="btn-primary">
-                        ابدأ رحلة الـ 100% <i class="fa-solid fa-arrow-left"></i>
+                        ابدأ رحلة الـ 100% <i class="fa-solid fa-rocket"></i>
                     </a>
                     <a href="/Student/BrowseCourses" class="btn-outline">
                         تصفح الدورات <i class="fa-solid fa-compass"></i>
@@ -501,12 +752,14 @@
 
             <div class="hero-visual">
                 <div class="visual-frame">
-                    <img src="~/images/Salah.jpg" style="border-radius:50px;width: 100%;" alt="Alternate Text" />
-
-
+                    <img src="~/images/Salah.jpg" alt="أ. صلاح عبد العال" onerror="this.src='https://ui-avatars.com/api/?name=صلاح+عبدالعال&background=0a3254&color=af8f42&size=600';" />
                     <div class="float-card-1">
                         <i class="fa-solid fa-bullseye"></i>
-                        <span>علامة كاملة</span>
+                        <span>علامة كاملة 100%</span>
+                    </div>
+                    <div class="float-card-2">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>شفرات للحل السريع</span>
                     </div>
                 </div>
             </div>
@@ -518,19 +771,19 @@
         <div class="stats-grid">
             <div class="stat-item">
                 <div class="stat-value">+@ViewBag.TotalStudentsDisplay</div>
-                <div class="stat-label">طالب وطالبة</div>
+                <div class="stat-label">طالب وطالبة يثقون بنا</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value">100%</div>
-                <div class="stat-label">محاكاة دقيقة</div>
+                <div class="stat-label">نسبة رضا الطلاب</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value">+@ViewBag.CoursesCount</div>
-                <div class="stat-label">دورة متخصصة</div>
+                <div class="stat-label">دورة تدريبية متخصصة</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value">24/7</div>
-                <div class="stat-label">دعم فني وتدريب</div>
+                <div class="stat-label">دعم فني وتواصل مباشر</div>
             </div>
         </div>
     </section>
@@ -539,25 +792,122 @@
     <section class="features-section">
         <div class="section-header">
             <h2 class="section-title">لماذا تختار الأديب؟</h2>
-            <p class="section-subtitle">صُممت المنصة بعناية فائقة لتلبية كافة احتياجاتك وضمان وصولك للقمة.</p>
+            <p class="section-subtitle">صُممت المنصة بعناية فائقة لتلبية كافة احتياجاتك وضمان وصولك للقمة بكل سهولة وثقة وبدون تشتت.</p>
         </div>
 
         <div class="features-grid">
             <div class="feature-card">
                 <div class="f-icon-wrapper"><i class="fa-solid fa-layer-group"></i></div>
-                <h3>تأسيس من الصفر</h3>
-                <p>بناء قاعدة معرفية صلبة تمكنك من فهم الجذور الأساسية للأسئلة بأسلوب سلس ومبسط.</p>
+                <h3>تأسيس شامل من الصفر</h3>
+                <p>بناء قاعدة معرفية صلبة تمكنك من فهم الجذور الأساسية للأسئلة بأسلوب سلس ومبسط ومناسب لجميع المستويات.</p>
             </div>
             <div class="feature-card">
                 <div class="f-icon-wrapper"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <h3>شفرات الحل السريع</h3>
-                <p>تعلم كيف تستنتج الإجابة الصحيحة في ثوانٍ معدودة باستخدام استراتيجياتنا الحصرية.</p>
+                <h3>شفرات الحل الذهني السريع</h3>
+                <p>تعلم كيف تستنتج الإجابة الصحيحة في ثوانٍ معدودة باستخدام استراتيجياتنا الحصرية المبتكرة.</p>
             </div>
             <div class="feature-card">
                 <div class="f-icon-wrapper"><i class="fa-solid fa-laptop-file"></i></div>
-                <h3>محاكاة اختبار قياس</h3>
-                <p>اختبارات إلكترونية ذكية بنفس واجهة وتوقيت الاختبار الفعلي لكسر رهبة الامتحان.</p>
+                <h3>محاكاة دقيقة لاختبار قياس</h3>
+                <p>اختبارات إلكترونية ذكية بنفس واجهة وتوقيت الاختبار الفعلي لكسر رهبة الامتحان وتدريبك على إدارة الوقت.</p>
             </div>
+        </div>
+    </section>
+
+    <!-- Steps to Success -->
+    <section class="steps-section">
+        <div class="steps-container">
+            <div class="steps-content">
+                <h2>رحلتك نحو الـ 100% <br><span style="color: var(--c-secondary);">في 3 خطوات فقط</span></h2>
+
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <h3>تأسيس القواعد</h3>
+                        <p>شرح مبسط ومفصل لكل أقسام القدرات اللفظي (التناظر، إكمال الجمل، الخطأ السياقي، استيعاب المقروء) لتأسيس فهمك.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <h3>تطبيق وتدريب مكثف</h3>
+                        <p>حل مئات الأسئلة المحدثة من تجميعات قياس لتثبيت المعلومة وتطبيق استراتيجيات الحل السريع عملياً.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-text">
+                        <h3>اختبارات المحاكاة الشاملة</h3>
+                        <p>الدخول في جو الاختبار الفعلي من خلال نماذج اختبارات ذكية ومؤقتة تقيس مستواك وتحدد نقاط ضعفك لمعالجتها.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="steps-image">
+                <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop" alt="تدريب الطلاب" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" id="testimonials">
+        <div class="section-header" style="margin-bottom: 3rem;">
+            <div class="hero-badge" style="background: rgba(10,50,84,0.05); color: var(--c-primary); border-color: rgba(10,50,84,0.1); margin-bottom: 1rem;">
+                <i class="fa-solid fa-star"></i> قصص نجاح حقيقية
+            </div>
+            <h2 class="section-title">صناع التفوق</h2>
+            <p class="section-subtitle">انضم لقافلة المتميزين الذين حققوا العلامة الكاملة بفضل الله ثم بالتدريب معنا.</p>
+        </div>
+
+        <div class="testi-grid">
+            <div class="testi-card">
+                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
+                <p class="testi-text">"تجربتي مع منصة الأديب كانت نقطة تحول! الشرح سلس جداً والاستراتيجيات فعلاً تختصر الوقت في الاختبار. بفضل الله ثم أستاذ صلاح جبت 100%."</p>
+                <div class="testi-author">
+                    <div class="author-avatar">ع</div>
+                    <div class="author-info">
+                        <h4>عبدالله م.</h4>
+                        <span>درجة 100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testi-card">
+                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
+                <p class="testi-text">"أكثر شيء فادني هو اختبارات المحاكاة اللي دربتني على إدارة وقتي بشكل ممتاز، وكسرت رهبة الاختبار الفعلي عندي بشكل نهائي."</p>
+                <div class="testi-author">
+                    <div class="author-avatar">س</div>
+                    <div class="author-info">
+                        <h4>سارة ق.</h4>
+                        <span>درجة 99%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testi-card">
+                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
+                <p class="testi-text">"تأسيس اللفظي كان دائماً عقدتي، لكن الأستاذ صلاح بسط كل القواعد بأسلوب ذكي يثبت في المخ وما يُنسى وقت الحل. أنصح الجميع بالمنصة."</p>
+                <div class="testi-author">
+                    <div class="author-avatar">م</div>
+                    <div class="author-info">
+                        <h4>محمد ط.</h4>
+                        <span>درجة 100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call To Action -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>لا تترك مستقبلك للصدفة!</h2>
+            <p>مقعدك في القمة بانتظارك، ابدأ الآن رحلتك مع أقوى منصة تدريبية وتأكد أن تحقيق الـ 100% ليس مستحيلاً.</p>
+            <a href="/Account/Register" class="btn-primary" style="background: var(--c-white); color: var(--c-primary); font-size: 1.4rem;">
+                سجل حسابك مجاناً الآن <i class="fa-solid fa-arrow-left"></i>
+            </a>
         </div>
     </section>
 

@@ -1,0 +1,254 @@
+﻿@model AlAdeeb.Models.Certificate
+@{
+    ViewData["Title"] = "شهادة اجتياز الدورة";
+    Layout = null; // نمنع عرض الـ Navbar والـ Footer للتركيز على الشهادة والطباعة
+}
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - الأديب</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link type="image/x-icon" rel="icon" href="~/images/logo.png" />
+
+    <style>
+        @@font-face {
+            font-family: 'Hayah';
+            src: url('/fonts/Hayah.otf') format('opentype');
+        }
+
+        body {
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            font-family: Arial, sans-serif;
+        }
+
+        .cert-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .cert-border {
+            border: 10px double #af8f42;
+            padding: 40px;
+            position: relative;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6IiBmaWxsPSIjZmZmZmZmIi8+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6IiBmaWxsPSJ1cmwoI2EpIi8+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNhZjhmNDIiIHN0b3Atb3BhY2l0eT0iMC4wNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2FmOGY0MiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PC9zdmc+');
+            text-align: center;
+            overflow: hidden;
+        }
+
+            .cert-border::before {
+                content: '\f559';
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 25rem;
+                color: rgba(175, 143, 66, 0.03);
+                pointer-events: none;
+            }
+
+        .cert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cert-logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .cert-title {
+            font-family: 'Hayah', sans-serif;
+            font-size: 4rem;
+            color: #0a3254;
+            margin: 0;
+            text-shadow: 2px 2px 0px rgba(175, 143, 66, 0.2);
+        }
+
+        .cert-content {
+            position: relative;
+            z-index: 10;
+            margin: 40px 0;
+        }
+
+        .cert-text {
+            font-size: 1.4rem;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .student-name {
+            font-family: 'Hayah', sans-serif;
+            font-size: 3.5rem;
+            color: #af8f42;
+            margin: 20px 0;
+            border-bottom: 2px solid #af8f42;
+            display: inline-block;
+            padding: 0 40px 10px;
+        }
+
+        .course-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #0a3254;
+            margin: 20px 0;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            font-family: 'Hayah', sans-serif;
+            font-size: 2rem;
+            color: #0a3254;
+            margin-bottom: 5px;
+        }
+
+        .signature-title {
+            font-size: 1rem;
+            color: #64748b;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 5px;
+        }
+
+        .cert-seal {
+            width: 120px;
+            height: 120px;
+            background: #af8f42;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 3rem;
+            box-shadow: 0 0 0 10px rgba(175, 143, 66, 0.2);
+            position: relative;
+        }
+
+            .cert-seal::after {
+                content: '';
+                position: absolute;
+                width: 130px;
+                height: 130px;
+                border: 2px dashed #af8f42;
+                border-radius: 50%;
+            }
+
+        .cert-meta {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+            .cert-meta strong {
+                color: #0a3254;
+            }
+
+        .print-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #0a3254;
+            color: #af8f42;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Hayah', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+            .print-btn:hover {
+                background: #af8f42;
+                color: #0a3254;
+            }
+
+        @@media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .print-btn {
+                display: none;
+            }
+
+            .cert-container {
+                box-shadow: none;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الشهادة</button>
+
+    <div class="cert-container">
+        <div class="cert-border">
+
+            <div class="cert-header">
+                <img src="~/images/logo-transparent.png" alt="شعار الأديب" class="cert-logo" />
+                <h1 class="cert-title">شهادة اجتياز وتفوق</h1>
+                <img src="~/images/logo-transparent.png" style="opacity: 0;" class="cert-logo" /> <!-- للموازنة فقط -->
+            </div>
+
+            <div class="cert-content">
+                <p class="cert-text">يشهد إدارة منصة الأديب للقدرات اللفظي بأن الطالب/ة</p>
+                <h2 class="student-name">@Model.Student.FullName</h2>
+                <p class="cert-text">قد أتم/ت بنجاح واجتاز/ت الاختبار النهائي لبرنامج:</p>
+                <h3 class="course-name">@Model.Course.Title</h3>
+                <p class="cert-text" style="font-weight: bold; color: #0a3254;">وحصل/ت على التقييم النهائي بنسبة: <span style="font-size: 1.8rem; color: #af8f42; font-family: Arial;">@Model.FinalScore%</span></p>
+                <p class="cert-text" style="font-size: 1rem; margin-top: 20px;">متمنين له/لها دوام التوفيق والنجاح في مسيرته/ا العلمية والعملية.</p>
+            </div>
+
+            <div class="cert-footer">
+                <div class="cert-meta">
+                    <p>رقم الشهادة: <strong>@Model.SerialNumber</strong></p>
+                    <p>تاريخ الإصدار: <strong dir="ltr">@Model.IssueDate.ToString("yyyy/MM/dd")</strong></p>
+                </div>
+
+                <div class="cert-seal">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+
+                <div class="signature-box">
+                    <div class="signature-line">أ. صلاح عبد العال</div>
+                    <div class="signature-title">المدير العام وخبير القدرات</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

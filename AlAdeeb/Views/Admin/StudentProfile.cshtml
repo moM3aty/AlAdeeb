@@ -1,0 +1,442 @@
+﻿@model AlAdeeb.Models.ApplicationUser
+@{
+    ViewData["Title"] = "الملف الشامل للطالب";
+    Layout = "_AdminLayout";
+
+    var subscriptions = ViewBag.Subscriptions as IEnumerable<AlAdeeb.Models.SubscriptionRequest>;
+    var scores = ViewBag.Scores as IEnumerable<AlAdeeb.Models.StudentScore>;
+    var certificates = ViewBag.Certificates as IEnumerable<AlAdeeb.Models.Certificate>;
+}
+
+<style>
+    .profile-header {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        color: var(--c-white);
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @@media(min-width: 768px) {
+        .profile-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .student-main-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .student-avatar {
+        width: 6rem;
+        height: 6rem;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--c-secondary);
+        font-family: 'Hayah', sans-serif;
+        font-weight: 900;
+        backdrop-filter: blur(10px);
+    }
+
+    .student-main-info h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+    }
+
+    .student-main-info p {
+        color: rgba(255,255,255,0.8);
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    .profile-kpis {
+        display: flex;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 10;
+        flex-wrap: wrap;
+    }
+
+    .p-kpi {
+        background: rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 1.2rem 2rem;
+        border-radius: 1.2rem;
+        text-align: center;
+        flex: 1;
+        min-width: 120px;
+    }
+
+        .p-kpi span {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .p-kpi strong {
+            font-size: 2rem;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+            color: var(--c-secondary);
+            line-height: 1;
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    @@media(min-width: 1024px) {
+        .content-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .section-card {
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sc-head {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .sc-head i {
+            font-size: 1.5rem;
+            color: var(--c-secondary);
+        }
+
+        .sc-head h3 {
+            font-family: 'Hayah', sans-serif;
+            font-size: 1.6rem;
+            color: var(--c-primary);
+            margin: 0;
+        }
+
+    .sc-body {
+        padding: 1.5rem;
+        flex: 1;
+        overflow-y: auto;
+        max-height: 500px;
+    }
+
+        .sc-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sc-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+    /* List Items Styling */
+    .list-item {
+        background: var(--c-bg);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 1rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+        .list-item:hover {
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            transform: translateX(-5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+    .item-main {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .item-icon {
+        width: 3rem;
+        height: 3rem;
+        background: var(--c-white);
+        border-radius: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        flex-shrink: 0;
+    }
+
+    .item-text h4 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin: 0 0 0.3rem 0;
+    }
+
+    .item-text p {
+        font-size: 0.85rem;
+        color: var(--c-text-muted);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Badges */
+    .s-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .b-approved {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .b-pending {
+        background: #fef9c3;
+        color: #a16207;
+        border: 1px solid #fef08a;
+    }
+
+    .b-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .score-badge {
+        font-family: Arial, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 900;
+        padding: 0.4rem 1rem;
+        border-radius: 0.8rem;
+    }
+
+    .score-excellent {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .score-good {
+        background: #fef9c3;
+        color: #a16207;
+    }
+
+    .score-poor {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .cert-link {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 0.6rem 1rem;
+        border-radius: 0.8rem;
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+    }
+
+        .cert-link:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+        }
+
+    .empty-msg {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+        font-weight: bold;
+    }
+
+        .empty-msg i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+            display: block;
+        }
+</style>
+
+<div class="profile-header">
+    <div class="student-main-info">
+        <div class="student-avatar">@Model.FullName.Substring(0, 1)</div>
+        <div>
+            <h2>@Model.FullName</h2>
+            <p dir="ltr"><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> @Model.PhoneNumber</p>
+        </div>
+    </div>
+    <div class="profile-kpis">
+        <div class="p-kpi">
+            <span>إجمالي الدورات</span>
+            <strong>@(subscriptions?.Count(s => s.Status == "Approved") ?? 0)</strong>
+        </div>
+        <div class="p-kpi">
+            <span>متوسط التقييم</span>
+            <strong>@ViewBag.AverageScore%</strong>
+        </div>
+        <div class="p-kpi">
+            <span>الشهادات</span>
+            <strong>@(certificates?.Count() ?? 0)</strong>
+        </div>
+    </div>
+</div>
+
+<div class="content-grid">
+
+    <!-- قسم الدورات المشترك بها -->
+    <div class="section-card">
+        <div class="sc-head">
+            <i class="fa-solid fa-cubes"></i>
+            <h3>الدورات والاشتراكات</h3>
+        </div>
+        <div class="sc-body">
+            @if (subscriptions != null && subscriptions.Any())
+            {
+                foreach (var sub in subscriptions)
+                {
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="item-icon" style="color:var(--c-primary);"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <div class="item-text">
+                                <h4>@sub.Course.Title</h4>
+                                <p><i class="fa-regular fa-clock"></i> @sub.RequestDate.ToString("yyyy/MM/dd")</p>
+                            </div>
+                        </div>
+                        <div>
+                            @if (sub.Status == "Approved")
+                            {
+                                <span class="s-badge b-approved">مفعل</span>
+                            }
+                            else if (sub.Status == "Pending")
+                            {
+
+                                <span class="s-badge b-pending">قيد المراجعة</span>
+                            }
+                            else
+                            {
+
+                                <span class="s-badge b-rejected">موقوف/مرفوض</span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-msg"><i class="fa-solid fa-box-open"></i> لا توجد أي اشتراكات لهذا الطالب حتى الآن.</div>
+            }
+        </div>
+    </div>
+
+    <!-- قسم الشهادات -->
+    <div class="section-card">
+        <div class="sc-head">
+            <i class="fa-solid fa-file-certificate"></i>
+            <h3>الشهادات المُصدرة</h3>
+        </div>
+        <div class="sc-body">
+            @if (certificates != null && certificates.Any())
+            {
+                foreach (var cert in certificates)
+                {
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="item-icon" style="background:var(--c-secondary); color:white;"><i class="fa-solid fa-award"></i></div>
+                            <div class="item-text">
+                                <h4>@cert.Course.Title</h4>
+                                <p>بتقييم نهائي: @cert.FinalScore% | @cert.IssueDate.ToString("yyyy/MM/dd")</p>
+                            </div>
+                        </div>
+                        <a href="/Admin/ViewCertificate?serial=@cert.SerialNumber" target="_blank" class="cert-link"><i class="fa-solid fa-eye"></i> عرض</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-msg"><i class="fa-solid fa-file-circle-xmark"></i> لم يحصل الطالب على أي شهادات بعد.</div>
+            }
+        </div>
+    </div>
+
+    <!-- قسم التقييمات والاختبارات -->
+    <div class="section-card" style="grid-column: 1 / -1;">
+        <div class="sc-head">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>سجل الاختبارات والتقييم التفصيلي</h3>
+        </div>
+        <div class="sc-body" style="max-height: 400px;">
+            @if (scores != null && scores.Any())
+            {
+                foreach (var score in scores)
+                {
+                    string badgeClass = score.ScorePercentage >= 85 ? "score-excellent" : (score.ScorePercentage >= 65 ? "score-good" : "score-poor");
+
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="item-icon" style="color:var(--c-text-muted);"><i class="fa-solid fa-list-check"></i></div>
+                            <div class="item-text">
+                                <h4>@score.Quiz.Title @(score.Quiz.IsFinalExam ? "(اختبار نهائي)" : "")</h4>
+                                <p><i class="fa-regular fa-calendar-check"></i> تم التقديم: @score.DateTaken.ToString("yyyy/MM/dd hh:mm tt")</p>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap: 1.5rem;">
+                            <div style="text-align:center; font-family:Arial, sans-serif; font-size:0.9rem; color:var(--c-text-muted); font-weight:bold;">
+                                الصحيح<br><span style="color:var(--c-primary); font-size:1.1rem;">@score.CorrectAnswers / @score.TotalQuestions</span>
+                            </div>
+                            <span class="score-badge @badgeClass">@score.ScorePercentage%</span>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-msg"><i class="fa-solid fa-clipboard-question"></i> لم يقم الطالب بإجراء أي اختبارات تطبيقية حتى الآن.</div>
+            }
+        </div>
+    </div>
+
+</div>

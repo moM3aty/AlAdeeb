@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace AlAdeeb.Controllers
 {
-    [Authorize(Roles = "Admin")] // حماية كاملة: لا يدخل إلا الأدمن
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly AppDbContext _context;
@@ -24,9 +25,6 @@ namespace AlAdeeb.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // ==========================================
-        // 1. لوحة التحكم (Dashboard & Read Courses)
-        // ==========================================
         public async Task<IActionResult> Index()
         {
             ViewBag.PendingRequestsCount = await _context.SubscriptionRequests.CountAsync(r => r.Status == "Pending");
@@ -36,10 +34,6 @@ namespace AlAdeeb.Controllers
             var courses = await _context.Courses.OrderByDescending(c => c.Id).ToListAsync();
             return View(courses);
         }
-
-        // ==========================================
-        // 2. إدارة الكورسات (Create, Edit, Delete)
-        // ==========================================
 
         [HttpGet]
         public IActionResult CreateCourse()
@@ -51,22 +45,22 @@ namespace AlAdeeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCourse(Course model, IFormFile courseImage)
         {
+            ModelState.Remove("Lessons");
+            ModelState.Remove("Quizzes");
             if (ModelState.IsValid)
             {
-                // حفظ صورة الكورس إذا تم رفعها
-                // ملاحظة: تأكد من إضافة حقل ImageUrl في موديل الـ Course
-                // if (courseImage != null)
-                // {
-                //     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/courses");
-                //     Directory.CreateDirectory(uploadsFolder);
-                //     string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseImage.FileName;
-                //     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                //     using (var fileStream = new FileStream(filePath, FileMode.Create))
-                //     {
-                //         await courseImage.CopyToAsync(fileStream);
-                //     }
-                //     model.ImageUrl = "/uploads/courses/" + uniqueFileName;
-                // }
+                if (courseImage != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/courses");
+                    Directory.CreateDirectory(uploadsFolder);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await courseImage.CopyToAsync(fileStream);
+                    }
+                    model.ImageUrl = "/uploads/courses/" + uniqueFileName;
+                }
 
                 _context.Courses.Add(model);
                 await _context.SaveChangesAsync();
@@ -127,20 +121,60 @@ namespace AlAdeeb.Controllers
             return _context.Courses.Any(e => e.Id == id);
         }
 
-        // ==========================================
-        // 3. إدارة الاشتراكات (Read, Update Status)
-        // ==========================================
         public async Task<IActionResult> SubscriptionRequests()
         {
             var requests = await _context.SubscriptionRequests
                 .Include(r => r.Student)
                 .Include(r => r.Course)
-                .Where(r => r.Status == "Pending")
                 .OrderByDescending(r => r.RequestDate)
                 .ToListAsync();
 
             return View(requests);
         }
+        [HttpGet]
+        public async Task<IActionResult> StudentProfile(int id)
+        {
+            var student = await _context.Users.FindAsync(id);
+            if (student == null || student.Role != "Student") return NotFound("الطالب غير موجود.");
+
+            ViewBag.Subscriptions = await _context.SubscriptionRequests
+                .Include(s => s.Course)
+                .Where(s => s.StudentId == id)
+                .OrderByDescending(s => s.RequestDate)
+                .ToListAsync();
+
+            var scores = await _context.StudentScores
+                .Include(s => s.Quiz)
+                .Where(s => s.StudentId == id)
+                .OrderByDescending(s => s.DateTaken)
+                .ToListAsync();
+
+            ViewBag.Scores = scores;
+            ViewBag.AverageScore = scores.Any() ? Math.Round(scores.Average(s => s.ScorePercentage), 1) : 0;
+
+            ViewBag.Certificates = await _context.Certificates
+                .Include(c => c.Course)
+                .Where(c => c.StudentId == id)
+                .OrderByDescending(c => c.IssueDate)
+                .ToListAsync();
+
+            return View(student);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ViewCertificate(string serial)
+        {
+            var cert = await _context.Certificates
+                .Include(c => c.Student)
+                .Include(c => c.Course)
+                .FirstOrDefaultAsync(c => c.SerialNumber == serial);
+
+            if (cert == null) return NotFound("الشهادة غير موجودة.");
+
+            // يتم عرض ملف الشهادة الموجود في مجلد الطالب ولكن من خلال أكشن المدير
+            return View("~/Views/Student/Certificate.cshtml", cert);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -149,16 +183,13 @@ namespace AlAdeeb.Controllers
             var request = await _context.SubscriptionRequests.FindAsync(requestId);
             if (request != null)
             {
-                request.Status = status; // "Approved" or "Rejected"
+                request.Status = status;
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = status == "Approved" ? "تم تفعيل حساب الطالب بنجاح!" : "تم رفض الطلب.";
             }
             return RedirectToAction(nameof(SubscriptionRequests));
         }
 
-        // ==========================================
-        // 4. إدارة الطلاب (Read, Delete)
-        // ==========================================
         public async Task<IActionResult> StudentsList()
         {
             var students = await _context.Users
@@ -182,43 +213,42 @@ namespace AlAdeeb.Controllers
             return RedirectToAction(nameof(StudentsList));
         }
 
-        // ==========================================
-        // 5. إدارة وبناء الاختبارات (Quizzes)
-        // ==========================================
         [HttpGet]
-        public async Task<IActionResult> AddQuiz(int courseId)
+        public async Task<IActionResult> AddQuiz(int courseId, int? lessonId, bool isFinalExam = false)
         {
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null) return NotFound("الكورس غير موجود.");
+
+            ViewBag.LessonId = lessonId;
+            ViewBag.IsFinalExam = isFinalExam;
+
             return View(course);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveQuiz(int CourseId, string QuizTitle, int DurationInMinutes, List<Question> Questions)
+        public async Task<IActionResult> SaveQuiz(int CourseId, int? LessonId, string QuizTitle, int DurationInMinutes, bool IsFinalExam, List<Question> Questions)
         {
-            // 1. معالجة القائمة لتجنب NullReferenceException
             if (Questions == null) Questions = new List<Question>();
 
             var newQuiz = new Quiz
             {
-                CourseId = CourseId,
+                CourseId = IsFinalExam ? CourseId : null,
+                LessonId = IsFinalExam ? null : LessonId,
                 Title = string.IsNullOrEmpty(QuizTitle) ? "اختبار جديد" : QuizTitle,
                 DurationInMinutes = DurationInMinutes,
+                IsFinalExam = IsFinalExam,
                 Questions = new List<Question>()
             };
 
-            // إنشاء مجلد الصور إذا لم يكن موجوداً
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/questions");
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-            // 2. معالجة كل سؤال (النص والـ Snapshot معاً)
             for (int i = 0; i < Questions.Count; i++)
             {
                 var q = Questions[i];
                 if (q == null) continue;
 
-                // معالجة صورة الـ Snapshot
                 var fileKey = $"Questions[{i}].ImageFile";
                 var imageFile = Request.Form.Files[fileKey];
 
@@ -234,10 +264,9 @@ namespace AlAdeeb.Controllers
                 }
                 else
                 {
-                    q.QuestionImagePath = ""; // ضمان عدم إرسال NULL
+                    q.QuestionImagePath = "";
                 }
 
-                // 3. ضمان تعبئة كافة الحقول لتجنب SqlException
                 q.QuestionText = q.QuestionText ?? "";
                 q.OptionA = q.OptionA ?? "";
                 q.OptionB = q.OptionB ?? "";
@@ -245,7 +274,6 @@ namespace AlAdeeb.Controllers
                 q.OptionD = q.OptionD ?? "";
                 q.CorrectOption = q.CorrectOption ?? "A";
 
-                // إذا كانت الصورة موجودة والنص فارغ، نضع وسماً نصياً
                 if (string.IsNullOrEmpty(q.QuestionText) && !string.IsNullOrEmpty(q.QuestionImagePath))
                 {
                     q.QuestionText = "[سؤال مصور]";
@@ -257,8 +285,91 @@ namespace AlAdeeb.Controllers
             _context.Quizzes.Add(newQuiz);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "تم حفظ الاختبار بنجاح! تم دمج النصوص واللقطات المصورة (Snapshots) في بنك الأسئلة.";
+            TempData["SuccessMessage"] = "تم حفظ الاختبار بنجاح!";
             return RedirectToAction("Details", "Course", new { id = CourseId });
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditQuiz(int id)
+        {
+            var quiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quiz == null) return NotFound();
+
+            return View(quiz);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditQuiz(int id, Quiz model, List<Question> Questions)
+        {
+            if (id != model.Id) return NotFound();
+
+            var existingQuiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                .Include(q => q.Lesson)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (existingQuiz == null) return NotFound();
+
+            existingQuiz.Title = string.IsNullOrEmpty(model.Title) ? "اختبار" : model.Title;
+            existingQuiz.DurationInMinutes = model.DurationInMinutes;
+            existingQuiz.MinimumPassScore = model.MinimumPassScore;
+
+            // مسح الأسئلة القديمة وإضافة الجديدة التي تم إرسالها من الفورم
+            _context.Questions.RemoveRange(existingQuiz.Questions);
+
+            if (Questions != null && Questions.Any())
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/questions");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                for (int i = 0; i < Questions.Count; i++)
+                {
+                    var q = Questions[i];
+                    if (q == null) continue;
+
+                    var fileKey = $"Questions[{i}].ImageFile";
+                    var imageFile = Request.Form.Files[fileKey];
+
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(fileStream);
+                        }
+                        q.QuestionImagePath = "/uploads/questions/" + uniqueFileName;
+                    }
+                    else
+                    {
+                        var existingImage = Request.Form[$"Questions[{i}].ExistingImagePath"];
+                        q.QuestionImagePath = existingImage;
+                    }
+
+                    q.QuestionText = q.QuestionText ?? "";
+                    q.OptionA = q.OptionA ?? "";
+                    q.OptionB = q.OptionB ?? "";
+                    q.OptionC = q.OptionC ?? "";
+                    q.OptionD = q.OptionD ?? "";
+                    q.CorrectOption = q.CorrectOption ?? "A";
+                    q.QuizId = existingQuiz.Id;
+
+                    if (string.IsNullOrEmpty(q.QuestionText) && !string.IsNullOrEmpty(q.QuestionImagePath))
+                    {
+                        q.QuestionText = "[سؤال مصور]";
+                    }
+
+                    _context.Questions.Add(q);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "تم تحديث بيانات الاختبار بنجاح!";
+
+            return RedirectToAction("Details", "Course", new { id = existingQuiz.CourseId ?? existingQuiz.Lesson?.CourseId });
         }
     }
 }

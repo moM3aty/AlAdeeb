@@ -7,7 +7,6 @@ using AlAdeeb.Models;
 
 namespace AlAdeeb.Controllers
 {
-    // [Authorize(Roles = "Admin")]
     public class LiveController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,7 +16,6 @@ namespace AlAdeeb.Controllers
             _context = context;
         }
 
-        // صفحة إدارة البثوث المباشرة
         public async Task<IActionResult> ManageLiveSessions()
         {
             var sessions = await _context.LiveSessions
@@ -29,27 +27,52 @@ namespace AlAdeeb.Controllers
             return View(sessions);
         }
 
-        // إضافة بث مباشر جديد (Zoom / Meet)
         [HttpPost]
         public async Task<IActionResult> CreateLiveSession(LiveSession model)
         {
+            ModelState.Remove("Course");
+            ModelState.Remove("RecordedVideoUrl");
             if (ModelState.IsValid)
             {
+                
                 _context.LiveSessions.Add(model);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(ManageLiveSessions));
         }
 
-        // رفع التسجيل بعد انتهاء البث
         [HttpPost]
         public async Task<IActionResult> UploadRecording(int sessionId, string recordedUrl)
         {
             var session = await _context.LiveSessions.FindAsync(sessionId);
-            if (session != null)
+            if (session != null && !session.IsCompleted)
             {
                 session.RecordedVideoUrl = recordedUrl;
-                session.IsCompleted = true; // تم إنهاء البث وتوفير التسجيل
+                session.IsCompleted = true;
+
+                // 1. إنشاء درس جديد داخل الكورس تلقائياً
+                int currentLessonCount = await _context.Lessons.CountAsync(l => l.CourseId == session.CourseId);
+                var newLesson = new Lesson
+                {
+                    CourseId = session.CourseId,
+                    Title = "تسجيل بث: " + session.Title,
+                    OrderIndex = currentLessonCount + 1
+                };
+
+                _context.Lessons.Add(newLesson);
+                await _context.SaveChangesAsync(); // الحفظ للحصول على معرّف الدرس الجديد (Id)
+
+                // 2. إضافة التسجيل كمحتوى (فيديو) داخل هذا الدرس
+                var newMaterial = new LessonMaterial
+                {
+                    LessonId = newLesson.Id,
+                    Title = session.Title,
+                    MaterialType = "RecordedLive", // لتشغيله في المشغل المخصص
+                    UrlOrPath = recordedUrl,
+                    OrderIndex = 1
+                };
+
+                _context.LessonMaterials.Add(newMaterial);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(ManageLiveSessions));

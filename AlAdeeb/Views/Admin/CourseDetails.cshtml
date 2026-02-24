@@ -1,230 +1,649 @@
 ﻿@model AlAdeeb.Models.Course
 @{
-    ViewData["Title"] = "غرفة تحكم الدورة";
+    ViewData["Title"] = "إدارة محتوى الدورة";
     Layout = "_AdminLayout";
 }
 
-<div class="max-w-7xl mx-auto space-y-8 animate-fade-in pb-24">
+<style>
+    .course-banner {
+        background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary-light) 100%);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        color: var(--c-white);
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
 
-    <!-- هيدر الكورس (Modern Dashboard Style) -->
-    <div class="bg-dark text-white p-8 md:p-10 rounded-[2rem] shadow-xl flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-indigo-900/90 z-10"></div>
-        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 blur-3xl rounded-full pointer-events-none z-0"></div>
+    @@media(min-width: 768px) {
+        .course-banner {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
 
-        <div class="relative z-20 flex items-center gap-6 w-full md:w-auto">
-            <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-4xl border border-white/20 shadow-lg shrink-0">
-                <i class="fa-solid fa-laptop-code text-white"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-3 mb-2">
-                    <h2 class="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">@Model.Title</h2>
-                    @if (Model.IsActive)
-                    {
-                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest">مفعل ونشط</span>
-                    }
-                    else
-                    {
+    .course-banner::before {
+        content: '';
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        width: 200px;
+        height: 200px;
+        background: var(--c-secondary);
+        border-radius: 50%;
+        filter: blur(50px);
+        opacity: 0.2;
+    }
 
-                        <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest">غير مفعل</span>
-                    }
-                </div>
-                <p class="text-indigo-100 text-sm font-medium">أضف الفيديوهات، المذكرات، وبناء الاختبارات لتنظيم رحلة الطالب.</p>
-            </div>
-        </div>
-        <div class="relative z-20 bg-white/10 backdrop-blur-md border border-white/20 px-8 py-5 rounded-2xl text-center shrink-0 w-full md:w-auto">
-            <p class="text-indigo-200 text-xs font-black uppercase tracking-widest mb-1">الدروس الحالية</p>
-            <p class="text-4xl font-black text-white font-mono leading-none">@(Model.Materials?.Count ?? 0)</p>
+    .c-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .c-icon {
+        width: 5.5rem;
+        height: 5.5rem;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--c-secondary);
+        backdrop-filter: blur(10px);
+    }
+
+    .c-info h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+    }
+
+    .c-badge {
+        background: #059669;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 800;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        display: inline-block;
+    }
+
+    .c-stats-box {
+        background: rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 1.5rem 2.5rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+    }
+
+        .c-stats-box span {
+            display: block;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .c-stats-box strong {
+            font-size: 2.8rem;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+    .add-lesson-btn {
+        background: var(--c-secondary);
+        color: var(--c-primary-dark);
+        padding: 1.2rem 2.5rem;
+        border-radius: 1.5rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--shadow-glow);
+        transition: var(--transition);
+        margin-bottom: 2rem;
+    }
+
+        .add-lesson-btn:hover {
+            transform: translateY(-3px);
+            background: var(--c-secondary-light);
+        }
+
+    .lesson-card {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .lesson-header {
+        background: #f8fafc;
+        padding: 1.5rem 2.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .lesson-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .lesson-title i {
+            color: var(--c-primary);
+            font-size: 1.5rem;
+        }
+
+        .lesson-title h3 {
+            font-family: 'Hayah', sans-serif;
+            font-size: 1.8rem;
+            color: var(--c-primary);
+            margin: 0;
+        }
+
+    .lesson-body {
+        padding: 2rem 2.5rem;
+    }
+
+    .lesson-actions {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem 2.5rem;
+        background: #fdfdfd;
+        border-top: 1px dashed #e2e8f0;
+    }
+
+    .btn-act-mini {
+        background: rgba(10,50,84,0.05);
+        color: var(--c-primary);
+        padding: 0.8rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+        .btn-act-mini:hover {
+            background: var(--c-primary);
+            color: var(--c-secondary);
+        }
+
+    .btn-del-lesson {
+        background: #fee2e2;
+        color: #dc2626;
+        padding: 0.8rem;
+        border-radius: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-del-lesson:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+    .item-row {
+        background: var(--c-bg);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 1rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+        .item-row:hover {
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            transform: translateX(-5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+    .item-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .i-ico {
+        width: 40px;
+        height: 40px;
+        background: var(--c-white);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+        .i-ico.vid {
+            color: #3b82f6;
+        }
+
+        .i-ico.pdf {
+            color: #ef4444;
+        }
+
+        .i-ico.qz {
+            color: #10b981;
+        }
+
+    .item-info h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--c-primary);
+        margin: 0;
+    }
+
+    .item-info span {
+        font-size: 0.8rem;
+        color: var(--c-text-muted);
+        font-weight: 600;
+    }
+
+    .final-exam-section {
+        background: linear-gradient(135deg, rgba(175, 143, 66, 0.1) 0%, rgba(175, 143, 66, 0.02) 100%);
+        border: 2px dashed var(--c-secondary);
+        border-radius: var(--radius-xl);
+        padding: 3rem;
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+        .final-exam-section h3 {
+            font-family: 'Hayah', sans-serif;
+            font-size: 2.2rem;
+            color: var(--c-primary);
+            margin: 0 0 1rem 0;
+        }
+
+        .final-exam-section p {
+            color: var(--c-text-muted);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+    /* Modals */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,50,84,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+        .modal.open {
+            display: flex;
+            opacity: 1;
+        }
+
+    .modal-content {
+        background: var(--c-white);
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        overflow: hidden;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .modal.open .modal-content {
+        transform: scale(1);
+    }
+
+    .m-head {
+        background: #f8fafc;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .m-head h3 {
+            font-family: 'Hayah', sans-serif;
+            font-size: 1.8rem;
+            color: var(--c-primary);
+            margin: 0;
+        }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .btn-close:hover {
+            color: #ef4444;
+        }
+
+    .m-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 800;
+            color: var(--c-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border-radius: 1rem;
+        border: 2px solid #e2e8f0;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: var(--transition);
+    }
+
+        .form-control:focus {
+            border-color: var(--c-secondary);
+            background: var(--c-white);
+            outline: none;
+        }
+
+    .m-foot {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-m-save {
+        flex: 2;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 1rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-m-save:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+        }
+
+    .btn-m-cancel {
+        flex: 1;
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 1rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-m-cancel:hover {
+            background: #e2e8f0;
+            color: var(--c-primary);
+        }
+
+    .hidden-f {
+        display: none !important;
+    }
+</style>
+
+<div class="course-banner">
+    <div class="c-info">
+        <div class="c-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div>
+            <h2>@Model.Title</h2>
+            @if (Model.IsActive)
+            {
+                <span class="c-badge"><i class="fa-solid fa-check"></i> الكورس مفعل للطلاب</span>
+            }
         </div>
     </div>
-
-    <!-- لوحة التحكم السريعة: أزرار الإضافة (Glassmorphism Cards) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <!-- إضافة فيديو -->
-        <button onclick="document.getElementById('videoModal').classList.remove('hidden')" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden text-right">
-            <div class="absolute right-0 top-0 w-1.5 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-500 transition-colors duration-300">
-                <i class="fa-brands fa-youtube text-2xl text-blue-600 group-hover:text-white transition-colors"></i>
-            </div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">إضافة درس مسجل</h3>
-            <p class="text-sm text-slate-500 leading-relaxed">أضف رابط يوتيوب للدرس ليظهر مدمجاً بداخل المنصة للطالب.</p>
-            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                <i class="fa-solid fa-plus text-slate-400 group-hover:text-blue-600 transition-colors"></i>
-            </div>
-        </button>
-
-        <!-- إضافة PDF -->
-        <button onclick="document.getElementById('pdfModal').classList.remove('hidden')" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-rose-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden text-right">
-            <div class="absolute right-0 top-0 w-1.5 h-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="w-14 h-14 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-rose-500 transition-colors duration-300">
-                <i class="fa-solid fa-file-pdf text-2xl text-rose-600 group-hover:text-white transition-colors"></i>
-            </div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">رفع مذكرة (PDF)</h3>
-            <p class="text-sm text-slate-500 leading-relaxed">ارفع ملف ملزمة أو واجب من جهازك ليتمكن الطلاب من تصفحه.</p>
-            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-rose-50 transition-colors">
-                <i class="fa-solid fa-plus text-slate-400 group-hover:text-rose-600 transition-colors"></i>
-            </div>
-        </button>
-
-        <!-- بناء اختبار -->
-        <a href="/Admin/AddQuiz?courseId=@Model.Id" class="bg-white p-8 rounded-[2rem] border border-slate-200 hover:border-emerald-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group text-right relative overflow-hidden block">
-            <div class="absolute right-0 top-0 w-1.5 h-full bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-emerald-500 transition-colors duration-300">
-                <i class="fa-solid fa-list-check text-2xl text-emerald-600 group-hover:text-white transition-colors"></i>
-            </div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">بناء اختبار ذكي</h3>
-            <p class="text-sm text-slate-500 leading-relaxed">أنشئ اختباراً يحاكي القدرات وأضف أسئلة مع تايمر للحل.</p>
-            <div class="absolute left-6 bottom-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center group-hover:bg-emerald-50 transition-colors">
-                <i class="fa-solid fa-arrow-left text-slate-400 group-hover:text-emerald-600 transition-colors"></i>
-            </div>
-        </a>
-    </div>
-
-    <!-- المحتوى الحالي للدورة (تقسيم المحتوى) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        <!-- 1. قائمة الدروس والمذكرات -->
-        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
-                <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-play-circle text-primary"></i> الفيديوهات والمذكرات</h3>
-            </div>
-            <div class="p-6 flex-grow">
-                @if (Model.Materials != null && Model.Materials.Any())
-                {
-                    <div class="space-y-4">
-                        @foreach (var material in Model.Materials.OrderBy(m => m.OrderIndex))
-                        {
-                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center hover:shadow-md hover:border-slate-200 transition-all group">
-                                <div class="flex items-center gap-4">
-                                    @if (material.MaterialType == "PDF")
-                                    {
-                                        <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
-                                    }
-                                    else
-                                    {
-                                        <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-brands fa-youtube"></i></div>
-                                    }
-                                    <div>
-                                        <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">@material.Title</h4>
-                                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md @(material.MaterialType == "PDF" ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600")">@material.MaterialType</span>
-                                    </div>
-                                </div>
-                                <form asp-action="DeleteMaterial" asp-route-id="@material.Id" method="post" class="shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity" onsubmit="return confirm('حذف هذا المحتوى؟');">
-                                    <button type="submit" class="w-10 h-10 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-colors flex items-center justify-center shadow-sm" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
-                                </form>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center py-10">
-                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-photo-film text-2xl text-slate-300"></i></div>
-                        <p class="text-slate-500 font-medium text-sm">لا يوجد محتوى مرئي أو مقروء بعد.</p>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- 2. قائمة الاختبارات -->
-        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
-                <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-clipboard-question text-emerald-500"></i> الاختبارات والتطبيقات</h3>
-            </div>
-            <div class="p-6 flex-grow">
-                @if (Model.Quizzes != null && Model.Quizzes.Any())
-                {
-                    <div class="space-y-4">
-                        @foreach (var quiz in Model.Quizzes)
-                        {
-                            <div class="bg-white border border-slate-100 p-4 rounded-2xl flex justify-between items-center hover:shadow-md hover:border-slate-200 transition-all group">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-list-check"></i></div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">@quiz.Title</h4>
-                                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 flex items-center w-fit gap-1"><i class="fa-regular fa-clock"></i> @quiz.DurationInMinutes دقيقة</span>
-                                    </div>
-                                </div>
-                                <form asp-action="DeleteQuiz" asp-route-id="@quiz.Id" method="post" class="shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity" onsubmit="return confirm('حذف الاختبار سيحذف نتائج الطلاب المرتبطة به، متأكد؟');">
-                                    <button type="submit" class="w-10 h-10 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-colors flex items-center justify-center shadow-sm" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
-                                </form>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center py-10">
-                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-clipboard-list text-2xl text-slate-300"></i></div>
-                        <p class="text-slate-500 font-medium text-sm">لم تقم ببناء أي اختبارات لهذه الدورة.</p>
-                    </div>
-                }
-            </div>
-        </div>
-
+    <div class="c-stats-box">
+        <span>إجمالي الدروس</span>
+        <strong>@(Model.Lessons?.Count ?? 0)</strong>
     </div>
 </div>
 
-<!-- Modal 1: إضافة فيديو يوتيوب (Modern Glassmorphism) -->
-<div id="videoModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
-    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-transform">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-blue-50/30">
-            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-brands fa-youtube text-blue-600 text-2xl"></i> إضافة درس يوتيوب</h3>
-            <button onclick="document.getElementById('videoModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <form asp-controller="Course" asp-action="AddMaterial" method="post" class="p-8 space-y-6">
-            <input type="hidden" name="courseId" value="@Model.Id" />
-            <input type="hidden" name="materialType" value="YouTube" />
+<button class="add-lesson-btn" onclick="openModal('lessonModal')">
+    <i class="fa-solid fa-folder-plus"></i> إضافة وحدة / درس جديد
+</button>
 
-            <div>
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">عنوان الدرس <span class="text-rose-500">*</span></label>
-                <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all font-bold text-sm" placeholder="مثال: التناظر اللفظي - الجزء الأول" />
+@if (Model.Lessons != null && Model.Lessons.Any())
+{
+    foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
+    {
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-title">
+                    <i class="fa-solid fa-book-open"></i>
+                    <h3>@lesson.Title</h3>
+                </div>
+                <form asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
+                    <button type="submit" class="btn-del-lesson" title="حذف الدرس"><i class="fa-solid fa-trash-can"></i></button>
+                </form>
             </div>
-            <div>
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">رابط اليوتيوب <span class="text-rose-500">*</span></label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-link text-slate-400"></i></div>
-                    <input type="url" name="youtubeUrl" required class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pr-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-left font-mono text-sm" dir="ltr" placeholder="https://www.youtube.com/watch?v=..." />
+            <div class="lesson-body">
+                @if (lesson.Materials != null && lesson.Materials.Any())
+                {
+                    foreach (var m in lesson.Materials.OrderBy(x => x.OrderIndex))
+                    {
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="i-ico @(m.MaterialType == "PDF" ? "pdf" : "vid")">
+                                    <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play")"></i>
+                                </div>
+                                <div>
+                                    <h5>@m.Title</h5>
+                                    <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : "فيديو مسجل")</span>
+                                </div>
+                            </div>
+                            <form asp-action="DeleteMaterial" asp-route-id="@m.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف هذا المحتوى نهائياً؟');">
+                                <button type="submit" class="btn-del-lesson" style="background:transparent;"><i class="fa-solid fa-xmark"></i></button>
+                            </form>
+                        </div>
+                    }
+                }
+
+                @if (lesson.Quizzes != null && lesson.Quizzes.Any())
+                {
+                    foreach (var q in lesson.Quizzes)
+                    {
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="i-ico qz"><i class="fa-solid fa-list-check"></i></div>
+                                <div>
+                                    <h5>@q.Title</h5>
+                                    <span>اختبار تطبيقي - @q.DurationInMinutes دقيقة</span>
+                                </div>
+                            </div>
+                            <form asp-action="DeleteQuiz" asp-route-id="@q.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار؟');">
+                                <button type="submit" class="btn-del-lesson" style="background:transparent;"><i class="fa-solid fa-xmark"></i></button>
+                            </form>
+                        </div>
+                    }
+                }
+
+                @if ((lesson.Materials == null || !lesson.Materials.Any()) && (lesson.Quizzes == null || !lesson.Quizzes.Any()))
+                {
+                    <p style="text-align:center; color:#94a3b8; font-weight:600; margin: 1rem 0;">الدرس فارغ حالياً، أضف محتوى من الأسفل.</p>
+                }
+            </div>
+            <div class="lesson-actions">
+                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'YouTube')"><i class="fa-brands fa-youtube"></i> إضافة فيديو</button>
+                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')"><i class="fa-solid fa-file-pdf"></i> رفع PDF</button>
+                <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-act-mini"><i class="fa-solid fa-clipboard-question"></i> بناء اختبار للدرس</a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div style="text-align:center; padding: 4rem; background: var(--c-white); border-radius: var(--radius-xl); border: 1px dashed rgba(10,50,84,0.2);">
+        <i class="fa-solid fa-folder-open" style="font-size:4rem; color:#cbd5e1; margin-bottom:1.5rem;"></i>
+        <h3 style="font-family:'Hayah',sans-serif; font-size:2rem; color:var(--c-primary); margin:0 0 0.5rem 0;">الدورة فارغة</h3>
+        <p style="color:var(--c-text-muted); font-size:1.1rem; font-weight:600;">قم بإضافة الوحدة التعليمية الأولى للبدء.</p>
+    </div>
+}
+
+<div class="final-exam-section">
+    <h3><i class="fa-solid fa-award"></i> الاختبار النهائي والشهادة</h3>
+    <p>أضف اختباراً شاملاً للدورة ليحصل الطالب على شهادة اجتياز عند تجاوزه بنجاح.</p>
+
+    @if (Model.Quizzes != null && Model.Quizzes.Any(q => q.IsFinalExam))
+    {
+        var finalExam = Model.Quizzes.First(q => q.IsFinalExam);
+        <div class="item-row" style="max-width: 600px; margin: 0 auto; background: var(--c-white); border-color: var(--c-secondary);">
+            <div class="item-info">
+                <div class="i-ico" style="background: var(--c-secondary); color: var(--c-white);"><i class="fa-solid fa-star"></i></div>
+                <div style="text-align: right;">
+                    <h5>@finalExam.Title</h5>
+                    <span>درجة الاجتياز للشهادة: @finalExam.MinimumPassScore% | @finalExam.DurationInMinutes دقيقة</span>
                 </div>
             </div>
+            <form asp-action="DeleteQuiz" asp-route-id="@finalExam.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار النهائي؟');">
+                <button type="submit" class="btn-del-lesson"><i class="fa-solid fa-trash-can"></i></button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <a href="/Admin/AddQuiz?courseId=@Model.Id&isFinalExam=true" class="add-lesson-btn" style="margin:0;"><i class="fa-solid fa-plus"></i> بناء الاختبار النهائي للدورة</a>
+    }
+</div>
 
-            <div class="pt-4 flex gap-3">
-                <button type="submit" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-0.5">حفظ وإضافة</button>
-                <button type="button" onclick="document.getElementById('videoModal').classList.add('hidden')" class="px-6 bg-slate-100 text-slate-600 py-3.5 rounded-xl font-bold hover:bg-slate-200 transition-all">إلغاء</button>
+<!-- Modal 1: Add Lesson -->
+<div id="lessonModal" class="modal">
+    <div class="modal-content">
+        <div class="m-head">
+            <h3>إضافة درس/وحدة جديدة</h3>
+            <button class="btn-close" onclick="closeModal('lessonModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form asp-action="AddLesson" method="post" class="m-body">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <div class="form-group">
+                <label>عنوان الدرس</label>
+                <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى: التناظر اللفظي" />
+            </div>
+            <div class="m-foot">
+                <button type="submit" class="btn-m-save">حفظ</button>
+                <button type="button" class="btn-m-cancel" onclick="closeModal('lessonModal')">إلغاء</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal 2: رفع ملف PDF (Modern Glassmorphism) -->
-<div id="pdfModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity">
-    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-transform">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-rose-50/30">
-            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-pdf text-rose-600 text-2xl"></i> رفع مذكرة (PDF)</h3>
-            <button onclick="document.getElementById('pdfModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition"><i class="fa-solid fa-xmark"></i></button>
+<!-- Modal 2: Add Material -->
+<div id="materialModal" class="modal">
+    <div class="modal-content">
+        <div class="m-head">
+            <h3 id="matModalTitle">إضافة محتوى</h3>
+            <button class="btn-close" onclick="closeModal('materialModal')"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form asp-controller="Course" asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+        <form asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="m-body">
             <input type="hidden" name="courseId" value="@Model.Id" />
-            <input type="hidden" name="materialType" value="PDF" />
+            <input type="hidden" name="lessonId" id="matLessonId" value="" />
+            <input type="hidden" name="materialType" id="matType" value="" />
 
-            <div>
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">عنوان المذكرة/الواجب <span class="text-rose-500">*</span></label>
-                <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all font-bold text-sm" placeholder="مثال: ملزمة التأسيس - الوحدة الأولى" />
+            <div class="form-group">
+                <label>عنوان المحتوى <span style="color:#ef4444;">*</span></label>
+                <input type="text" name="title" required class="form-control" placeholder="مثال: الشرح التفصيلي..." />
             </div>
 
-            <div>
-                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">اختر ملف الـ PDF <span class="text-rose-500">*</span></label>
-                <div class="relative w-full h-32 border-2 border-dashed border-slate-300 rounded-2xl hover:border-rose-500 hover:bg-rose-50/50 transition-colors flex flex-col items-center justify-center cursor-pointer overflow-hidden group bg-slate-50">
-                    <input type="file" name="pdfFile" accept="application/pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 group-hover:text-rose-500 mb-2 transition-colors"></i>
-                    <span class="text-sm font-bold text-slate-600 group-hover:text-rose-600 transition-colors">اضغط لاختيار الملف من جهازك</span>
-                </div>
+            <div class="form-group" id="urlGroup">
+                <label>رابط يوتيوب <span style="color:#ef4444;">*</span></label>
+                <input type="url" name="youtubeUrl" id="yUrl" class="form-control" dir="ltr" placeholder="https://youtube.com/..." />
             </div>
 
-            <div class="pt-4 flex gap-3">
-                <button type="submit" class="flex-1 bg-rose-600 text-white py-3.5 rounded-xl font-bold hover:bg-rose-700 shadow-lg shadow-rose-600/30 transition-all hover:-translate-y-0.5">رفع الملف</button>
-                <button type="button" onclick="document.getElementById('pdfModal').classList.add('hidden')" class="px-6 bg-slate-100 text-slate-600 py-3.5 rounded-xl font-bold hover:bg-slate-200 transition-all">إلغاء</button>
+            <div class="form-group hidden-f" id="fileGroup">
+                <label>اختر ملف الـ PDF <span style="color:#ef4444;">*</span></label>
+                <input type="file" name="pdfFile" id="pFile" class="form-control" accept="application/pdf" style="padding: 0.8rem;" />
+            </div>
+
+            <div class="m-foot">
+                <button type="submit" class="btn-m-save"><i class="fa-solid fa-cloud-arrow-up"></i> رفع وحفظ</button>
+                <button type="button" class="btn-m-cancel" onclick="closeModal('materialModal')">إلغاء</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function openMaterialModal(lessonId, type) {
+        document.getElementById('matLessonId').value = lessonId;
+        document.getElementById('matType').value = type;
+
+        if(type === 'YouTube'){
+            document.getElementById('matModalTitle').innerText = 'إضافة فيديو للدرس';
+            document.getElementById('urlGroup').classList.remove('hidden-f');
+            document.getElementById('yUrl').required = true;
+            document.getElementById('fileGroup').classList.add('hidden-f');
+            document.getElementById('pFile').required = false;
+        } else {
+            document.getElementById('matModalTitle').innerText = 'رفع مذكرة للدرس';
+            document.getElementById('urlGroup').classList.add('hidden-f');
+            document.getElementById('yUrl').required = false;
+            document.getElementById('fileGroup').classList.remove('hidden-f');
+            document.getElementById('pFile').required = true;
+        }
+        openModal('materialModal');
+    }
+</script>

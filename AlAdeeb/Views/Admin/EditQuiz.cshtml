@@ -1,0 +1,431 @@
+﻿@model AlAdeeb.Models.Quiz
+@{
+    ViewData["Title"] = "تعديل الاختبار";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .page-header {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2.5rem;
+        color: var(--c-white);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @@media(min-width: 768px) {
+        .page-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .header-icon {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-text h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.2rem;
+        margin: 0 0 0.3rem 0;
+        line-height: 1.2;
+    }
+
+    .header-text p {
+        margin: 0;
+        color: rgba(255,255,255,0.7);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .quiz-form {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding-bottom: 100px;
+    }
+
+    .quiz-config {
+        background: var(--c-white);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        margin-bottom: 2rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    @@media(min-width: 768px) {
+        .quiz-config {
+            grid-template-columns: 2fr 1fr;
+        }
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 800;
+        color: var(--c-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1rem;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--c-primary);
+        transition: var(--transition);
+    }
+
+        .form-control:focus {
+            outline: none;
+            background: var(--c-white);
+            border-color: var(--c-secondary);
+            box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
+        }
+
+    .q-card {
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        transition: var(--transition);
+    }
+
+        .q-card:hover {
+            border-color: rgba(175, 143, 66, 0.3);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+    .q-num {
+        width: 45px;
+        height: 45px;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 900;
+        position: absolute;
+        top: -15px;
+        right: 30px;
+        box-shadow: 0 5px 15px rgba(10,50,84,0.2);
+        border: 3px solid var(--c-bg);
+        font-family: Arial, sans-serif;
+    }
+
+    .btn-del-item {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-del-item:hover {
+            background: #dc2626;
+            color: var(--c-white);
+        }
+
+    .options-setup {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    @@media(min-width: 768px) {
+        .options-setup {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .opt-box {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #f8fafc;
+        padding: 0.8rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        transition: var(--transition);
+    }
+
+        .opt-box:focus-within {
+            border-color: var(--c-secondary);
+            background: var(--c-white);
+        }
+
+        .opt-box span {
+            width: 35px;
+            height: 35px;
+            background: var(--c-white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--c-secondary);
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .opt-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            outline: none;
+        }
+
+    .correct-selector {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .correct-selector label {
+            font-weight: 800;
+            color: var(--c-primary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .correct-selector select {
+            padding: 0.6rem 2rem;
+            border-radius: 10px;
+            border: 2px solid var(--c-secondary);
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--c-primary);
+            background: #fdfdfd;
+            outline: none;
+            cursor: pointer;
+        }
+
+    .sticky-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(15px);
+        padding: 1.5rem 2.5rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
+    }
+
+    .btn-save-all {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 1rem 3rem;
+        border-radius: 1.2rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .btn-save-all:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-3px);
+        }
+
+    .btn-add-q {
+        background: #f1f5f9;
+        color: var(--c-primary);
+        padding: 1rem 2rem;
+        border-radius: 1.2rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-add-q:hover {
+            background: var(--c-primary);
+            color: var(--c-white);
+            border-color: var(--c-primary);
+        }
+</style>
+
+<div class="page-header">
+    <div class="header-info">
+        <div class="header-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+        <div class="header-text">
+            <h2>تعديل بيانات الاختبار</h2>
+            <p>يمكنك التعديل على الأسئلة الحالية، أو إضافة أسئلة جديدة للاختبار: @Model.Title</p>
+        </div>
+    </div>
+</div>
+
+<div class="quiz-form">
+    <form asp-controller="Admin" asp-action="EditQuiz" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="quiz-config">
+            <div class="form-group" style="margin:0;">
+                <label>اسم أو عنوان الاختبار</label>
+                <input type="text" name="Title" value="@Model.Title" required class="form-control" />
+            </div>
+            <div class="form-group" style="margin:0;">
+                <label>المدة الزمنية (بالدقائق)</label>
+                <input type="number" name="DurationInMinutes" value="@Model.DurationInMinutes" required class="form-control" style="font-family: Arial; font-weight:900; font-size: 1.2rem;" />
+            </div>
+            @if (Model.IsFinalExam)
+            {
+                <div class="form-group" style="margin:0;">
+                    <label>درجة الاجتياز للشهادة (%)</label>
+                    <input type="number" name="MinimumPassScore" value="@Model.MinimumPassScore" required class="form-control" style="font-family: Arial; font-weight:900; font-size: 1.2rem;" />
+                </div>
+            }
+        </div>
+
+        <div id="questions"></div>
+
+        <div class="sticky-actions">
+            <button type="button" class="btn-add-q" onclick="addQ()"><i class="fa-solid fa-plus"></i> إضافة سؤال جديد</button>
+            <button type="submit" class="btn-save-all">حفظ التعديلات <i class="fa-solid fa-floppy-disk"></i></button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let qCount = 0;
+
+    // تحميل الأسئلة القديمة
+    const existingQuestions = [
+        @if (Model.Questions != null)
+        {
+                foreach (var q in Model.Questions)
+                {
+                        <text>
+                        {
+                            text: `@Html.Raw(q.QuestionText?.Replace("`", "\\`") ?? "")`,
+                            image: `@Html.Raw(q.QuestionImagePath ?? "")`,
+                            optA: `@Html.Raw(q.OptionA?.Replace("`", "\\`") ?? "")`,
+                            optB: `@Html.Raw(q.OptionB?.Replace("`", "\\`") ?? "")`,
+                            optC: `@Html.Raw(q.OptionC?.Replace("`", "\\`") ?? "")`,
+                            optD: `@Html.Raw(q.OptionD?.Replace("`", "\\`") ?? "")`,
+                            correct: `@q.CorrectOption`
+                        },
+                        </text>
+                }
+        }
+    ];
+
+    function addQ(q = null) {
+        const text = q ? q.text : '';
+        const image = q ? q.image : '';
+        const optA = q ? q.optA : '';
+        const optB = q ? q.optB : '';
+        const optC = q ? q.optC : '';
+        const optD = q ? q.optD : '';
+        const correct = q ? q.correct : 'A';
+
+        const html = `
+            <div class="q-card" id="q-card-${qCount}">
+                <div class="q-num">${qCount + 1}</div>
+                <button type="button" class="btn-del-item" style="position: absolute; top: 15px; left: 15px;" onclick="document.getElementById('q-card-${qCount}').remove()"><i class="fa-solid fa-trash"></i></button>
+                <div class="form-group">
+                    <label>نص السؤال (اتركه فارغاً إذا كان السؤال عبارة عن صورة فقط)</label>
+                    <textarea name="Questions[${qCount}].QuestionText" rows="2" class="form-control">${text}</textarea>
+                </div>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>تحديث صورة السؤال (اختياري)</label>
+                    <input type="file" name="Questions[${qCount}].ImageFile" class="form-control" accept="image/*" style="padding: 0.8rem;" />
+                    <input type="hidden" name="Questions[${qCount}].ExistingImagePath" value="${image}" />
+                    ${image ? `<img src="${image}" style="max-height:120px; margin-top:10px; border-radius:10px; border:1px solid #e2e8f0; display:block;" />` : ''}
+                </div>
+                <div class="options-setup">
+                    <div class="opt-box"><span>أ</span><input type="text" name="Questions[${qCount}].OptionA" value="${optA}" required placeholder="الخيار الأول" /></div>
+                    <div class="opt-box"><span>ب</span><input type="text" name="Questions[${qCount}].OptionB" value="${optB}" required placeholder="الخيار الثاني" /></div>
+                    <div class="opt-box"><span>ج</span><input type="text" name="Questions[${qCount}].OptionC" value="${optC}" required placeholder="الخيار الثالث" /></div>
+                    <div class="opt-box"><span>د</span><input type="text" name="Questions[${qCount}].OptionD" value="${optD}" required placeholder="الخيار الرابع" /></div>
+                </div>
+                <div class="correct-selector">
+                    <label>تحديد الإجابة الصحيحة:</label>
+                    <select name="Questions[${qCount}].CorrectOption">
+                        <option value="A" ${correct === 'A' ? 'selected' : ''}>الخيار (أ)</option>
+                        <option value="B" ${correct === 'B' ? 'selected' : ''}>الخيار (ب)</option>
+                        <option value="C" ${correct === 'C' ? 'selected' : ''}>الخيار (ج)</option>
+                        <option value="D" ${correct === 'D' ? 'selected' : ''}>الخيار (د)</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        document.getElementById('questions').insertAdjacentHTML('beforeend', html);
+        qCount++;
+
+        if(!q) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    window.onload = () => {
+        if(existingQuestions.length > 0) {
+            existingQuestions.forEach(q => addQ(q));
+        } else {
+            addQ();
+        }
+    };
+</script>
