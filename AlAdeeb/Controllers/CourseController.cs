@@ -60,14 +60,15 @@ namespace AlAdeeb.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddMaterial(int lessonId, int courseId, string title, string materialType, string youtubeUrl, IFormFile pdfFile)
+        public async Task<IActionResult> AddMaterial(int lessonId, int courseId, string title, string materialType, string youtubeUrl, IFormFile pdfFile, bool isFreeSample = false)
         {
             var material = new LessonMaterial
             {
                 LessonId = lessonId,
                 Title = title,
                 MaterialType = materialType,
-                OrderIndex = _context.LessonMaterials.Count(m => m.LessonId == lessonId) + 1
+                OrderIndex = _context.LessonMaterials.Count(m => m.LessonId == lessonId) + 1,
+                IsFreeSample = isFreeSample // حفظ اختيار العينة
             };
 
             if (materialType == "YouTube" || materialType == "RecordedLive")
@@ -77,17 +78,13 @@ namespace AlAdeeb.Controllers
             else if (materialType == "PDF" && pdfFile != null)
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/pdfs");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
                 string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName;
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await pdfFile.CopyToAsync(fileStream);
                 }
-
                 material.UrlOrPath = "/uploads/pdfs/" + uniqueFileName;
             }
 

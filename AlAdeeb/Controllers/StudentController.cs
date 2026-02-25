@@ -121,10 +121,13 @@ namespace AlAdeeb.Controllers
         {
             int studentId = GetCurrentStudentId();
 
-            bool isSubscribed = await _context.SubscriptionRequests
-                .AnyAsync(r => r.StudentId == studentId && r.CourseId == id && r.Status == "Approved");
+            var subscription = await _context.SubscriptionRequests
+                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.CourseId == id && r.Status == "Approved");
 
-            if (!isSubscribed) return Unauthorized("غير مصرح لك بدخول هذا الكورس.");
+            if (subscription == null) return Unauthorized("غير مصرح لك بدخول هذا الكورس.");
+
+            // تمرير حالة الاشتراك وهل هو منتهي أم لا للفيو
+            ViewBag.IsExpired = subscription.ExpiryDate.HasValue && subscription.ExpiryDate.Value < DateTime.Now;
 
             var course = await _context.Courses
                 .Include(c => c.Lessons)

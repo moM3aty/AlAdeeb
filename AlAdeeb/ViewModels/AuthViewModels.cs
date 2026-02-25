@@ -16,6 +16,20 @@ namespace AlAdeeb.ViewModels
         public bool RememberMe { get; set; }
     }
 
+    // --- نموذج إدخال رمز التحقق ---
+    public class VerifyCodeViewModel
+    {
+        [Required]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "يرجى إدخال رمز التحقق")]
+        [StringLength(4, MinimumLength = 4, ErrorMessage = "الرمز يتكون من 4 أرقام")]
+        [Display(Name = "رمز التحقق (4 أرقام)")]
+        public string Code { get; set; }
+
+        public bool RememberMe { get; set; }
+    }
+
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "الاسم الكامل مطلوب")]
@@ -39,4 +53,5 @@ namespace AlAdeeb.ViewModels
         public string ConfirmPassword { get; set; }
     }
 
+   
 }

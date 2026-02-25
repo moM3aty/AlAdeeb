@@ -4,6 +4,7 @@ using AlAdeeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlAdeeb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225122820_AddCourseTimeConstraintsAnd2FA")]
+    partial class AddCourseTimeConstraintsAnd2FA
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,66 +140,6 @@ namespace AlAdeeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("AlAdeeb.Models.ForumPost", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ForumPosts");
-                });
-
-            modelBuilder.Entity("AlAdeeb.Models.ForumReply", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ForumPostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ForumPostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ForumReplies");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.Lesson", b =>
@@ -468,44 +411,6 @@ namespace AlAdeeb.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("AlAdeeb.Models.ForumPost", b =>
-                {
-                    b.HasOne("AlAdeeb.Models.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlAdeeb.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AlAdeeb.Models.ForumReply", b =>
-                {
-                    b.HasOne("AlAdeeb.Models.ForumPost", "ForumPost")
-                        .WithMany("Replies")
-                        .HasForeignKey("ForumPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlAdeeb.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ForumPost");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("AlAdeeb.Models.Lesson", b =>
                 {
                     b.HasOne("AlAdeeb.Models.Course", "Course")
@@ -609,11 +514,6 @@ namespace AlAdeeb.Migrations
                     b.Navigation("Lessons");
 
                     b.Navigation("Quizzes");
-                });
-
-            modelBuilder.Entity("AlAdeeb.Models.ForumPost", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.Lesson", b =>

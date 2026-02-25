@@ -484,6 +484,9 @@
             <a href="/Live/ManageLiveSessions" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Live" ? "active" : "")">
                 <div class="nav-item-content"><i class="fa-solid fa-video"></i> إدارة وتوثيق البثوث (CRUD)</div>
             </a>
+            <a href="/Admin/Discussions" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Discussions" ? "active" : "")">
+                <div class="nav-item-content"> <i class="fa-solid fa-comments"></i> منتدى النقاشات </div>
+            </a>
 
             <div style="margin-top: auto; padding-top: 2rem;">
                 <a href="/Account/Logout" class="nav-item" style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; justify-content: center; gap: 0.5rem;">

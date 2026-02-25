@@ -44,35 +44,85 @@ namespace AlAdeeb.Controllers
 
                     if (result == PasswordVerificationResult.Success)
                     {
-                        // 1. توليد معرّف جلسة فريد جديد
-                        string newSessionId = Guid.NewGuid().ToString();
-
-                        // 2. تحديث قاعدة البيانات بالمعرّف الجديد (هذا سيلغي الجلسة القديمة)
-                        user.CurrentSessionId = newSessionId;
-                        _context.Update(user);
-                        await _context.SaveChangesAsync();
-
-                        var claims = new List<Claim>
+                        if (user.Role == "Student")
                         {
-                            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                            new Claim(ClaimTypes.Name, user.FullName),
-                            new Claim(ClaimTypes.Role, user.Role),
-                            // 3. تخزين معرّف الجلسة داخل الكوكيز للمقارنة لاحقاً
-                            new Claim("SessionId", newSessionId)
-                        };
+                            // 1. توليد رمز تحقق من 4 أرقام
+                            string code = new Random().Next(1000, 9999).ToString();
+                            user.VerificationCode = code;
+                            user.VerificationCodeExpiry = DateTime.Now.AddMinutes(10); // صلاحية الرمز 10 دقائق
 
-                        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        var principal = new ClaimsPrincipal(identity);
+                            _context.Update(user);
+                            await _context.SaveChangesAsync();
 
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = model.RememberMe });
+                            // ملاحظة: هنا يمكنك ربط الـ API الخاص بإرسال الواتساب (WhatsApp)
+                            // حالياً سنقوم بطباعته في النظام كرسالة تنبيهية للتجربة
+                            TempData["DevCode"] = $"مرحباً، رمز التحقق الخاص بك هو: {code}";
 
-                        if (user.Role == "Admin") return RedirectToAction("Index", "Admin");
-                        else return RedirectToAction("Dashboard", "Student");
+                            // توجيه الطالب لصفحة إدخال الرمز
+                            return RedirectToAction("VerifyCode", new { username = user.Username, rememberMe = model.RememberMe });
+                        }
+                        else
+                        {
+                            // دخول المدير مباشرة بدون رمز تحقق
+                            return await CompleteSignIn(user, model.RememberMe);
+                        }
                     }
                 }
                 ModelState.AddModelError(string.Empty, "بيانات الدخول غير صحيحة.");
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult VerifyCode(string username, bool rememberMe)
+        {
+            return View(new VerifyCodeViewModel { Username = username, RememberMe = rememberMe });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+
+                if (user != null && user.VerificationCode == model.Code && user.VerificationCodeExpiry > DateTime.Now)
+                {
+                    return await CompleteSignIn(user, model.RememberMe);
+                }
+
+                ModelState.AddModelError(string.Empty, "رمز التحقق غير صحيح أو منتهي الصلاحية.");
+            }
+            return View(model);
+        }
+
+        private async Task<IActionResult> CompleteSignIn(ApplicationUser user, bool rememberMe)
+        {
+            string newSessionId = Guid.NewGuid().ToString();
+            user.CurrentSessionId = newSessionId;
+
+            // تصفير رمز التحقق بعد الدخول الناجح
+            user.VerificationCode = null;
+            user.VerificationCodeExpiry = null;
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("SessionId", newSessionId)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = rememberMe });
+
+            if (user.Role == "Admin") return RedirectToAction("Index", "Admin");
+            else return RedirectToAction("Dashboard", "Student");
         }
 
         [HttpGet]

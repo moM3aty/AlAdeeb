@@ -9,7 +9,6 @@ namespace AlAdeeb.Data
         {
         }
 
-        // تسجيل الجداول
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
@@ -21,50 +20,68 @@ namespace AlAdeeb.Data
         public DbSet<StudentScore> StudentScores { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
 
+        // جداول المنتدى
+        public DbSet<ForumPost> ForumPosts { get; set; }
+        public DbSet<ForumReply> ForumReplies { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // علاقات طلبات الاشتراك
             modelBuilder.Entity<SubscriptionRequest>()
                 .HasOne(s => s.Student)
                 .WithMany()
                 .HasForeignKey(s => s.StudentId)
-                .OnDelete(DeleteBehavior.Restrict); // منع حذف الطالب إذا كان له اشتراك
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<SubscriptionRequest>()
                 .HasOne(s => s.Course)
                 .WithMany()
                 .HasForeignKey(s => s.CourseId)
-                .OnDelete(DeleteBehavior.Cascade); // حذف الاشتراكات إذا تم حذف الكورس
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // علاقة الدروس بالكورس
             modelBuilder.Entity<Lesson>()
                 .HasOne(l => l.Course)
                 .WithMany(c => c.Lessons)
                 .HasForeignKey(l => l.CourseId)
-                .OnDelete(DeleteBehavior.Cascade); // حذف الدروس تلقائياً عند حذف الكورس
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // علاقة محتوى الدرس بالدرس
             modelBuilder.Entity<LessonMaterial>()
                 .HasOne(m => m.Lesson)
                 .WithMany(l => l.Materials)
                 .HasForeignKey(m => m.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // حذف الفيديوهات والملفات عند حذف الدرس
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // علاقة الاختبار بالدرس
             modelBuilder.Entity<Quiz>()
                 .HasOne(q => q.Lesson)
                 .WithMany(l => l.Quizzes)
                 .HasForeignKey(q => q.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // حذف الاختبارات المتعلقة بالدرس عند حذفه
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // علاقة الشهادات
             modelBuilder.Entity<Certificate>()
                 .HasOne(c => c.Student)
                 .WithMany()
                 .HasForeignKey(c => c.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // علاقات المنتدى
+            modelBuilder.Entity<ForumPost>()
+                .HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // منع خطأ المسارات المتعددة
+
+            modelBuilder.Entity<ForumReply>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ForumReply>()
+                .HasOne(r => r.ForumPost)
+                .WithMany(p => p.Replies)
+                .HasForeignKey(r => r.ForumPostId)
+                .OnDelete(DeleteBehavior.Cascade); // حذف الردود تلقائياً عند حذف المنشور
         }
     }
 }

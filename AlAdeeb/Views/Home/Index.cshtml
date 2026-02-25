@@ -3,6 +3,7 @@
 }
 
 <style>
+    /* ... احتفظ بنفس تنسيقاتك السابقة هنا، سنضيف فقط تنسيقات الأقسام الجديدة ... */
     @@font-face {
         font-family: 'Hayah';
         src: url('/fonts/Hayah.otf') format('opentype');
@@ -32,6 +33,7 @@
         overflow-x: hidden;
     }
 
+    /* Hero Section */
     .hero-section {
         position: relative;
         background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary) 100%);
@@ -233,17 +235,20 @@
         object-fit: cover;
     }
 
-    .float-card-1 {
+    .float-card-1, .float-card-2 {
         position: absolute;
-        top: 10%;
-        right: -20px;
-        background: var(--c-white);
         padding: 0.5rem 1rem;
         border-radius: 1.5rem;
-        box-shadow: var(--shadow-card);
         display: flex;
         align-items: center;
         gap: 1.2rem;
+    }
+
+    .float-card-1 {
+        top: 10%;
+        right: -20px;
+        background: var(--c-white);
+        box-shadow: var(--shadow-card);
         transform: translateZ(80px);
         animation: floatY 5s infinite ease-in-out;
     }
@@ -260,30 +265,19 @@
         }
 
     .float-card-2 {
-        position: absolute;
         bottom: 15%;
         left: -30px;
         background: var(--c-primary);
-        padding: 0.5rem 1rem;
-        border-radius: 1.5rem;
         box-shadow: 0 20px 40px rgba(10,50,84,0.4);
-        display: flex;
-        align-items: center;
-        gap: 1.2rem;
         transform: translateZ(60px);
         animation: floatY 6s infinite ease-in-out reverse;
         border: 1px solid rgba(175,143,66,0.3);
     }
 
-        .float-card-2 i {
+        .float-card-2 i, .float-card-2 span {
             color: var(--c-white);
             font-size: 1.5rem;
-        }
-
-        .float-card-2 span {
-            color: var(--c-white);
             font-weight: 900;
-            font-size: 1.5rem;
         }
 
     /* Stats Section */
@@ -312,14 +306,7 @@
         .stats-grid {
             grid-template-columns: repeat(4, 1fr);
         }
-    }
 
-    .stat-item {
-        text-align: center;
-        position: relative;
-    }
-
-    @@media (min-width: 768px) {
         .stat-item:not(:last-child)::after {
             content: '';
             position: absolute;
@@ -329,6 +316,11 @@
             width: 1px;
             background: rgba(10, 50, 84, 0.1);
         }
+    }
+
+    .stat-item {
+        text-align: center;
+        position: relative;
     }
 
     .stat-value {
@@ -346,9 +338,104 @@
         font-weight: 900;
     }
 
+    /* Placement Test Section (NEW) */
+    .placement-section {
+        padding: 6rem 2rem;
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-bg);
+        text-align: center;
+    }
+
+    .placement-card {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--c-white);
+        border-radius: 2rem;
+        padding: 4rem 2rem;
+        box-shadow: var(--shadow-card);
+        border: 2px dashed var(--c-secondary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .placement-icon {
+        width: 5rem;
+        height: 5rem;
+        background: var(--c-secondary);
+        color: var(--c-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 1.5rem;
+        box-shadow: var(--shadow-glow);
+    }
+
+    .placement-card h2 {
+        font-size: 2.5rem;
+        color: var(--c-primary);
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .placement-card p {
+        font-size: 1.2rem;
+        color: var(--c-text-muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Promo Video Section (NEW) */
+    .promo-section {
+        padding: 6rem 2rem 10rem;
+        background: var(--c-primary-dark);
+        position: relative;
+    }
+
+    .promo-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .promo-header h2 {
+        color: var(--c-white);
+        font-size: 3rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .promo-header p {
+        color: var(--c-secondary);
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        font-weight: bold;
+    }
+
+    .promo-video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        border: 3px solid rgba(175,143,66,0.5);
+    }
+
+        .promo-video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
     /* Features Section */
     .features-section {
-        padding: 10rem 2rem 6rem;
+        padding: 8rem 2rem 6rem;
         background: var(--c-bg);
         direction: rtl;
         max-width: 1280px;
@@ -532,95 +619,6 @@
             display: block;
         }
 
-    /* Testimonials Section */
-    .testimonials-section {
-        padding: 8rem 2rem;
-        background: var(--c-bg);
-        text-align: center;
-    }
-
-    .testi-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2.5rem;
-        max-width: 1280px;
-        margin: 4rem auto 0;
-    }
-
-    .testi-card {
-        background: var(--c-white);
-        padding: 3rem 2rem;
-        border-radius: 2rem;
-        border: 1px solid rgba(175,143,66,0.1);
-        position: relative;
-        box-shadow: var(--shadow-card);
-        text-align: right;
-        transition: var(--transition);
-    }
-
-        .testi-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--c-secondary);
-        }
-
-    .quote-icon {
-        position: absolute;
-        top: -25px;
-        right: 40px;
-        background: var(--c-secondary);
-        color: var(--c-white);
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        box-shadow: 0 10px 20px rgba(175,143,66,0.3);
-    }
-
-    .testi-text {
-        font-size: 1.3rem;
-        color: var(--c-primary);
-        line-height: 1.8;
-        margin-bottom: 2rem;
-        font-weight: bold;
-    }
-
-    .testi-author {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        border-top: 1px solid #e2e8f0;
-        padding-top: 1.5rem;
-    }
-
-    .author-avatar {
-        width: 50px;
-        height: 50px;
-        background: rgba(10,50,84,0.05);
-        color: var(--c-primary);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        font-weight: 900;
-    }
-
-    .author-info h4 {
-        font-size: 1.2rem;
-        color: var(--c-primary);
-        font-weight: 900;
-        margin: 0 0 0.2rem 0;
-    }
-
-    .author-info span {
-        font-size: 1rem;
-        color: var(--c-secondary);
-        font-weight: bold;
-    }
-
     /* CTA Section */
     .cta-section {
         background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
@@ -660,16 +658,16 @@
             line-height: 1.6;
         }
 
-    /* ===== Media Queries for Mobile Responsiveness ===== */
+    /* Mobile Queries */
     @@media (max-width: 768px) {
         .hero-section {
-            padding: 8rem 0 4rem; /* مساحة أقل من الأعلى والأسفل */
+            padding: 8rem 0 4rem;
             min-height: auto;
         }
 
         .hero-container {
             gap: 2rem;
-            text-align: center; /* توسيط النص في الموبايل */
+            text-align: center;
         }
 
         .hero-title {
@@ -682,7 +680,7 @@
         }
 
         .hero-actions {
-            flex-direction: column; /* الأزرار تحت بعض */
+            flex-direction: column;
             gap: 1rem;
         }
 
@@ -692,7 +690,7 @@
         }
 
         .stats-section {
-            margin-top: -3rem; /* تداخل أقل في الموبايل */
+            margin-top: -3rem;
             padding: 0 1rem;
         }
 
@@ -702,101 +700,28 @@
         }
 
         .stat-value {
-            font-size: 2.5rem; /* تصغير الأرقام */
+            font-size: 2.5rem;
         }
 
         .stat-label {
             font-size: 1rem;
         }
 
-        .features-section {
-            padding: 6rem 1.5rem 3rem;
-        }
-
-        .section-header {
-            margin-bottom: 3rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-        }
-
-        .steps-section {
+        .features-section, .placement-section, .promo-section, .steps-section, .cta-section {
             padding: 4rem 1.5rem;
         }
 
-        .steps-container {
-            gap: 3rem;
+        .section-title, .placement-card h2, .promo-header h2, .cta-content h2 {
+            font-size: 2.2rem;
+        }
+
+        .section-subtitle, .placement-card p, .promo-header p, .cta-content p {
+            font-size: 1.1rem;
         }
 
         .steps-content h2 {
             font-size: 2.2rem;
-            margin-bottom: 2rem;
             text-align: center;
-        }
-
-        .step-item {
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .step-number {
-            width: 3.5rem;
-            height: 3.5rem;
-            font-size: 1.5rem;
-        }
-
-        .step-text h3 {
-            font-size: 1.5rem;
-        }
-
-        .step-text p {
-            font-size: 1.1rem;
-        }
-
-        .testimonials-section {
-            padding: 4rem 1.5rem;
-        }
-
-        .testi-grid {
-            margin-top: 2rem;
-        }
-
-        .cta-section {
-            padding: 4rem 1.5rem;
-        }
-
-        .cta-content h2 {
-            font-size: 2.2rem;
-        }
-
-        .cta-content p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .cta-content .btn-primary {
-            width: 100%;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .hero-title {
-            font-size: 2.2rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
         }
     }
 
@@ -928,6 +853,32 @@
         </div>
     </section>
 
+    <!-- Placement Test Section (تحديد المستوى) -->
+    <section class="placement-section">
+        <div class="placement-card">
+            <div class="placement-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+            <h2>أين تقف الآن؟ اختبر مستواك مجاناً</h2>
+            <p>قبل أن تبدأ، دعنا نحدد مستواك الحالي بدقة عبر اختبار تشخيصي شامل يحاكي اختبار قياس الفعلي. ستظهر نتيجتك فور الانتهاء لتعرف نقاط قوتك وضعفك.</p>
+            <a href="/Student/TakeQuiz/1" class="btn-primary" style="margin: 0 auto;">
+                ابدأ اختبار تحديد المستوى <i class="fa-solid fa-pen-nib"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Promo Video Section (الفيديو الترويجي) -->
+    <section class="promo-section">
+        <div class="promo-container">
+            <div class="promo-header">
+                <h2>اكتشف منصة الأديب</h2>
+                <p>شاهد كيف نصنع التفوق ونغير مفهوم المذاكرة التقليدية</p>
+            </div>
+            <div class="promo-video-wrapper">
+                <!-- يمكنك استبدال الرابط برابط البرومو الخاص بك -->
+                <iframe src="https://www.youtube.com/embed/YOUR_PROMO_VIDEO_ID?rel=0&modestbranding=1&controls=1" title="فيديو ترويجي لمنصة الأديب" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section class="features-section">
         <div class="section-header">
@@ -987,55 +938,6 @@
 
             <div class="steps-image">
                 <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop" alt="تدريب الطلاب" />
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials-section" id="testimonials">
-        <div class="section-header" style="margin-bottom: 3rem;">
-            <div class="hero-badge" style="background: rgba(10,50,84,0.05); color: var(--c-primary); border-color: rgba(10,50,84,0.1); margin-bottom: 1rem;">
-                <i class="fa-solid fa-star"></i> قصص نجاح حقيقية
-            </div>
-            <h2 class="section-title">صناع التفوق</h2>
-            <p class="section-subtitle">انضم لقافلة المتميزين الذين حققوا العلامة الكاملة بفضل الله ثم بالتدريب معنا.</p>
-        </div>
-
-        <div class="testi-grid">
-            <div class="testi-card">
-                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
-                <p class="testi-text">"تجربتي مع منصة الأديب كانت نقطة تحول! الشرح سلس جداً والاستراتيجيات فعلاً تختصر الوقت في الاختبار. بفضل الله ثم أستاذ صلاح جبت 100%."</p>
-                <div class="testi-author">
-                    <div class="author-avatar">ع</div>
-                    <div class="author-info">
-                        <h4>عبدالله م.</h4>
-                        <span>درجة 100%</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testi-card">
-                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
-                <p class="testi-text">"أكثر شيء فادني هو اختبارات المحاكاة اللي دربتني على إدارة وقتي بشكل ممتاز، وكسرت رهبة الاختبار الفعلي عندي بشكل نهائي."</p>
-                <div class="testi-author">
-                    <div class="author-avatar">س</div>
-                    <div class="author-info">
-                        <h4>سارة ق.</h4>
-                        <span>درجة 99%</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testi-card">
-                <div class="quote-icon"><i class="fa-solid fa-quote-right"></i></div>
-                <p class="testi-text">"تأسيس اللفظي كان دائماً عقدتي، لكن الأستاذ صلاح بسط كل القواعد بأسلوب ذكي يثبت في المخ وما يُنسى وقت الحل. أنصح الجميع بالمنصة."</p>
-                <div class="testi-author">
-                    <div class="author-avatar">م</div>
-                    <div class="author-info">
-                        <h4>محمد ط.</h4>
-                        <span>درجة 100%</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>

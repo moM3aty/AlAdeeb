@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* ... احتفظ بجميع التنسيقات الموجودة مسبقاً في ملف الـ Dashboard ... */
     @@font-face {
         font-family: 'Hayah';
         src: url('/fonts/Hayah.otf') format('opentype');
@@ -421,6 +422,24 @@
             transform: scale(1.2);
         }
     }
+
+    /* تنسيق تنبيهات الاشتراك */
+    .expiry-tag {
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .exp-active {
+        color: #ca8a04;
+    }
+
+    .exp-ended {
+        color: #dc2626;
+    }
 </style>
 
 <div class="student-dashboard">
@@ -478,6 +497,20 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">@request.Course.Title</h4>
+
+                        @if (request.ExpiryDate.HasValue)
+                        {
+                            var daysLeft = (request.ExpiryDate.Value - DateTime.Now).TotalDays;
+                            if (daysLeft > 0)
+                            {
+                                <div class="expiry-tag exp-active"><i class="fa-regular fa-clock"></i> متبقي لاشتراكك: @Math.Ceiling(daysLeft) يوم</div>
+                            }
+                            else
+                            {
+                                <div class="expiry-tag exp-ended"><i class="fa-solid fa-ban"></i> انتهت فترة اشتراكك الأساسية</div>
+                            }
+                        }
+
                         <p class="card-desc">@request.Course.Description</p>
                         <a href="/Student/CourseContent/@request.Course.Id" class="btn-enter">
                             دخول الدورة والمذاكرة <i class="fa-solid fa-arrow-left"></i>

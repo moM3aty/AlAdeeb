@@ -240,7 +240,7 @@
         <div class="header-icon"><i class="fa-solid fa-pen-clip"></i></div>
         <div class="header-text">
             <h2>تحديث بيانات الدورة</h2>
-            <p>تعديل مسار الدورة، التكلفة، أو التحكم في حالة التفعيل.</p>
+            <p>تعديل مسار الدورة، التكلفة، أو التحكم في حالة التفعيل وصلاحية الاشتراك.</p>
         </div>
     </div>
 </div>
@@ -269,6 +269,11 @@
                     <i class="fa-solid fa-money-bill-wave price-icon"></i>
                 </div>
                 <span asp-validation-for="Price" class="val-error"></span>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label asp-for="AccessDurationMonths" class="form-label">صلاحية الدورة (بالشهور)</label>
+                <input asp-for="AccessDurationMonths" type="number" class="form-control" placeholder="اتركه فارغاً لصلاحية مفتوحة مدى الحياة..." />
             </div>
 
             <div class="form-group" style="margin: 0;">

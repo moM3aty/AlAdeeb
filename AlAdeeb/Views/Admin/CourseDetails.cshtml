@@ -5,6 +5,7 @@
 }
 
 <style>
+    /* ... (احتفظ بنفس تنسيقات الصفحة هنا دون تغيير لتوفير المساحة) ... */
     .course-banner {
         background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary-light) 100%);
         border-radius: var(--radius-xl);
@@ -175,6 +176,7 @@
         padding: 1.5rem 2.5rem;
         background: #fdfdfd;
         border-top: 1px dashed #e2e8f0;
+        flex-wrap: wrap;
     }
 
     .btn-act-mini {
@@ -186,7 +188,7 @@
         font-size: 0.95rem;
         border: none;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         transition: var(--transition);
@@ -206,6 +208,11 @@
         border: none;
         cursor: pointer;
         transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
     }
 
         .btn-del-lesson:hover {
@@ -275,6 +282,25 @@
         font-weight: 600;
     }
 
+    .btn-del-item {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-del-item:hover {
+            background: #dc2626;
+            color: var(--c-white);
+        }
+
     .final-exam-section {
         background: linear-gradient(135deg, rgba(175, 143, 66, 0.1) 0%, rgba(175, 143, 66, 0.02) 100%);
         border: 2px dashed var(--c-secondary);
@@ -298,7 +324,6 @@
             font-size: 1.1rem;
         }
 
-    /* Modals */
     .modal {
         display: none;
         position: fixed;
@@ -441,6 +466,18 @@
     .hidden-f {
         display: none !important;
     }
+
+    /* تنسيق خاص للعينات المجانية */
+    .badge-free {
+        background: #ecfccb;
+        color: #ca8a04;
+        border: 1px solid #fef08a;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
 </style>
 
 <div class="course-banner">
@@ -450,7 +487,7 @@
             <h2>@Model.Title</h2>
             @if (Model.IsActive)
             {
-                <span class="c-badge"><i class="fa-solid fa-check"></i> الكورس مفعل للطلاب</span>
+                <span class="c-badge"><i class="fa-solid fa-check"></i> الكورس مفعل ومتاح للطلاب</span>
             }
         </div>
     </div>
@@ -474,7 +511,7 @@
                     <i class="fa-solid fa-book-open"></i>
                     <h3>@lesson.Title</h3>
                 </div>
-                <form asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
+                <form asp-controller="Course" asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
                     <button type="submit" class="btn-del-lesson" title="حذف الدرس"><i class="fa-solid fa-trash-can"></i></button>
                 </form>
             </div>
@@ -489,12 +526,18 @@
                                     <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play")"></i>
                                 </div>
                                 <div>
-                                    <h5>@m.Title</h5>
+                                    <h5>
+                                        @m.Title
+                                        @if (m.IsFreeSample)
+                                        {
+                                            <span class="badge-free"><i class="fa-solid fa-unlock-keyhole"></i> عينة مجانية</span>
+                                        }
+                                    </h5>
                                     <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : "فيديو مسجل")</span>
                                 </div>
                             </div>
-                            <form asp-action="DeleteMaterial" asp-route-id="@m.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف هذا المحتوى نهائياً؟');">
-                                <button type="submit" class="btn-del-lesson" style="background:transparent;"><i class="fa-solid fa-xmark"></i></button>
+                            <form asp-controller="Course" asp-action="DeleteMaterial" asp-route-id="@m.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف هذا المحتوى نهائياً؟');">
+                                <button type="submit" class="btn-del-item"><i class="fa-solid fa-xmark"></i></button>
                             </form>
                         </div>
                     }
@@ -512,8 +555,8 @@
                                     <span>اختبار تطبيقي - @q.DurationInMinutes دقيقة</span>
                                 </div>
                             </div>
-                            <form asp-action="DeleteQuiz" asp-route-id="@q.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار؟');">
-                                <button type="submit" class="btn-del-lesson" style="background:transparent;"><i class="fa-solid fa-xmark"></i></button>
+                            <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@q.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار؟');">
+                                <button type="submit" class="btn-del-item"><i class="fa-solid fa-xmark"></i></button>
                             </form>
                         </div>
                     }
@@ -525,9 +568,9 @@
                 }
             </div>
             <div class="lesson-actions">
-                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'YouTube')"><i class="fa-brands fa-youtube"></i> إضافة فيديو</button>
-                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')"><i class="fa-solid fa-file-pdf"></i> رفع PDF</button>
-                <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-act-mini"><i class="fa-solid fa-clipboard-question"></i> بناء اختبار للدرس</a>
+                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'YouTube')"><i class="fa-brands fa-youtube" style="color:#3b82f6;"></i> إضافة فيديو</button>
+                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')"><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> رفع PDF</button>
+                <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-act-mini"><i class="fa-solid fa-clipboard-question" style="color:#10b981;"></i> بناء اختبار للدرس</a>
             </div>
         </div>
     }
@@ -537,7 +580,7 @@ else
     <div style="text-align:center; padding: 4rem; background: var(--c-white); border-radius: var(--radius-xl); border: 1px dashed rgba(10,50,84,0.2);">
         <i class="fa-solid fa-folder-open" style="font-size:4rem; color:#cbd5e1; margin-bottom:1.5rem;"></i>
         <h3 style="font-family:'Hayah',sans-serif; font-size:2rem; color:var(--c-primary); margin:0 0 0.5rem 0;">الدورة فارغة</h3>
-        <p style="color:var(--c-text-muted); font-size:1.1rem; font-weight:600;">قم بإضافة الوحدة التعليمية الأولى للبدء.</p>
+        <p style="color:var(--c-text-muted); font-size:1.1rem; font-weight:600;">قم بإضافة الوحدة التعليمية الأولى للبدء في رفع المحتوى.</p>
     </div>
 }
 
@@ -556,7 +599,7 @@ else
                     <span>درجة الاجتياز للشهادة: @finalExam.MinimumPassScore% | @finalExam.DurationInMinutes دقيقة</span>
                 </div>
             </div>
-            <form asp-action="DeleteQuiz" asp-route-id="@finalExam.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار النهائي؟');">
+            <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@finalExam.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار النهائي سيلغي قدرة الطلاب الجدد على استخراج الشهادة؟');">
                 <button type="submit" class="btn-del-lesson"><i class="fa-solid fa-trash-can"></i></button>
             </form>
         </div>
@@ -572,16 +615,16 @@ else
     <div class="modal-content">
         <div class="m-head">
             <h3>إضافة درس/وحدة جديدة</h3>
-            <button class="btn-close" onclick="closeModal('lessonModal')"><i class="fa-solid fa-xmark"></i></button>
+            <button class="btn-close" onclick="closeModal('lessonModal')" type="button"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form asp-action="AddLesson" method="post" class="m-body">
+        <form asp-controller="Course" asp-action="AddLesson" method="post" class="m-body">
             <input type="hidden" name="courseId" value="@Model.Id" />
             <div class="form-group">
                 <label>عنوان الدرس</label>
                 <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى: التناظر اللفظي" />
             </div>
             <div class="m-foot">
-                <button type="submit" class="btn-m-save">حفظ</button>
+                <button type="submit" class="btn-m-save">حفظ الدرس</button>
                 <button type="button" class="btn-m-cancel" onclick="closeModal('lessonModal')">إلغاء</button>
             </div>
         </form>
@@ -593,9 +636,9 @@ else
     <div class="modal-content">
         <div class="m-head">
             <h3 id="matModalTitle">إضافة محتوى</h3>
-            <button class="btn-close" onclick="closeModal('materialModal')"><i class="fa-solid fa-xmark"></i></button>
+            <button class="btn-close" onclick="closeModal('materialModal')" type="button"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="m-body">
+        <form asp-controller="Course" asp-action="AddMaterial" method="post" enctype="multipart/form-data" class="m-body">
             <input type="hidden" name="courseId" value="@Model.Id" />
             <input type="hidden" name="lessonId" id="matLessonId" value="" />
             <input type="hidden" name="materialType" id="matType" value="" />
@@ -615,6 +658,14 @@ else
                 <input type="file" name="pdfFile" id="pFile" class="form-control" accept="application/pdf" style="padding: 0.8rem;" />
             </div>
 
+            <!-- خيار العينة المجانية -->
+            <div class="form-group" style="margin-top: 1.5rem; background: #fef9c3; padding: 1rem; border-radius: 1rem; border: 1px solid #fef08a;">
+                <label class="form-label" style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; margin:0;">
+                    <input type="checkbox" name="isFreeSample" value="true" style="width: 1.4rem; height: 1.4rem; accent-color: #ca8a04;" />
+                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية" (متاح للطلاب حتى لو انتهى اشتراكهم)</span>
+                </label>
+            </div>
+
             <div class="m-foot">
                 <button type="submit" class="btn-m-save"><i class="fa-solid fa-cloud-arrow-up"></i> رفع وحفظ</button>
                 <button type="button" class="btn-m-cancel" onclick="closeModal('materialModal')">إلغاء</button>
@@ -624,8 +675,13 @@ else
 </div>
 
 <script>
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
 
     function openMaterialModal(lessonId, type) {
         document.getElementById('matLessonId').value = lessonId;

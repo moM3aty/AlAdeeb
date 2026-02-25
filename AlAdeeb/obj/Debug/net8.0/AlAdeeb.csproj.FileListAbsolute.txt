@@ -273,3 +273,4 @@ C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlAdeeb\AlAdeeb\obj\Debug\net8.0\refint\A
 C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlAdeeb\AlAdeeb\obj\Debug\net8.0\AlAdeeb.pdb
 C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlAdeeb\AlAdeeb\obj\Debug\net8.0\AlAdeeb.genruntimeconfig.cache
 C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlAdeeb\AlAdeeb\obj\Debug\net8.0\ref\AlAdeeb.dll
+D:\Dev\AlAdeeb\AlAdeeb\obj\Debug\net8.0\AlAdeeb.sourcelink.json
