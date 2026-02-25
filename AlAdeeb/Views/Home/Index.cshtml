@@ -118,7 +118,7 @@
         }
 
     .hero-title {
-        font-size: clamp(3.5rem, 6vw, 5rem);
+        font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 900;
         color: var(--c-white);
         line-height: 1.2;
@@ -659,6 +659,146 @@
             margin-bottom: 3rem;
             line-height: 1.6;
         }
+
+    /* ===== Media Queries for Mobile Responsiveness ===== */
+    @@media (max-width: 768px) {
+        .hero-section {
+            padding: 8rem 0 4rem; /* مساحة أقل من الأعلى والأسفل */
+            min-height: auto;
+        }
+
+        .hero-container {
+            gap: 2rem;
+            text-align: center; /* توسيط النص في الموبايل */
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            margin: 0 auto 2rem auto;
+        }
+
+        .hero-actions {
+            flex-direction: column; /* الأزرار تحت بعض */
+            gap: 1rem;
+        }
+
+        .btn-primary, .btn-outline {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stats-section {
+            margin-top: -3rem; /* تداخل أقل في الموبايل */
+            padding: 0 1rem;
+        }
+
+        .stats-grid {
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem; /* تصغير الأرقام */
+        }
+
+        .stat-label {
+            font-size: 1rem;
+        }
+
+        .features-section {
+            padding: 6rem 1.5rem 3rem;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .steps-section {
+            padding: 4rem 1.5rem;
+        }
+
+        .steps-container {
+            gap: 3rem;
+        }
+
+        .steps-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .step-item {
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            width: 3.5rem;
+            height: 3.5rem;
+            font-size: 1.5rem;
+        }
+
+        .step-text h3 {
+            font-size: 1.5rem;
+        }
+
+        .step-text p {
+            font-size: 1.1rem;
+        }
+
+        .testimonials-section {
+            padding: 4rem 1.5rem;
+        }
+
+        .testi-grid {
+            margin-top: 2rem;
+        }
+
+        .cta-section {
+            padding: 4rem 1.5rem;
+        }
+
+        .cta-content h2 {
+            font-size: 2.2rem;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-content .btn-primary {
+            width: 100%;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
 
     @@keyframes fadeUp {
         from {
