@@ -151,6 +151,25 @@
         font-family: Arial, sans-serif;
     }
 
+    .btn-del-item {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .btn-del-item:hover {
+            background: #dc2626;
+            color: var(--c-white);
+        }
+
     .options-setup {
         display: grid;
         grid-template-columns: 1fr;
@@ -296,13 +315,13 @@
         <div class="header-icon"><i class="fa-solid fa-list-check"></i></div>
         <div class="header-text">
             <h2>@ViewData["Title"]</h2>
-            <p>أضف أسئلة الخيارات المتعددة (نصوص أو صور) في مسار: @Model.Title</p>
+            <p>أضف أسئلة الخيارات المتعددة وحدد مهارة كل سؤال لتظهر في محاكي قياس.</p>
         </div>
     </div>
 </div>
 
 <div class="quiz-form">
-    <form asp-controller="Admin" asp-action="SaveQuiz" method="post" enctype="multipart/form-data">
+    <form asp-controller="Admin" asp-action="SaveQuiz" method="post" enctype="multipart/form-data" onsubmit="reindexQuestions()">
         <input type="hidden" name="CourseId" value="@Model.Id" />
         <input type="hidden" name="LessonId" value="@ViewBag.LessonId" />
         <input type="hidden" name="IsFinalExam" value="@(ViewBag.IsFinalExam == true ? "true" : "false")" />
@@ -329,10 +348,25 @@
 
 <script>
     let qCount = 0;
+
     function addQ() {
         const html = `
-            <div class="q-card">
+            <div class="q-card" id="q-card-${qCount}">
                 <div class="q-num">${qCount + 1}</div>
+                <button type="button" class="btn-del-item" style="position: absolute; top: 15px; left: 15px;" onclick="document.getElementById('q-card-${qCount}').remove()"><i class="fa-solid fa-trash"></i></button>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>نوع المهارة (تظهر في محاكي قياس بالجانب الأيمن)</label>
+                    <select name="Questions[${qCount}].SkillType" class="form-control">
+                        <option value="التناظر اللفظي">التناظر اللفظي</option>
+                        <option value="إكمال الجمل">إكمال الجمل</option>
+                        <option value="الخطأ السياقي">الخطأ السياقي</option>
+                        <option value="استيعاب المقروء">استيعاب المقروء</option>
+                        <option value="المفردة الشاذة">المفردة الشاذة</option>
+                        <option value="أسئلة منوعة" selected>أسئلة منوعة (عام)</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>نص السؤال (اتركه فارغاً إذا كان السؤال عبارة عن صورة فقط)</label>
                     <textarea name="Questions[${qCount}].QuestionText" rows="2" class="form-control" placeholder="اكتب السؤال هنا..."></textarea>
@@ -362,5 +396,19 @@
         qCount++;
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
+
+    function reindexQuestions() {
+        const cards = document.querySelectorAll('.q-card');
+        cards.forEach((card, index) => {
+            card.querySelector('.q-num').innerText = index + 1;
+            const inputs = card.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
+                }
+            });
+        });
+    }
+
     window.onload = addQ;
 </script>

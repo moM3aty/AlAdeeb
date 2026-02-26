@@ -345,6 +345,25 @@
             </div>
 
             <div class="input-group" style="margin: 0;">
+                <label asp-for="AccessDurationMonths" class="form-label">صلاحية الدورة (بالشهور)</label>
+                <input asp-for="AccessDurationMonths" type="number" class="form-control" placeholder="اتركه فارغاً لصلاحية مفتوحة..." />
+            </div>
+
+            <div class="input-group" style="margin: 0;">
+                <label asp-for="TeacherId" class="form-label">تعيين معلم مساعد (اختياري)</label>
+                <select asp-for="TeacherId" class="form-control" style="cursor: pointer;">
+                    <option value="">-- بدون معلم (إدارة شخصية) --</option>
+                    @if (ViewBag.Teachers != null)
+                    {
+                        foreach (var teacher in ViewBag.Teachers)
+                        {
+                            <option value="@teacher.Id">@teacher.FullName</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="input-group" style="margin: 0;">
                 <label class="form-label" style="visibility: hidden;">التفعيل</label>
                 <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
                     <input asp-for="IsActive" type="checkbox" checked id="IsActive" style="pointer-events: none;" />

@@ -266,7 +266,7 @@
                     <tr>
                         <th>الاسم والبيانات</th>
                         <th>رقم الجوال (واتساب)</th>
-                        <th>تاريخ الانضمام</th>
+                        <th>عدد الأجهزه</th>
                         <th>إجراءات</th>
                     </tr>
                 </thead>
@@ -284,7 +284,16 @@
                                 </div>
                             </td>
                             <td><span class="phone-tag">@student.PhoneNumber</span></td>
-                            <td><span class="date-tag"><i class="fa-regular fa-calendar-days"></i> @student.CreatedAt.ToString("yyyy/MM/dd")</span></td>
+
+                            <!-- عمود الأجهزة المضافة حديثاً -->
+                            <td>
+                                <form asp-action="UpdateDeviceLimit" method="post" style="display:inline-flex; gap:0.5rem; align-items:center; margin:0;">
+                                    <input type="hidden" name="studentId" value="@student.Id" />
+                                    <input type="number" name="newLimit" value="@student.AllowedDevicesCount" min="1" max="5" style="width:60px; padding:0.4rem; border:1px solid #cbd5e1; border-radius:8px; text-align:center; font-weight:bold; font-family:Arial;" />
+                                    <button type="submit" class="btn-act btn-wa" title="حفظ حد الأجهزة" style="width:30px; height:30px;"><i class="fa-solid fa-save"></i></button>
+                                </form>
+                            </td>
+
                             <td>
                                 <div class="action-btns">
                                     <a href="/Admin/StudentProfile/@student.Id" class="btn-act btn-view" title="الملف الشامل للطالب"><i class="fa-solid fa-address-card"></i></a>

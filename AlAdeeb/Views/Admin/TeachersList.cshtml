@@ -1,0 +1,166 @@
+﻿@model IEnumerable<AlAdeeb.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "فريق المعلمين";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .page-header {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon {
+        width: 4.5rem;
+        height: 4.5rem;
+        background: #e0f2fe;
+        color: #0284c7;
+        border-radius: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .data-card {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+    }
+
+        .modern-table th {
+            background: #f8fafc;
+            padding: 1.2rem 1.5rem;
+            color: var(--c-text-muted);
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+    .form-box {
+        padding: 2rem;
+        background: #f8fafc;
+        border-radius: var(--radius-xl);
+        border: 2px dashed #e2e8f0;
+    }
+
+        .form-box h3 {
+            color: var(--c-primary);
+            margin-top: 0;
+            font-family: 'Hayah';
+            font-size: 1.8rem;
+        }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid #cbd5e1;
+        font-family: inherit;
+        font-weight: bold;
+    }
+
+    .btn-add {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<div class="page-header">
+    <div class="header-info">
+        <div class="header-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <div>
+            <h2 style="margin:0; font-family:'Hayah'; color:var(--c-primary);">إدارة فريق المعلمين</h2>
+            <p style="margin:0; color:#64748b; font-weight:600;">صلاحية رفع الملفات والفيديوهات دون التحكم بالإدارة.</p>
+        </div>
+    </div>
+</div>
+
+<div class="data-card">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>اسم المعلم</th>
+                <th>رقم الدخول (جوال)</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var teacher in Model)
+                {
+                    <tr>
+                        <td><strong><i class="fa-solid fa-user-tie" style="color:var(--c-secondary);"></i> @teacher.FullName</strong></td>
+                        <td dir="ltr" style="text-align:right;">@teacher.PhoneNumber</td>
+                        <td>
+                            <form asp-action="DeleteTeacher" method="post" onsubmit="confirmAction(event, 'حذف المعلم؟');">
+                                <input type="hidden" name="id" value="@teacher.Id" />
+                                <button type="submit" style="background:#fee2e2; color:#dc2626; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-weight:bold;">إزالة الصلاحية</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="3" style="text-align:center; color:#94a3b8; font-weight:bold;">لا يوجد معلمون مساعدون حالياً.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="form-box">
+    <h3>إضافة معلم جديد للمنصة</h3>
+    <form asp-action="AddTeacher" method="post" style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:1rem; align-items:end;">
+        <div class="form-group" style="margin:0;">
+            <label>الاسم الكامل</label>
+            <input type="text" name="FullName" class="form-control" required />
+        </div>
+        <div class="form-group" style="margin:0;">
+            <label>رقم الجوال (اسم المستخدم)</label>
+            <input type="text" name="PhoneNumber" class="form-control" dir="ltr" required />
+        </div>
+        <div class="form-group" style="margin:0;">
+            <label>كلمة المرور</label>
+            <input type="text" name="Password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn-add"><i class="fa-solid fa-user-plus"></i> اعتماد المعلم</button>
+    </form>
+</div>

@@ -28,12 +28,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlAdeeb/AlAdeeb/Views/Account/VerifyCode.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxWZXJpZnlDb2RlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/AddQuiz.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkUXVpei5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/AddStudentManual.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkU3R1ZGVudE1hbnVhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/CourseDetails.cshtml]
@@ -42,6 +42,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/CreateCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlQ291cnNlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/Discussions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGlzY3Vzc2lvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/EditCourse.cshtml]
@@ -66,6 +70,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/SubscriptionRequests.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3Vic2NyaXB0aW9uUmVxdWVzdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/TeachersList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVGVhY2hlcnNMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Dev/AlAdeeb/AlAdeeb/Views/Course/Details.cshtml]

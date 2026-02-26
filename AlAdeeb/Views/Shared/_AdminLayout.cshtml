@@ -295,13 +295,12 @@
             align-items: center;
             gap: 1rem;
             background: var(--c-white);
-            padding: 0.4rem 0.4rem 0.4rem 1rem;
             border-radius: 15px;
             border: 1px solid rgba(0,0,0,0.05);
             box-shadow: var(--shadow-sm);
             cursor: pointer;
             transition: var(--transition);
-            padding:5px 15px;
+            padding: 5px 15px;
         }
 
             .admin-profile:hover {
@@ -455,42 +454,43 @@
         <div class="nav-menu">
             <div class="nav-group"><i class="fa-solid fa-server"></i> نظرة عامة</div>
             <a href="/Admin/Index" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-chart-line"></i> لوحة الإحصائيات (Dashboard)</div>
+                <div class="nav-item-content"><i class="fa-solid fa-chart-line"></i> دوراتي / لوحة التحكم</div>
             </a>
 
-            <div class="nav-group"><i class="fa-solid fa-cubes"></i> إدارة الدورات (Courses)</div>
-            <a href="/Admin/CreateCourse" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "CreateCourse" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-square-plus"></i> إضافة دورة جديدة (Create)</div>
-            </a>
-            <a href="/Admin/Index" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-list-check"></i> استعراض وتعديل الدورات (Read/Update)</div>
-            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="nav-group"><i class="fa-solid fa-wallet"></i> العمليات المالية</div>
+                <a href="/Admin/SubscriptionRequests" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "SubscriptionRequests" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-file-invoice-dollar"></i> مراجعة الطلبات</div>
+                    @if (ViewBag.PendingRequestsCount != null && ViewBag.PendingRequestsCount > 0)
+                    {
+                        <span class="badge-pulse">@ViewBag.PendingRequestsCount</span>
+                    }
+                </a>
 
-            <div class="nav-group"><i class="fa-solid fa-users"></i> إدارة الطلاب (Students)</div>
-            <a href="/Admin/StudentsList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "StudentsList" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-user-gear"></i> قاعدة بيانات الطلاب (Read/Delete)</div>
-            </a>
+                <div class="nav-group"><i class="fa-solid fa-users"></i> الإدارة العليا</div>
+                <a href="/Admin/CreateCourse" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "CreateCourse" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-square-plus"></i> إضافة دورة جديدة</div>
+                </a>
+                <a href="/Admin/StudentsList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "StudentsList" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-user-gear"></i> قاعدة بيانات الطلاب</div>
+                </a>
+                <a href="/Admin/TeachersList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "TeachersList" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-chalkboard-user"></i> فريق المعلمين</div>
+                </a>
+            }
 
-            <div class="nav-group"><i class="fa-solid fa-wallet"></i> العمليات المالية (Subscriptions)</div>
-            <a href="/Admin/SubscriptionRequests" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "SubscriptionRequests" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-file-invoice-dollar"></i> مراجعة الطلبات (Update)</div>
-                @if (ViewBag.PendingRequestsCount != null && ViewBag.PendingRequestsCount > 0)
-                {
-                    <span class="badge-pulse">@ViewBag.PendingRequestsCount</span>
-                }
-            </a>
-
-            <div class="nav-group"><i class="fa-solid fa-satellite-dish"></i> البث المباشر (Live)</div>
+            <div class="nav-group"><i class="fa-solid fa-satellite-dish"></i> التفاعل والبثوث</div>
             <a href="/Live/ManageLiveSessions" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Live" ? "active" : "")">
-                <div class="nav-item-content"><i class="fa-solid fa-video"></i> إدارة وتوثيق البثوث (CRUD)</div>
+                <div class="nav-item-content"><i class="fa-solid fa-video"></i> إدارة البث المباشر</div>
             </a>
-            <a href="/Admin/Discussions" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Discussions" ? "active" : "")">
+            <a href="/Admin/Discussions" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Discussions" ? "active" : "")">
                 <div class="nav-item-content"> <i class="fa-solid fa-comments"></i> منتدى النقاشات </div>
             </a>
 
             <div style="margin-top: auto; padding-top: 2rem;">
                 <a href="/Account/Logout" class="nav-item" style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; justify-content: center; gap: 0.5rem;">
-                    <i class="fa-solid fa-power-off"></i> تسجيل الخروج من الإدارة
+                    <i class="fa-solid fa-power-off"></i> تسجيل الخروج
                 </a>
             </div>
         </div>
@@ -511,10 +511,10 @@
                 </a>
                 <div class="admin-profile">
                     <div class="admin-info">
-                        <h4>أ. صلاح عبد العال</h4>
-                        <p>المدير العام</p>
+                        <h4>@User.Identity.Name</h4>
+                        <p>@(User.IsInRole("Admin") ? "المدير العام" : "معلم مساعد")</p>
                     </div>
-                    <img src="~/images/Salah.jpg" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=صلاح+عبدالعال&background=0a3254&color=af8f42';" />
+                    <img src="~/images/Salah.jpg" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=@User.Identity.Name&background=0a3254&color=af8f42';" />
                 </div>
             </div>
         </header>

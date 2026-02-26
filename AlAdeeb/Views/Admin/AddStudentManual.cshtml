@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "إضافة طالب جديد يدوياً";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .page-header {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon {
+        width: 4rem;
+        height: 4rem;
+        background: #e0f2fe;
+        color: #0284c7;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .form-card {
+        background: var(--c-white);
+        padding: 3rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        max-width: 600px;
+        margin: 0 auto;
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 800;
+            color: var(--c-primary);
+            margin-bottom: 0.5rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 2px solid #e2e8f0;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        background: #f8fafc;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--c-secondary);
+            background: #fff;
+        }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 1.2rem;
+        border-radius: 1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: 0.3s;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(10,50,84,0.2);
+        }
+</style>
+
+<div class="page-header">
+    <div class="header-icon"><i class="fa-solid fa-user-plus"></i></div>
+    <div>
+        <h2 style="margin:0; color:var(--c-primary); font-family:'Hayah';">إضافة طالب يدوياً</h2>
+        <p style="margin:0; color:#64748b; font-weight:600;">تجاوز التسجيل العادي وقم بإنشاء حساب للطالب فوراً.</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <form asp-action="AddStudentManual" method="post">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:#fee2e2; color:#dc2626; padding:1rem; border-radius:1rem; font-weight:bold; margin-bottom:1.5rem;">
+                <div asp-validation-summary="All" style="margin:0; padding:0; list-style:none;"></div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label>اسم الطالب الثلاثي</label>
+            <input type="text" name="FullName" class="form-control" required placeholder="مثال: أحمد محمد عبدالله" />
+        </div>
+
+        <div class="form-group">
+            <label>رقم الجوال (رقم الدخول)</label>
+            <input type="text" name="PhoneNumber" class="form-control" required placeholder="05xxxxxxxx" dir="ltr" style="text-align:right;" />
+        </div>
+
+        <div class="form-group">
+            <label>تعيين كلمة مرور أولية</label>
+            <input type="text" name="Password" class="form-control" required placeholder="مثال: 123456" />
+        </div>
+
+        <button type="submit" class="btn-submit"><i class="fa-solid fa-check"></i> إنشاء الحساب وتفعيله</button>
+    </form>
+</div>

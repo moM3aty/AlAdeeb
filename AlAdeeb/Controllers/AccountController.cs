@@ -6,10 +6,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using AlAdeeb.Data;
 using AlAdeeb.Models;
 using AlAdeeb.ViewModels;
 using System;
+using System.Linq;
 
 namespace AlAdeeb.Controllers
 {
@@ -44,28 +46,8 @@ namespace AlAdeeb.Controllers
 
                     if (result == PasswordVerificationResult.Success)
                     {
-                        if (user.Role == "Student")
-                        {
-                            // 1. توليد رمز تحقق من 4 أرقام
-                            string code = new Random().Next(1000, 9999).ToString();
-                            user.VerificationCode = code;
-                            user.VerificationCodeExpiry = DateTime.Now.AddMinutes(10); // صلاحية الرمز 10 دقائق
-
-                            _context.Update(user);
-                            await _context.SaveChangesAsync();
-
-                            // ملاحظة: هنا يمكنك ربط الـ API الخاص بإرسال الواتساب (WhatsApp)
-                            // حالياً سنقوم بطباعته في النظام كرسالة تنبيهية للتجربة
-                            TempData["DevCode"] = $"مرحباً، رمز التحقق الخاص بك هو: {code}";
-
-                            // توجيه الطالب لصفحة إدخال الرمز
-                            return RedirectToAction("VerifyCode", new { username = user.Username, rememberMe = model.RememberMe });
-                        }
-                        else
-                        {
-                            // دخول المدير مباشرة بدون رمز تحقق
-                            return await CompleteSignIn(user, model.RememberMe);
-                        }
+                        // تم إزالة رمز التحقق - سيتم الدخول مباشرة لجميع المستخدمين
+                        return await CompleteSignIn(user, model.RememberMe);
                     }
                 }
                 ModelState.AddModelError(string.Empty, "بيانات الدخول غير صحيحة.");
@@ -73,35 +55,28 @@ namespace AlAdeeb.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        public IActionResult VerifyCode(string username, bool rememberMe)
-        {
-            return View(new VerifyCodeViewModel { Username = username, RememberMe = rememberMe });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
-
-                if (user != null && user.VerificationCode == model.Code && user.VerificationCodeExpiry > DateTime.Now)
-                {
-                    return await CompleteSignIn(user, model.RememberMe);
-                }
-
-                ModelState.AddModelError(string.Empty, "رمز التحقق غير صحيح أو منتهي الصلاحية.");
-            }
-            return View(model);
-        }
-
         private async Task<IActionResult> CompleteSignIn(ApplicationUser user, bool rememberMe)
         {
             string newSessionId = Guid.NewGuid().ToString();
+
+            // جلب الأجهزة النشطة حالياً
+            var activeSessions = string.IsNullOrEmpty(user.ActiveSessionsJson)
+                ? new List<string>()
+                : JsonSerializer.Deserialize<List<string>>(user.ActiveSessionsJson);
+
+            activeSessions.Add(newSessionId);
+
+            // تطبيق قاعدة "عدد الأجهزة المسموحة" وطرد الأقدم
+            int maxDevices = user.AllowedDevicesCount > 0 ? user.AllowedDevicesCount : 1;
+            if (activeSessions.Count > maxDevices)
+            {
+                activeSessions = activeSessions.Skip(activeSessions.Count - maxDevices).ToList();
+            }
+
+            user.ActiveSessionsJson = JsonSerializer.Serialize(activeSessions);
             user.CurrentSessionId = newSessionId;
 
-            // تصفير رمز التحقق بعد الدخول الناجح
+            // تنظيف بيانات التحقق القديمة إن وجدت في قاعدة البيانات
             user.VerificationCode = null;
             user.VerificationCodeExpiry = null;
 
@@ -121,7 +96,8 @@ namespace AlAdeeb.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = rememberMe });
 
-            if (user.Role == "Admin") return RedirectToAction("Index", "Admin");
+            // توجيه المعلم والمدير للإدارة، والطالب للمنصة التعليمية
+            if (user.Role == "Admin" || user.Role == "Teacher") return RedirectToAction("Index", "Admin");
             else return RedirectToAction("Dashboard", "Student");
         }
 
@@ -148,7 +124,8 @@ namespace AlAdeeb.Controllers
                     Username = model.PhoneNumber,
                     PhoneNumber = model.PhoneNumber,
                     Role = "Student",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    AllowedDevicesCount = 1
                 };
 
                 newUser.PasswordHash = _passwordHasher.HashPassword(newUser, model.Password);
@@ -156,6 +133,7 @@ namespace AlAdeeb.Controllers
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
 
+                // تسجيل الدخول مباشرة بعد إنشاء الحساب
                 return await Login(new LoginViewModel { Username = model.PhoneNumber, Password = model.Password });
             }
             return View(model);

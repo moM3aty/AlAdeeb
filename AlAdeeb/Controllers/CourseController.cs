@@ -23,8 +23,8 @@ namespace AlAdeeb.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-
-        [Authorize(Roles = "Admin")]
+        // قم بتعديل سطر الصلاحيات هذا في جميع الدوال داخل الملف ليصبح هكذا:
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> Details(int id)
         {
             var course = await _context.Courses
@@ -60,15 +60,14 @@ namespace AlAdeeb.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddMaterial(int lessonId, int courseId, string title, string materialType, string youtubeUrl, IFormFile pdfFile, bool isFreeSample = false)
+        public async Task<IActionResult> AddMaterial(int lessonId, int courseId, string title, string materialType, string youtubeUrl, IFormFile pdfFile)
         {
             var material = new LessonMaterial
             {
                 LessonId = lessonId,
                 Title = title,
                 MaterialType = materialType,
-                OrderIndex = _context.LessonMaterials.Count(m => m.LessonId == lessonId) + 1,
-                IsFreeSample = isFreeSample // حفظ اختيار العينة
+                OrderIndex = _context.LessonMaterials.Count(m => m.LessonId == lessonId) + 1
             };
 
             if (materialType == "YouTube" || materialType == "RecordedLive")
@@ -78,13 +77,17 @@ namespace AlAdeeb.Controllers
             else if (materialType == "PDF" && pdfFile != null)
             {
                 string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/pdfs");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
                 string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName;
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await pdfFile.CopyToAsync(fileStream);
                 }
+
                 material.UrlOrPath = "/uploads/pdfs/" + uniqueFileName;
             }
 

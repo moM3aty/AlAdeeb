@@ -11,11 +11,9 @@ using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. إعداد قاعدة البيانات
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. إعداد الهوية والجلسة الواحدة (OnValidatePrincipal)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -24,7 +22,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.ExpireTimeSpan = System.TimeSpan.FromDays(30);
 
-        // هذه هي النقطة الجوهرية: التحقق من الجلسة في كل طلب
+        // المراقب الأمني للأجهزة المتعددة (يتم تنفيذه في كل طلب)
         options.Events = new CookieAuthenticationEvents
         {
             OnValidatePrincipal = async context =>
@@ -35,16 +33,23 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(sessionId))
                 {
                     var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                    var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
 
-                    // البحث عن المستخدم في قاعدة البيانات والتأكد من تطابق معرّف الجلسة
-                    var userExists = await db.Users
-                        .AsNoTracking()
-                        .Where(u => u.Id == int.Parse(userId) && u.CurrentSessionId == sessionId)
-                        .AnyAsync();
-
-                    if (!userExists)
+                    if (user != null)
                     {
-                        // إذا لم يتطابق، يتم طرده فوراً
+                        var activeSessions = string.IsNullOrEmpty(user.ActiveSessionsJson)
+                            ? new System.Collections.Generic.List<string>()
+                            : System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<string>>(user.ActiveSessionsJson);
+
+                        // إذا كان الجلسة الحالية غير موجودة في قائمة الأجهزة النشطة للطالب، يتم طرده فوراً
+                        if (!activeSessions.Contains(sessionId))
+                        {
+                            context.RejectPrincipal();
+                            await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                        }
+                    }
+                    else
+                    {
                         context.RejectPrincipal();
                         await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     }
@@ -57,7 +62,6 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// تهيئة بيانات المسؤول
 DbSeeder.SeedAdmin(app.Services);
 
 if (!app.Environment.IsDevelopment())

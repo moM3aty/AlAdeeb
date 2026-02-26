@@ -1,5 +1,53 @@
 [
   {
+    "ContainingType": "AlAdeeb.Controllers.ForumController",
+    "Method": "GetCoursePosts",
+    "RelativePath": "api/Forum/{courseId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "courseId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.ForumController",
+    "Method": "CreatePost",
+    "RelativePath": "api/Forum/post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "AlAdeeb.Controllers.ForumController\u002BPostDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.ForumController",
+    "Method": "CreateReply",
+    "RelativePath": "api/Forum/reply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "AlAdeeb.Controllers.ForumController\u002BReplyDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "AlAdeeb.Controllers.QuizController",
     "Method": "SubmitQuiz",
     "RelativePath": "api/Quiz/submit",

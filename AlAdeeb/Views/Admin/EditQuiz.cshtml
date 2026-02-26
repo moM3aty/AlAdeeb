@@ -5,6 +5,7 @@
 }
 
 <style>
+    /* ... احتفظ بالتنسيقات العلوية نفسها للـ AddQuiz ... */
     .page-header {
         background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
         border-radius: var(--radius-xl);
@@ -315,13 +316,13 @@
         <div class="header-icon"><i class="fa-solid fa-pen-to-square"></i></div>
         <div class="header-text">
             <h2>تعديل بيانات الاختبار</h2>
-            <p>يمكنك التعديل على الأسئلة الحالية، أو إضافة أسئلة جديدة للاختبار: @Model.Title</p>
+            <p>يمكنك التعديل على الأسئلة وتحديد المهارات لتظهر بمحاكي قياس.</p>
         </div>
     </div>
 </div>
 
 <div class="quiz-form">
-    <form asp-controller="Admin" asp-action="EditQuiz" method="post" enctype="multipart/form-data">
+    <form asp-controller="Admin" asp-action="EditQuiz" method="post" enctype="multipart/form-data" onsubmit="reindexQuestions()">
         <input type="hidden" name="Id" value="@Model.Id" />
 
         <div class="quiz-config">
@@ -362,12 +363,13 @@
                 {
                         <text>
                         {
-                            text: `@Html.Raw(q.QuestionText?.Replace("`", "\\`") ?? "")`,
+                            skill: `@Html.Raw(q.SkillType ?? "أسئلة منوعة")`,
+                            text: `@Html.Raw(q.QuestionText?.Replace("`", "\\`").Replace("$", "\\$") ?? "")`,
                             image: `@Html.Raw(q.QuestionImagePath ?? "")`,
-                            optA: `@Html.Raw(q.OptionA?.Replace("`", "\\`") ?? "")`,
-                            optB: `@Html.Raw(q.OptionB?.Replace("`", "\\`") ?? "")`,
-                            optC: `@Html.Raw(q.OptionC?.Replace("`", "\\`") ?? "")`,
-                            optD: `@Html.Raw(q.OptionD?.Replace("`", "\\`") ?? "")`,
+                            optA: `@Html.Raw(q.OptionA?.Replace("`", "\\`").Replace("$", "\\$") ?? "")`,
+                            optB: `@Html.Raw(q.OptionB?.Replace("`", "\\`").Replace("$", "\\$") ?? "")`,
+                            optC: `@Html.Raw(q.OptionC?.Replace("`", "\\`").Replace("$", "\\$") ?? "")`,
+                            optD: `@Html.Raw(q.OptionD?.Replace("`", "\\`").Replace("$", "\\$") ?? "")`,
                             correct: `@q.CorrectOption`
                         },
                         </text>
@@ -376,6 +378,7 @@
     ];
 
     function addQ(q = null) {
+        const skill = q ? q.skill : 'أسئلة منوعة';
         const text = q ? q.text : '';
         const image = q ? q.image : '';
         const optA = q ? q.optA : '';
@@ -388,6 +391,19 @@
             <div class="q-card" id="q-card-${qCount}">
                 <div class="q-num">${qCount + 1}</div>
                 <button type="button" class="btn-del-item" style="position: absolute; top: 15px; left: 15px;" onclick="document.getElementById('q-card-${qCount}').remove()"><i class="fa-solid fa-trash"></i></button>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>نوع المهارة (تظهر في محاكي قياس)</label>
+                    <select name="Questions[${qCount}].SkillType" class="form-control">
+                        <option value="التناظر اللفظي" ${skill === 'التناظر اللفظي' ? 'selected' : ''}>التناظر اللفظي</option>
+                        <option value="إكمال الجمل" ${skill === 'إكمال الجمل' ? 'selected' : ''}>إكمال الجمل</option>
+                        <option value="الخطأ السياقي" ${skill === 'الخطأ السياقي' ? 'selected' : ''}>الخطأ السياقي</option>
+                        <option value="استيعاب المقروء" ${skill === 'استيعاب المقروء' ? 'selected' : ''}>استيعاب المقروء</option>
+                        <option value="المفردة الشاذة" ${skill === 'المفردة الشاذة' ? 'selected' : ''}>المفردة الشاذة</option>
+                        <option value="أسئلة منوعة" ${skill === 'أسئلة منوعة' ? 'selected' : ''}>أسئلة منوعة (عام)</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>نص السؤال (اتركه فارغاً إذا كان السؤال عبارة عن صورة فقط)</label>
                     <textarea name="Questions[${qCount}].QuestionText" rows="2" class="form-control">${text}</textarea>
@@ -419,6 +435,19 @@
         qCount++;
 
         if(!q) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function reindexQuestions() {
+        const cards = document.querySelectorAll('.q-card');
+        cards.forEach((card, index) => {
+            card.querySelector('.q-num').innerText = index + 1;
+            const inputs = card.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
+                }
+            });
+        });
     }
 
     window.onload = () => {

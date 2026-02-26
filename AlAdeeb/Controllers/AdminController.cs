@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity; // تم إضافة المكتبة هنا لحل خطأ التشفير
 using AlAdeeb.Data;
 using AlAdeeb.Models;
 using System.Threading.Tasks;
@@ -28,21 +29,83 @@ namespace AlAdeeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.PendingRequestsCount = await _context.SubscriptionRequests.CountAsync(r => r.Status == "Pending");
-            ViewBag.TotalStudentsCount = await _context.Users.CountAsync(u => u.Role == "Student");
-            ViewBag.TotalCoursesCount = await _context.Courses.CountAsync();
+            bool isAdmin = User.IsInRole("Admin");
+            int currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            var courses = await _context.Courses.OrderByDescending(c => c.Id).ToListAsync();
-            return View(courses);
+            if (isAdmin)
+            {
+                ViewBag.PendingRequestsCount = await _context.SubscriptionRequests.CountAsync(r => r.Status == "Pending");
+                ViewBag.TotalStudentsCount = await _context.Users.CountAsync(u => u.Role == "Student");
+                ViewBag.TotalCoursesCount = await _context.Courses.CountAsync();
+                var courses = await _context.Courses.OrderByDescending(c => c.Id).ToListAsync();
+                return View(courses);
+            }
+            else
+            {
+                // المعلم يرى فقط كورساته
+                var teacherCourses = await _context.Courses.Where(c => c.TeacherId == currentUserId).OrderByDescending(c => c.Id).ToListAsync();
+                return View(teacherCourses);
+            }
+        }
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> TeachersList()
+        {
+            var teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync();
+            return View(teachers);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTeacher(string FullName, string PhoneNumber, string Password)
+        {
+            if (await _context.Users.AnyAsync(u => u.PhoneNumber == PhoneNumber))
+            {
+                TempData["ErrorMessage"] = "رقم الجوال مستخدم بالفعل.";
+                return RedirectToAction(nameof(TeachersList));
+            }
+
+            var passwordHasher = new PasswordHasher<ApplicationUser>();
+            var teacher = new ApplicationUser
+            {
+                FullName = FullName,
+                Username = PhoneNumber,
+                PhoneNumber = PhoneNumber,
+                Role = "Teacher",
+                CreatedAt = DateTime.Now
+            };
+            teacher.PasswordHash = passwordHasher.HashPassword(teacher, Password);
+
+            _context.Users.Add(teacher);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "تم إضافة المعلم بنجاح.";
+            return RedirectToAction(nameof(TeachersList));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTeacher(int id)
+        {
+            var teacher = await _context.Users.FindAsync(id);
+            if (teacher != null)
+            {
+                _context.Users.Remove(teacher);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم حذف المعلم بنجاح.";
+            }
+            return RedirectToAction(nameof(TeachersList));
+        }
         // ==========================================
         // إدارة الكورسات
         // ==========================================
         [HttpGet]
+        [Authorize(Roles = "Admin")] // المدير فقط ينشئ كورس
         public IActionResult CreateCourse() => View();
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCourse(Course model, IFormFile courseImage)
         {
@@ -54,10 +117,7 @@ namespace AlAdeeb.Controllers
                     Directory.CreateDirectory(uploadsFolder);
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseImage.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await courseImage.CopyToAsync(fileStream);
-                    }
+                    using (var fileStream = new FileStream(filePath, FileMode.Create)) { await courseImage.CopyToAsync(fileStream); }
                     model.ImageUrl = "/uploads/courses/" + uniqueFileName;
                 }
                 _context.Courses.Add(model);
@@ -69,14 +129,17 @@ namespace AlAdeeb.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditCourse(int id)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null) return NotFound();
+            ViewBag.Teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync(); // لجلب المعلمين في الفيو
             return View(course);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCourse(int id, Course model)
         {
@@ -85,13 +148,14 @@ namespace AlAdeeb.Controllers
             {
                 _context.Update(model);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "تم تعديل الكورس بنجاح!";
+                TempData["SuccessMessage"] = "تم تعديل الكورس وتعيين المعلم بنجاح!";
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCourse(int id)
         {
@@ -104,7 +168,27 @@ namespace AlAdeeb.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> StudentsList()
+        {
+            var students = await _context.Users.Where(u => u.Role == "Student").OrderByDescending(u => u.CreatedAt).ToListAsync();
+            return View(students);
+        }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateDeviceLimit(int studentId, int newLimit)
+        {
+            var student = await _context.Users.FindAsync(studentId);
+            if (student != null)
+            {
+                student.AllowedDevicesCount = newLimit;
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم تحديث حد الأجهزة المسموحة للطالب بنجاح.";
+            }
+            return RedirectToAction(nameof(StudentsList));
+        }
         // ==========================================
         // إدارة الاشتراكات
         // ==========================================
@@ -149,11 +233,6 @@ namespace AlAdeeb.Controllers
         // ==========================================
         // إدارة الطلاب
         // ==========================================
-        public async Task<IActionResult> StudentsList()
-        {
-            var students = await _context.Users.Where(u => u.Role == "Student").OrderByDescending(u => u.CreatedAt).ToListAsync();
-            return View(students);
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -166,6 +245,50 @@ namespace AlAdeeb.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "تم حذف الطالب.";
             }
+            return RedirectToAction(nameof(StudentsList));
+        }
+
+        // --- إضافة الطالب يدوياً ---
+        [HttpGet]
+        public IActionResult AddStudentManual()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStudentManual(string FullName, string PhoneNumber, string Password)
+        {
+            if (string.IsNullOrWhiteSpace(FullName) || string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrWhiteSpace(Password))
+            {
+                ModelState.AddModelError("", "جميع الحقول مطلوبة");
+                return View();
+            }
+
+            if (await _context.Users.AnyAsync(u => u.PhoneNumber == PhoneNumber))
+            {
+                ModelState.AddModelError("", "رقم الجوال مسجل مسبقاً في المنصة.");
+                return View();
+            }
+
+            var newUser = new ApplicationUser
+            {
+                FullName = FullName,
+                Username = PhoneNumber,
+                PhoneNumber = PhoneNumber,
+                Role = "Student",
+                CreatedAt = DateTime.Now,
+                AllowedDevicesCount = 1
+            };
+
+            // تعريف أداة التشفير محلياً لحل الخطأ
+            var passwordHasher = new PasswordHasher<ApplicationUser>();
+            newUser.PasswordHash = passwordHasher.HashPassword(newUser, Password);
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "تم تسجيل الطالب بنجاح! يمكنك الآن تفعيل الدورات له.";
             return RedirectToAction(nameof(StudentsList));
         }
 
@@ -260,11 +383,9 @@ namespace AlAdeeb.Controllers
         public async Task<IActionResult> AddQuiz(int courseId, int? lessonId, bool isFinalExam = false)
         {
             var course = await _context.Courses.FindAsync(courseId);
-            if (course == null) return NotFound("الكورس غير موجود.");
-
+            if (course == null) return NotFound();
             ViewBag.LessonId = lessonId;
             ViewBag.IsFinalExam = isFinalExam;
-
             return View(course);
         }
 
@@ -273,61 +394,30 @@ namespace AlAdeeb.Controllers
         public async Task<IActionResult> SaveQuiz(int CourseId, int? LessonId, string QuizTitle, int DurationInMinutes, bool IsFinalExam, List<Question> Questions)
         {
             if (Questions == null) Questions = new List<Question>();
-
-            var newQuiz = new Quiz
-            {
-                CourseId = IsFinalExam ? CourseId : null,
-                LessonId = IsFinalExam ? null : LessonId,
-                Title = string.IsNullOrEmpty(QuizTitle) ? "اختبار جديد" : QuizTitle,
-                DurationInMinutes = DurationInMinutes,
-                IsFinalExam = IsFinalExam,
-                Questions = new List<Question>()
-            };
-
+            var newQuiz = new Quiz { CourseId = IsFinalExam ? CourseId : null, LessonId = IsFinalExam ? null : LessonId, Title = string.IsNullOrEmpty(QuizTitle) ? "اختبار جديد" : QuizTitle, DurationInMinutes = DurationInMinutes, IsFinalExam = IsFinalExam, Questions = new List<Question>() };
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/questions");
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
             for (int i = 0; i < Questions.Count; i++)
             {
                 var q = Questions[i];
                 if (q == null) continue;
-
                 var fileKey = $"Questions[{i}].ImageFile";
                 var imageFile = Request.Form.Files[fileKey];
-
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(fileStream);
-                    }
+                    using (var fileStream = new FileStream(filePath, FileMode.Create)) { await imageFile.CopyToAsync(fileStream); }
                     q.QuestionImagePath = "/uploads/questions/" + uniqueFileName;
                 }
-                else
-                {
-                    q.QuestionImagePath = "";
-                }
-
                 q.QuestionText = q.QuestionText ?? "";
-                q.OptionA = q.OptionA ?? "";
-                q.OptionB = q.OptionB ?? "";
-                q.OptionC = q.OptionC ?? "";
-                q.OptionD = q.OptionD ?? "";
+                q.OptionA = q.OptionA ?? ""; q.OptionB = q.OptionB ?? ""; q.OptionC = q.OptionC ?? ""; q.OptionD = q.OptionD ?? "";
                 q.CorrectOption = q.CorrectOption ?? "A";
-
-                if (string.IsNullOrEmpty(q.QuestionText) && !string.IsNullOrEmpty(q.QuestionImagePath))
-                {
-                    q.QuestionText = "[سؤال مصور]";
-                }
-
+                q.SkillType = q.SkillType ?? "أسئلة منوعة"; // حفظ نوع المهارة للمحاكي
                 newQuiz.Questions.Add(q);
             }
-
             _context.Quizzes.Add(newQuiz);
             await _context.SaveChangesAsync();
-
             TempData["SuccessMessage"] = "تم حفظ الاختبار بنجاح!";
             return RedirectToAction("Details", "Course", new { id = CourseId });
         }
