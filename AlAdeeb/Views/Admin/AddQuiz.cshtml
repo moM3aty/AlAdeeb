@@ -5,6 +5,7 @@
 }
 
 <style>
+    /* ... احتفظ بنفس التنسيقات السابقة ... */
     .page-header {
         background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
         border-radius: var(--radius-xl);
@@ -126,12 +127,6 @@
         transition: var(--transition);
     }
 
-        .q-card:hover {
-            border-color: rgba(175, 143, 66, 0.3);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-3px);
-        }
-
     .q-num {
         width: 45px;
         height: 45px;
@@ -165,11 +160,6 @@
         transition: var(--transition);
     }
 
-        .btn-del-item:hover {
-            background: #dc2626;
-            color: var(--c-white);
-        }
-
     .options-setup {
         display: grid;
         grid-template-columns: 1fr;
@@ -193,11 +183,6 @@
         border: 1px solid #e2e8f0;
         transition: var(--transition);
     }
-
-        .opt-box:focus-within {
-            border-color: var(--c-secondary);
-            background: var(--c-white);
-        }
 
         .opt-box span {
             width: 35px;
@@ -233,13 +218,6 @@
         gap: 1rem;
     }
 
-        .correct-selector label {
-            font-weight: 800;
-            color: var(--c-primary);
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
         .correct-selector select {
             padding: 0.6rem 2rem;
             border-radius: 10px;
@@ -266,7 +244,6 @@
         justify-content: space-between;
         align-items: center;
         z-index: 1000;
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
     }
 
     .btn-save-all {
@@ -279,17 +256,7 @@
         border: none;
         cursor: pointer;
         box-shadow: 0 10px 20px rgba(10,50,84,0.2);
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
     }
-
-        .btn-save-all:hover {
-            background: var(--c-secondary);
-            color: var(--c-primary);
-            transform: translateY(-3px);
-        }
 
     .btn-add-q {
         background: #f1f5f9;
@@ -300,14 +267,20 @@
         font-size: 1.1rem;
         border: 1px solid #e2e8f0;
         cursor: pointer;
-        transition: var(--transition);
     }
 
-        .btn-add-q:hover {
-            background: var(--c-primary);
-            color: var(--c-white);
-            border-color: var(--c-primary);
-        }
+    /* تنسيق المحاكي */
+    .simulator-toggle {
+        background: #fffcf2;
+        border: 2px dashed #eab308;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .hidden {
+        display: none !important;
+    }
 </style>
 
 <div class="page-header">
@@ -315,7 +288,7 @@
         <div class="header-icon"><i class="fa-solid fa-list-check"></i></div>
         <div class="header-text">
             <h2>@ViewData["Title"]</h2>
-            <p>أضف أسئلة الخيارات المتعددة وحدد مهارة كل سؤال لتظهر في محاكي قياس.</p>
+            <p>أضف أسئلة يدوية، أو قم بتفعيل المحاكي العشوائي ليقوم بسحب الأسئلة من البنك.</p>
         </div>
     </div>
 </div>
@@ -326,6 +299,20 @@
         <input type="hidden" name="LessonId" value="@ViewBag.LessonId" />
         <input type="hidden" name="IsFinalExam" value="@(ViewBag.IsFinalExam == true ? "true" : "false")" />
 
+        <div class="simulator-toggle">
+            <label style="display:flex; align-items:center; gap:1rem; font-weight:900; font-size:1.2rem; color:#854d0e; cursor:pointer;">
+                <input type="checkbox" name="IsSimulator" id="simToggle" value="true" style="width:20px; height:20px; accent-color:#ca8a04;" onchange="toggleSimulator()" />
+                جعل هذا الاختبار (محاكي عشوائي) يسحب من بنك الأسئلة
+            </label>
+
+            <div id="simOptions" class="hidden" style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #fef08a;">
+                <div class="form-group" style="margin:0;">
+                    <label style="color:#854d0e;">كم عدد (أقسام بنك الأسئلة) التي تود سحبها عشوائياً للطالب في كل مرة؟</label>
+                    <input type="number" name="SimulatorSectionsCount" value="5" class="form-control" style="border-color:#fde047;" />
+                </div>
+            </div>
+        </div>
+
         <div class="quiz-config">
             <div class="form-group" style="margin:0;">
                 <label>اسم أو عنوان الاختبار</label>
@@ -333,14 +320,16 @@
             </div>
             <div class="form-group" style="margin:0;">
                 <label>المدة الزمنية (بالدقائق)</label>
-                <input type="number" name="DurationInMinutes" value="20" required class="form-control" style="font-family: Arial; font-weight:900; font-size: 1.2rem;" />
+                <input type="number" name="DurationInMinutes" value="20" required class="form-control" style="font-family: Arial; font-weight:900;" />
             </div>
         </div>
 
-        <div id="questions"></div>
+        <div id="manualQuestionsSection">
+            <div id="questions"></div>
+        </div>
 
         <div class="sticky-actions">
-            <button type="button" class="btn-add-q" onclick="addQ()"><i class="fa-solid fa-plus"></i> إضافة سؤال جديد</button>
+            <button type="button" class="btn-add-q" id="btnAddQ" onclick="addQ()"><i class="fa-solid fa-plus"></i> إضافة سؤال يدوي</button>
             <button type="submit" class="btn-save-all">حفظ واعتماد الاختبار <i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </form>
@@ -349,6 +338,23 @@
 <script>
     let qCount = 0;
 
+    function toggleSimulator() {
+        const isSim = document.getElementById('simToggle').checked;
+        const simOptions = document.getElementById('simOptions');
+        const manualSec = document.getElementById('manualQuestionsSection');
+        const btnAddQ = document.getElementById('btnAddQ');
+
+        if(isSim) {
+            simOptions.classList.remove('hidden');
+            manualSec.classList.add('hidden');
+            btnAddQ.classList.add('hidden');
+        } else {
+            simOptions.classList.add('hidden');
+            manualSec.classList.remove('hidden');
+            btnAddQ.classList.remove('hidden');
+        }
+    }
+
     function addQ() {
         const html = `
             <div class="q-card" id="q-card-${qCount}">
@@ -356,7 +362,7 @@
                 <button type="button" class="btn-del-item" style="position: absolute; top: 15px; left: 15px;" onclick="document.getElementById('q-card-${qCount}').remove()"><i class="fa-solid fa-trash"></i></button>
 
                 <div class="form-group" style="margin-bottom:1rem;">
-                    <label>نوع المهارة (تظهر في محاكي قياس بالجانب الأيمن)</label>
+                    <label>نوع المهارة</label>
                     <select name="Questions[${qCount}].SkillType" class="form-control">
                         <option value="التناظر اللفظي">التناظر اللفظي</option>
                         <option value="إكمال الجمل">إكمال الجمل</option>
@@ -366,35 +372,30 @@
                         <option value="أسئلة منوعة" selected>أسئلة منوعة (عام)</option>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label>نص السؤال (اتركه فارغاً إذا كان السؤال عبارة عن صورة فقط)</label>
-                    <textarea name="Questions[${qCount}].QuestionText" rows="2" class="form-control" placeholder="اكتب السؤال هنا..."></textarea>
+                    <label>نص السؤال</label>
+                    <textarea name="Questions[${qCount}].QuestionText" rows="2" class="form-control"></textarea>
                 </div>
                 <div class="form-group" style="margin-top:1rem;">
-                    <label>رفع صورة مرفقة للسؤال (اختياري)</label>
+                    <label>صورة (اختياري)</label>
                     <input type="file" name="Questions[${qCount}].ImageFile" class="form-control" accept="image/*" style="padding: 0.8rem;" />
                 </div>
                 <div class="options-setup">
-                    <div class="opt-box"><span>أ</span><input type="text" name="Questions[${qCount}].OptionA" required placeholder="الخيار الأول" /></div>
-                    <div class="opt-box"><span>ب</span><input type="text" name="Questions[${qCount}].OptionB" required placeholder="الخيار الثاني" /></div>
-                    <div class="opt-box"><span>ج</span><input type="text" name="Questions[${qCount}].OptionC" required placeholder="الخيار الثالث" /></div>
-                    <div class="opt-box"><span>د</span><input type="text" name="Questions[${qCount}].OptionD" required placeholder="الخيار الرابع" /></div>
+                    <div class="opt-box"><span>أ</span><input type="text" name="Questions[${qCount}].OptionA" required /></div>
+                    <div class="opt-box"><span>ب</span><input type="text" name="Questions[${qCount}].OptionB" required /></div>
+                    <div class="opt-box"><span>ج</span><input type="text" name="Questions[${qCount}].OptionC" required /></div>
+                    <div class="opt-box"><span>د</span><input type="text" name="Questions[${qCount}].OptionD" required /></div>
                 </div>
                 <div class="correct-selector">
-                    <label>تحديد الإجابة الصحيحة:</label>
+                    <label>الإجابة الصحيحة:</label>
                     <select name="Questions[${qCount}].CorrectOption">
-                        <option value="A">الخيار (أ)</option>
-                        <option value="B">الخيار (ب)</option>
-                        <option value="C">الخيار (ج)</option>
-                        <option value="D">الخيار (د)</option>
+                        <option value="A">أ</option><option value="B">ب</option><option value="C">ج</option><option value="D">د</option>
                     </select>
                 </div>
             </div>
         `;
         document.getElementById('questions').insertAdjacentHTML('beforeend', html);
         qCount++;
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function reindexQuestions() {
@@ -403,9 +404,7 @@
             card.querySelector('.q-num').innerText = index + 1;
             const inputs = card.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
-                if (input.name) {
-                    input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
-                }
+                if (input.name) input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
             });
         });
     }

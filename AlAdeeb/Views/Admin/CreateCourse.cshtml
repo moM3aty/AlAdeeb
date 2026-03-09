@@ -1,6 +1,6 @@
 ﻿@model AlAdeeb.Models.Course
 @{
-    ViewData["Title"] = "بناء دورة جديدة";
+    ViewData["Title"] = "إضافة دورة جديدة";
     Layout = "_AdminLayout";
 }
 
@@ -103,67 +103,6 @@
             border-color: var(--c-secondary);
             box-shadow: 0 0 0 4px rgba(175, 143, 66, 0.1);
         }
-
-    .upload-box {
-        border: 2px dashed #cbd5e1;
-        border-radius: 1.5rem;
-        background: #f8fafc;
-        padding: 3rem 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: var(--transition);
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 220px;
-    }
-
-        .upload-box:hover {
-            border-color: var(--c-secondary);
-            background: rgba(175,143,66,0.02);
-        }
-
-    .upload-input {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-        z-index: 10;
-    }
-
-    .upload-icon {
-        font-size: 3.5rem;
-        color: #94a3b8;
-        margin-bottom: 1rem;
-        transition: var(--transition);
-    }
-
-    .upload-box:hover .upload-icon {
-        color: var(--c-secondary);
-        transform: scale(1.1);
-    }
-
-    .upload-text {
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: var(--c-primary);
-        margin: 0 0 0.5rem 0;
-    }
-
-    .img-preview {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 1.3rem;
-        display: none;
-        z-index: 5;
-    }
 
     .grid-2 {
         display: grid;
@@ -298,44 +237,35 @@
 
 <div class="page-header">
     <div class="header-info">
-        <div class="header-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="header-icon"><i class="fa-solid fa-square-plus"></i></div>
         <div class="header-text">
-            <h2>بناء دورة جديدة</h2>
-            <p>أضف تفاصيل المسار التعليمي ليكون جاهزاً لاستقبال الطلاب.</p>
+            <h2>إضافة دورة جديدة</h2>
+            <p>قم ببناء مسار تعليمي جديد وإضافة كافة التفاصيل للطلاب.</p>
         </div>
     </div>
 </div>
 
 <div class="form-card">
     <form asp-controller="Admin" asp-action="CreateCourse" method="post" enctype="multipart/form-data">
-
-        <div class="input-group">
-            <label asp-for="Title" class="form-label">عنوان الدورة الترويجي <span>*</span></label>
-            <input asp-for="Title" required class="form-control" placeholder="مثال: دورة التأسيس الشاملة..." />
+        <div class="form-group">
+            <label asp-for="Title" class="form-label">عنوان الدورة <span>*</span></label>
+            <input asp-for="Title" required class="form-control" placeholder="مثال: الدورة الشاملة لتأسيس القدرات اللفظي..." />
             <span asp-validation-for="Title" class="val-error"></span>
         </div>
 
-        <div class="input-group">
+        <div class="form-group">
             <label asp-for="Description" class="form-label">النبذة الوصفية <span>*</span></label>
-            <textarea asp-for="Description" rows="4" required class="form-control" placeholder="اكتب وصفاً جذاباً يشرح محتويات الكورس..."></textarea>
+            <textarea asp-for="Description" rows="4" required class="form-control" placeholder="وصف كامل لمحتوى الكورس وماذا سيستفيد الطالب..."></textarea>
             <span asp-validation-for="Description" class="val-error"></span>
         </div>
 
-        <div class="input-group">
-            <label class="form-label">صورة الغلاف للمنصة (اختياري)</label>
-            <div class="upload-box">
-                <input type="file" name="courseImage" accept="image/*" class="upload-input" onchange="previewImg(this)" />
-                <img id="imgPreview" src="" class="img-preview" />
-                <div id="imgPlaceholder">
-                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                    <h4 class="upload-text">اضغط لرفع صورة الغلاف</h4>
-                    <p class="upload-hint">مستحسن أبعاد 16:9 (JPG, PNG)</p>
-                </div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">صورة غلاف الدورة <span>*</span></label>
+            <input type="file" name="courseImage" required class="form-control" accept="image/*" style="padding: 0.9rem;" />
         </div>
 
         <div class="grid-2">
-            <div class="input-group" style="margin: 0;">
+            <div class="form-group" style="margin: 0;">
                 <label asp-for="Price" class="form-label">تكلفة الاشتراك (ريال) <span>*</span></label>
                 <div class="price-wrapper">
                     <input asp-for="Price" type="number" step="0.01" required class="form-control price-input" placeholder="0.00" />
@@ -344,12 +274,20 @@
                 <span asp-validation-for="Price" class="val-error"></span>
             </div>
 
-            <div class="input-group" style="margin: 0;">
+            <div class="form-group" style="margin: 0;">
+                <label asp-for="OldPrice" class="form-label">السعر القديم (لعمل خصم - اختياري)</label>
+                <div class="price-wrapper">
+                    <input asp-for="OldPrice" type="number" step="0.01" class="form-control price-input" placeholder="مثال: 500" style="color: #ef4444;" />
+                    <i class="fa-solid fa-tag price-icon" style="color: #ef4444;"></i>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
                 <label asp-for="AccessDurationMonths" class="form-label">صلاحية الدورة (بالشهور)</label>
                 <input asp-for="AccessDurationMonths" type="number" class="form-control" placeholder="اتركه فارغاً لصلاحية مفتوحة..." />
             </div>
 
-            <div class="input-group" style="margin: 0;">
+            <div class="form-group" style="margin: 0;">
                 <label asp-for="TeacherId" class="form-label">تعيين معلم مساعد (اختياري)</label>
                 <select asp-for="TeacherId" class="form-control" style="cursor: pointer;">
                     <option value="">-- بدون معلم (إدارة شخصية) --</option>
@@ -363,35 +301,21 @@
                 </select>
             </div>
 
-            <div class="input-group" style="margin: 0;">
-                <label class="form-label" style="visibility: hidden;">التفعيل</label>
+            <div class="form-group" style="margin: 0; grid-column: 1 / -1;">
+                <label class="form-label" style="visibility: hidden; display:none;">التفعيل</label>
                 <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
                     <input asp-for="IsActive" type="checkbox" checked id="IsActive" style="pointer-events: none;" />
                     <div class="toggle-text">
                         <h4>تفعيل ونشر الدورة فوراً</h4>
-                        <p>ستظهر للطلاب للتسجيل المباشر.</p>
+                        <p>ستظهر للطلاب للتسجيل المباشر بالموقع.</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn-save"><i class="fa-solid fa-check-double"></i> اعتماد وحفظ الدورة</button>
-            <a href="/Admin/Index" class="btn-cancel">إلغاء وتراجع</a>
+            <button type="submit" class="btn-save"><i class="fa-solid fa-cloud-arrow-up"></i> إنشاء واعتماد الدورة</button>
+            <a href="/Admin/Index" class="btn-cancel">إلغاء</a>
         </div>
     </form>
 </div>
-
-<script>
-    function previewImg(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imgPreview').src = e.target.result;
-                document.getElementById('imgPreview').style.display = 'block';
-                document.getElementById('imgPlaceholder').style.opacity = '0';
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-</script>

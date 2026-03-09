@@ -3,6 +3,7 @@
     ViewData["Title"] = "قاعة المذاكرة";
     var liveSessions = ViewBag.LiveSessions as IEnumerable<AlAdeeb.Models.LiveSession>;
     bool isExpired = ViewBag.IsExpired != null && (bool)ViewBag.IsExpired;
+    var unlockedLessonIds = ViewBag.UnlockedLessonIds as List<int> ?? new List<int>();
 }
 
 <style>
@@ -99,6 +100,59 @@
 
     video.player-iframe {
         object-fit: contain;
+    }
+
+    /* --- حماية الشاشة (العلامة المائية) --- */
+    .watermark-container {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 40;
+        overflow: hidden;
+    }
+
+    .watermark-text {
+        position: absolute;
+        font-family: Arial, sans-serif;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.35);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        white-space: nowrap;
+        user-select: none;
+        animation: floatWatermark 18s linear infinite;
+    }
+
+    @@keyframes floatWatermark {
+        0% {
+            top: 10%;
+            left: -10%;
+            transform: rotate(-15deg);
+        }
+
+        25% {
+            top: 70%;
+            left: 30%;
+            transform: rotate(15deg);
+        }
+
+        50% {
+            top: 40%;
+            left: 80%;
+            transform: rotate(-10deg);
+        }
+
+        75% {
+            top: 80%;
+            left: 50%;
+            transform: rotate(20deg);
+        }
+
+        100% {
+            top: 10%;
+            left: -10%;
+            transform: rotate(-15deg);
+        }
     }
 
     .player-placeholder {
@@ -250,6 +304,7 @@
         border-radius: 1.2rem;
         overflow: hidden;
         margin-bottom: 1rem;
+        position: relative;
     }
 
     .lesson-group-title {
@@ -376,6 +431,38 @@
     .hidden {
         display: none !important;
     }
+
+    /* تنسيق الدروس المقفلة بسبب الترتيب */
+    .lesson-locked-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(248, 250, 252, 0.85);
+        backdrop-filter: blur(2px);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 1.2rem;
+        border: 1px dashed #cbd5e1;
+    }
+
+        .lesson-locked-overlay i {
+            font-size: 2rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-locked-overlay span {
+            color: var(--c-primary);
+            font-weight: bold;
+            font-size: 0.95rem;
+            background: var(--c-white);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
 
     /* ===== تنسيقات منتدى النقاشات ===== */
     .forum-container {
@@ -547,10 +634,21 @@
             background: var(--c-primary);
             color: var(--c-white);
         }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 
 <div class="viewer-page">
-
     <div class="main-area">
         @if (isExpired)
         {
@@ -561,12 +659,11 @@
         }
 
         <div class="player-container" id="playerWrapper">
+            <div class="watermark-container hidden" id="watermarkOverlay"><div class="watermark-text">@User.Identity.Name</div></div>
             <div class="yt-blocker-top hidden" id="ytBlockerTop" title="تشغيل الفيديو من هنا فقط"></div>
             <div class="yt-blocker-logo hidden" id="ytBlockerLogo"></div>
-
             <iframe id="mainViewer" class="player-iframe hidden" src="" allowfullscreen></iframe>
             <video id="videoViewer" class="player-iframe hidden" controls controlsList="nodownload"></video>
-
             <div id="placeholder" class="player-placeholder">
                 <div class="play-icon-wrapper"><i class="fa-solid fa-play"></i></div>
                 <h3>@Model.Title</h3>
@@ -589,28 +686,39 @@
             <div class="s-tab" onclick="switchTab('forum', this)"><i class="fa-solid fa-comments"></i> النقاشات</div>
         </div>
 
-        <!-- تبويب المنهج الدراسي -->
         <div id="tab-curriculum" class="playlist-content">
             @if (Model.Lessons != null && Model.Lessons.Any())
             {
                 foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
                 {
-                    <div class="lesson-group">
+                    bool isLessonUnlocked = unlockedLessonIds.Contains(lesson.Id);
+
+                    <div class="lesson-group" style="@(!isLessonUnlocked ? "opacity:0.8;" : "")">
+
+                        @if (!isLessonUnlocked)
+                        {
+                            <div class="lesson-locked-overlay">
+                                <i class="fa-solid fa-lock"></i>
+                                <span>اجتز اختبار الدرس السابق لتتمكن من فتحه</span>
+                            </div>
+                        }
+
                         <div class="lesson-group-title"><i class="fa-solid fa-book"></i> @lesson.Title</div>
                         <div class="lesson-items">
                             @if (lesson.Materials != null)
                             {
                                 foreach (var item in lesson.Materials.OrderBy(m => m.OrderIndex))
                                 {
-                                    bool isLocked = isExpired && !item.IsFreeSample;
-                                    string icon = isLocked ? "fa-lock" : (item.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play");
+                                    bool isLocked = (isExpired && !item.IsFreeSample) || !isLessonUnlocked;
+                                    string icon = isLocked ? "fa-lock" : (item.MaterialType == "PDF" ? "fa-file-pdf" : (item.MaterialType == "Link" ? "fa-link" : "fa-play"));
+                                    string typeLabel = item.MaterialType == "PDF" ? "مذكرة تفاعلية" : (item.MaterialType == "Link" ? "رابط خارجي" : "فيديو مسجل");
 
                                     <button onclick="loadContent('@item.UrlOrPath', '@item.Title', '@item.MaterialType', this)" class="item-btn" @(isLocked ? "disabled" : "")>
                                         <div class="item-icon"><i class="fa-solid @icon"></i></div>
                                         <div class="item-text">
                                             <p class="item-title">@item.Title</p>
                                             <div class="item-meta">
-                                                @(item.MaterialType == "PDF" ? "مذكرة تفاعلية" : "فيديو مسجل")
+                                                @typeLabel
                                                 @if (item.IsFreeSample)
                                                 {
                                                     <span class="badge-free"><i class="fa-solid fa-star"></i> متاح للتقييم</span>
@@ -624,7 +732,7 @@
                             {
                                 foreach (var quiz in lesson.Quizzes)
                                 {
-                                    bool isLocked = isExpired;
+                                    bool isLocked = isExpired || !isLessonUnlocked;
                                     <button class="item-btn" onclick="location.href='/Student/TakeQuiz/@quiz.Id'" @(isLocked ? "disabled" : "")>
                                         <div class="item-icon" style="color:#2e7d32; background:#edf7ed;"><i class="fa-solid @(isLocked ? "fa-lock" : "fa-clipboard-check")"></i></div>
                                         <div class="item-text">
@@ -640,7 +748,6 @@
             }
         </div>
 
-        <!-- تبويب منتدى النقاشات المبرمج حديثاً -->
         <div id="tab-forum" class="playlist-content hidden">
             <div class="forum-container">
                 <div class="forum-add-post">
@@ -653,7 +760,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -673,7 +779,6 @@
         }
     }
 
-    // --- وظائف مشغل الفيديو ---
     function getYouTubeEmbedUrl(url) {
         if (!url) return "";
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
@@ -686,17 +791,26 @@
 
     function loadContent(url, title, type, btnElement) {
         if (btnElement.disabled) return;
+
+        // ميزة الروابط الخارجية
+        if (type === 'Link') {
+            window.open(url, '_blank');
+            return;
+        }
+
         document.getElementById('placeholder').style.display = 'none';
 
         var iframeViewer = document.getElementById('mainViewer');
         var videoViewer = document.getElementById('videoViewer');
         var blockerTop = document.getElementById('ytBlockerTop');
         var blockerLogo = document.getElementById('ytBlockerLogo');
+        var watermark = document.getElementById('watermarkOverlay');
 
         iframeViewer.classList.add('hidden');
         videoViewer.classList.add('hidden');
         blockerTop.classList.add('hidden');
         blockerLogo.classList.add('hidden');
+        watermark.classList.add('hidden');
 
         iframeViewer.src = "";
         videoViewer.pause();
@@ -708,6 +822,7 @@
         else if (url.includes('.mp4') || type === 'RecordedLive') {
             videoViewer.src = url;
             videoViewer.classList.remove('hidden');
+            watermark.classList.remove('hidden');
             videoViewer.play();
         }
         else {
@@ -716,9 +831,11 @@
             iframeViewer.classList.remove('hidden');
             blockerTop.classList.remove('hidden');
             blockerLogo.classList.remove('hidden');
+            watermark.classList.remove('hidden');
         }
 
         document.getElementById('currentTitle').innerText = title;
+
         document.querySelectorAll('.item-btn').forEach(el => el.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
     }
@@ -749,7 +866,7 @@
         posts.forEach(post => {
             let repliesHtml = '';
             post.replies.forEach(r => {
-                let badge = r.userRole === 'Admin' ? '<span class="badge-admin"><i class="fa-solid fa-crown"></i> المدرب</span>' : '';
+                let badge = (r.userRole === 'Admin' || r.userRole === 'Teacher') ? '<span class="badge-admin"><i class="fa-solid fa-crown"></i> الإدارة</span>' : '';
                 repliesHtml += `
                     <div class="reply-card">
                         <div class="post-head" style="margin-bottom:0.5rem;">
@@ -761,7 +878,7 @@
                 `;
             });
 
-            let adminBadge = post.userRole === 'Admin' ? '<span class="badge-admin"><i class="fa-solid fa-crown"></i> المدرب</span>' : '';
+            let adminBadge = (post.userRole === 'Admin' || post.userRole === 'Teacher') ? '<span class="badge-admin"><i class="fa-solid fa-crown"></i> الإدارة</span>' : '';
 
             const postHtml = `
                 <div class="post-card">
@@ -798,7 +915,7 @@
 
             if(res.ok) {
                 contentBox.value = '';
-                loadForumPosts(); // إعادة تحميل القائمة لتظهر الإضافة
+                loadForumPosts();
             }
         } catch(e) { console.error(e); }
     }
@@ -817,7 +934,7 @@
 
             if(res.ok) {
                 inputBox.value = '';
-                loadForumPosts(); // إعادة تحميل القائمة لتحديث الردود
+                loadForumPosts();
             }
         } catch(e) { console.error(e); }
     }

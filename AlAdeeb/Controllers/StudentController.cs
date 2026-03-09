@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
-using System.IO;
+using System.Security.Claims;
+using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 using AlAdeeb.Data;
 using AlAdeeb.Models;
 
@@ -18,13 +18,11 @@ namespace AlAdeeb.Controllers
     public class StudentController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly PasswordHasher<ApplicationUser> _passwordHasher;
 
-        public StudentController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
+        public StudentController(AppDbContext context)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
             _passwordHasher = new PasswordHasher<ApplicationUser>();
         }
 
@@ -33,41 +31,176 @@ namespace AlAdeeb.Controllers
             return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
+        // ==========================================
+        // اللوحة الرئيسية للطالب
+        // ==========================================
         public async Task<IActionResult> Dashboard()
         {
             int studentId = GetCurrentStudentId();
-
-            var approvedSubscriptions = await _context.SubscriptionRequests
+            var requests = await _context.SubscriptionRequests
                 .Include(r => r.Course)
-                .Where(r => r.StudentId == studentId && r.Status == "Approved")
+                .Where(r => r.StudentId == studentId)
+                .OrderByDescending(r => r.RequestDate)
                 .ToListAsync();
 
-            ViewBag.StudentName = User.FindFirstValue(ClaimTypes.Name);
-            return View(approvedSubscriptions);
+            ViewBag.StudentName = User.Identity.Name;
+            return View(requests);
         }
 
+        // ==========================================
+        // استكشاف الدورات (متاحة للزوار والطلاب)
+        // ==========================================
+        [AllowAnonymous]
         public async Task<IActionResult> BrowseCourses()
+        {
+            var courses = await _context.Courses.Where(c => c.IsActive).OrderByDescending(c => c.Id).ToListAsync();
+
+            if (User.Identity.IsAuthenticated && User.IsInRole("Student"))
+            {
+                int studentId = GetCurrentStudentId();
+                ViewBag.MySubscriptions = await _context.SubscriptionRequests
+                    .Where(r => r.StudentId == studentId)
+                    .Select(r => r.CourseId)
+                    .ToListAsync();
+            }
+            else
+            {
+                ViewBag.MySubscriptions = new List<int>();
+            }
+
+            return View(courses);
+        }
+
+        // ==========================================
+        // قاعة المذاكرة (محتوى الدورة) وإجبار الترتيب
+        // ==========================================
+        public async Task<IActionResult> CourseContent(int id)
         {
             int studentId = GetCurrentStudentId();
 
-            var subscribedCourseIds = await _context.SubscriptionRequests
-                .Where(r => r.StudentId == studentId)
-                .Select(r => r.CourseId)
+            var subscription = await _context.SubscriptionRequests
+                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.CourseId == id && r.Status == "Approved");
+
+            if (subscription == null) return Unauthorized("غير مصرح لك بدخول هذه الدورة أو أن اشتراكك غير مفعل.");
+
+            ViewBag.IsExpired = subscription.ExpiryDate.HasValue && subscription.ExpiryDate.Value < DateTime.Now;
+
+            var course = await _context.Courses
+                .Include(c => c.Lessons)
+                    .ThenInclude(l => l.Materials)
+                .Include(c => c.Lessons)
+                    .ThenInclude(l => l.Quizzes)
+                .Include(c => c.Quizzes)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course == null) return NotFound();
+
+            ViewBag.LiveSessions = await _context.Set<LiveSession>()
+                .Where(l => l.CourseId == id)
+                .OrderByDescending(l => l.ScheduledDate)
                 .ToListAsync();
 
-            var availableCourses = await _context.Courses
-                .Where(c => c.IsActive && !subscribedCourseIds.Contains(c.Id))
+            // خوارزمية إجبار الترتيب (Sequential Learning)
+            var passedScores = await _context.StudentScores
+                .Where(s => s.StudentId == studentId && s.Passed)
+                .Select(s => s.QuizId)
                 .ToListAsync();
 
-            return View(availableCourses);
+            var unlockedLessonIds = new List<int>();
+            bool previousLessonPassed = true; // الدرس الأول مفتوح دائماً
+
+            foreach (var lesson in course.Lessons.OrderBy(l => l.OrderIndex))
+            {
+                if (previousLessonPassed)
+                {
+                    unlockedLessonIds.Add(lesson.Id);
+                }
+
+                // للتمكن من فتح الدرس التالي، يجب اجتياز جميع اختبارات الدرس الحالي
+                if (lesson.Quizzes != null && lesson.Quizzes.Any())
+                {
+                    previousLessonPassed = lesson.Quizzes.All(q => passedScores.Contains(q.Id));
+                }
+            }
+
+            ViewBag.UnlockedLessonIds = unlockedLessonIds;
+            return View(course);
         }
 
+        // ==========================================
+        // محاكي الاختبارات العشوائي
+        // ==========================================
+        [HttpGet]
+        public async Task<IActionResult> TakeQuiz(int id)
+        {
+            var quiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quiz == null) return NotFound();
+
+            if (quiz.IsSimulator)
+            {
+                int courseId = quiz.CourseId ?? (quiz.Lesson != null ? quiz.Lesson.CourseId : 0);
+
+                // سحب الأقسام العشوائية من بنك الأسئلة بناءً على العدد المحدد في إعدادات الاختبار
+                var randomSections = await _context.QuestionBankSections
+                    .Include(s => s.Questions)
+                    .Where(s => s.CourseId == courseId)
+                    .OrderBy(x => Guid.NewGuid())
+                    .Take(quiz.SimulatorSectionsCount)
+                    .ToListAsync();
+
+                var simulatedQuestions = new List<Question>();
+                foreach (var sec in randomSections)
+                {
+                    foreach (var bq in sec.Questions)
+                    {
+                        simulatedQuestions.Add(new Question
+                        {
+                            Id = bq.Id,
+                            SkillType = bq.SkillType,
+                            QuestionText = bq.QuestionText,
+                            QuestionImagePath = bq.QuestionImagePath,
+                            OptionA = bq.OptionA,
+                            OptionB = bq.OptionB,
+                            OptionC = bq.OptionC,
+                            OptionD = bq.OptionD,
+                            CorrectOption = bq.CorrectOption
+                        });
+                    }
+                }
+
+                // خلط جميع الأسئلة المستخرجة من الأقسام ليصبح الاختبار عشوائياً بالكامل
+                quiz.Questions = simulatedQuestions.OrderBy(x => Guid.NewGuid()).ToList();
+            }
+
+            return View(quiz);
+        }
+
+        // ==========================================
+        // سجل النتائج والشهادات
+        // ==========================================
+        public async Task<IActionResult> Results()
+        {
+            int studentId = GetCurrentStudentId();
+            var scores = await _context.StudentScores
+                .Include(s => s.Quiz)
+                .ThenInclude(q => q.Course)
+                .Where(s => s.StudentId == studentId)
+                .OrderByDescending(s => s.DateTaken)
+                .ToListAsync();
+            return View(scores);
+        }
+
+        // ==========================================
+        // الاشتراك ورفع الإيصال
+        // ==========================================
         [HttpGet]
         public async Task<IActionResult> Subscribe(int id)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null || !course.IsActive) return NotFound();
-
+            if (course == null) return NotFound();
             return View(course);
         }
 
@@ -77,12 +210,11 @@ namespace AlAdeeb.Controllers
         {
             int studentId = GetCurrentStudentId();
 
-            var existingRequest = await _context.SubscriptionRequests
-                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.CourseId == courseId);
-
-            if (existingRequest != null)
+            // منع تكرار الطلب لنفس الكورس
+            var existing = await _context.SubscriptionRequests.FirstOrDefaultAsync(r => r.CourseId == courseId && r.StudentId == studentId);
+            if (existing != null)
             {
-                TempData["ErrorMessage"] = "لديك طلب اشتراك مسبق في هذا الكورس.";
+                TempData["ErrorMessage"] = "لديك طلب اشتراك مسبق في هذه الدورة.";
                 return RedirectToAction(nameof(Dashboard));
             }
 
@@ -96,7 +228,7 @@ namespace AlAdeeb.Controllers
 
             if (receiptImage != null && receiptImage.Length > 0)
             {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/receipts");
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/receipts");
                 if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
                 string uniqueFileName = Guid.NewGuid().ToString() + "_" + receiptImage.FileName;
@@ -112,130 +244,45 @@ namespace AlAdeeb.Controllers
             _context.SubscriptionRequests.Add(request);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "تم إرسال طلبك بنجاح! سيتم تفعيل حسابك بمجرد مراجعة الإيصال.";
+            TempData["SuccessMessage"] = "تم رفع طلب الاشتراك بنجاح، يرجى انتظار التفعيل من الإدارة.";
             return RedirectToAction(nameof(Dashboard));
         }
 
-        // تم إصلاح الخطأ هنا (استخدام Lessons بدلاً من Materials مباشرة)
-        public async Task<IActionResult> CourseContent(int id)
-        {
-            int studentId = GetCurrentStudentId();
-
-            var subscription = await _context.SubscriptionRequests
-                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.CourseId == id && r.Status == "Approved");
-
-            if (subscription == null) return Unauthorized("غير مصرح لك بدخول هذا الكورس.");
-
-            // تمرير حالة الاشتراك وهل هو منتهي أم لا للفيو
-            ViewBag.IsExpired = subscription.ExpiryDate.HasValue && subscription.ExpiryDate.Value < DateTime.Now;
-
-            var course = await _context.Courses
-                .Include(c => c.Lessons)
-                    .ThenInclude(l => l.Materials)
-                .Include(c => c.Lessons)
-                    .ThenInclude(l => l.Quizzes)
-                .Include(c => c.Quizzes)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            ViewBag.LiveSessions = await _context.Set<LiveSession>()
-                .Where(l => l.CourseId == id)
-                .OrderByDescending(l => l.ScheduledDate)
-                .ToListAsync();
-
-            return View(course);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> TakeQuiz(int id)
-        {
-            int studentId = GetCurrentStudentId();
-
-            var quiz = await _context.Quizzes
-                .Include(q => q.Questions)
-                .Include(q => q.Lesson)
-                .FirstOrDefaultAsync(q => q.Id == id);
-
-            if (quiz == null) return NotFound("الاختبار غير موجود");
-
-            int courseIdToCheck = quiz.IsFinalExam && quiz.CourseId.HasValue ? quiz.CourseId.Value : (quiz.Lesson?.CourseId ?? 0);
-
-            bool isSubscribed = await _context.SubscriptionRequests
-                .AnyAsync(r => r.StudentId == studentId && r.CourseId == courseIdToCheck && r.Status == "Approved");
-
-            if (!isSubscribed) return Unauthorized("غير مصرح لك بدخول هذا الاختبار.");
-
-            return View(quiz);
-        }
-
-        public async Task<IActionResult> Results()
-        {
-            int studentId = GetCurrentStudentId();
-            var scores = await _context.Set<StudentScore>()
-                .Include(s => s.Quiz)
-                .Where(s => s.StudentId == studentId)
-                .OrderByDescending(s => s.DateTaken)
-                .ToListAsync();
-
-            return View(scores);
-        }
-
+        // ==========================================
+        // الملف الشخصي للطالب (تحديث البيانات)
+        // ==========================================
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            int studentId = GetCurrentStudentId();
-            var student = await _context.Users.FindAsync(studentId);
-            return View(student);
+            var studentId = GetCurrentStudentId();
+            var user = await _context.Users.FindAsync(studentId);
+            return View(user);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(string FullName, string PhoneNumber, string NewPassword)
         {
-            int studentId = GetCurrentStudentId();
-            var student = await _context.Users.FindAsync(studentId);
+            var studentId = GetCurrentStudentId();
+            var user = await _context.Users.FindAsync(studentId);
 
-            if (student != null)
+            if (user != null)
             {
-                student.FullName = FullName;
-                student.PhoneNumber = PhoneNumber;
-                student.Username = PhoneNumber;
+                user.FullName = FullName;
+                user.PhoneNumber = PhoneNumber;
+                user.Username = PhoneNumber;
 
-                if (!string.IsNullOrEmpty(NewPassword))
+                if (!string.IsNullOrWhiteSpace(NewPassword))
                 {
-                    student.PasswordHash = _passwordHasher.HashPassword(student, NewPassword);
+                    user.PasswordHash = _passwordHasher.HashPassword(user, NewPassword);
                 }
 
-                _context.Update(student);
+                _context.Update(user);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "تم تحديث بياناتك بنجاح!";
             }
+
             return RedirectToAction(nameof(Profile));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Certificate(string serial, int? courseId)
-        {
-            int studentId = GetCurrentStudentId();
-            Certificate cert = null;
-
-            if (!string.IsNullOrEmpty(serial))
-            {
-                cert = await _context.Certificates
-                    .Include(c => c.Student)
-                    .Include(c => c.Course)
-                    .FirstOrDefaultAsync(c => c.SerialNumber == serial);
-            }
-            else if (courseId.HasValue)
-            {
-                cert = await _context.Certificates
-                    .Include(c => c.Student)
-                    .Include(c => c.Course)
-                    .FirstOrDefaultAsync(c => c.StudentId == studentId && c.CourseId == courseId.Value);
-            }
-
-            if (cert == null) return NotFound("الشهادة غير موجودة أو لم تجتز الاختبار النهائي بعد.");
-
-            return View(cert);
         }
     }
 }

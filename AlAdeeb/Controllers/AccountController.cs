@@ -46,7 +46,6 @@ namespace AlAdeeb.Controllers
 
                     if (result == PasswordVerificationResult.Success)
                     {
-                        // تم إزالة رمز التحقق - سيتم الدخول مباشرة لجميع المستخدمين
                         return await CompleteSignIn(user, model.RememberMe);
                     }
                 }
@@ -59,14 +58,12 @@ namespace AlAdeeb.Controllers
         {
             string newSessionId = Guid.NewGuid().ToString();
 
-            // جلب الأجهزة النشطة حالياً
             var activeSessions = string.IsNullOrEmpty(user.ActiveSessionsJson)
                 ? new List<string>()
                 : JsonSerializer.Deserialize<List<string>>(user.ActiveSessionsJson);
 
             activeSessions.Add(newSessionId);
 
-            // تطبيق قاعدة "عدد الأجهزة المسموحة" وطرد الأقدم
             int maxDevices = user.AllowedDevicesCount > 0 ? user.AllowedDevicesCount : 1;
             if (activeSessions.Count > maxDevices)
             {
@@ -76,7 +73,6 @@ namespace AlAdeeb.Controllers
             user.ActiveSessionsJson = JsonSerializer.Serialize(activeSessions);
             user.CurrentSessionId = newSessionId;
 
-            // تنظيف بيانات التحقق القديمة إن وجدت في قاعدة البيانات
             user.VerificationCode = null;
             user.VerificationCodeExpiry = null;
 
@@ -96,7 +92,6 @@ namespace AlAdeeb.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = rememberMe });
 
-            // توجيه المعلم والمدير للإدارة، والطالب للمنصة التعليمية
             if (user.Role == "Admin" || user.Role == "Teacher") return RedirectToAction("Index", "Admin");
             else return RedirectToAction("Dashboard", "Student");
         }
@@ -133,7 +128,6 @@ namespace AlAdeeb.Controllers
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
 
-                // تسجيل الدخول مباشرة بعد إنشاء الحساب
                 return await Login(new LoginViewModel { Username = model.PhoneNumber, Password = model.Password });
             }
             return View(model);
@@ -143,6 +137,74 @@ namespace AlAdeeb.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+
+        // ========================================================
+        // نظام استعادة وتغيير كلمة المرور المضاف حديثاً
+        // ========================================================
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string phoneNumber)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                ModelState.AddModelError("", "يرجى إدخال رقم الجوال.");
+                return View();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            if (user != null)
+            {
+                // توليد كود مؤقت (يمكن لاحقاً ربطه بخدمة SMS أو الواتساب)
+                string code = new Random().Next(1000, 9999).ToString();
+                user.VerificationCode = code;
+                user.VerificationCodeExpiry = DateTime.Now.AddMinutes(15);
+                await _context.SaveChangesAsync();
+
+                TempData["DevCode"] = $"رمز استعادة كلمة المرور الخاص بك هو: {code}";
+                return RedirectToAction("ResetPassword", new { phone = phoneNumber });
+            }
+
+            ModelState.AddModelError("", "رقم الجوال غير مسجل لدينا في المنصة.");
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return RedirectToAction("Login");
+            ViewBag.Phone = phone;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string phoneNumber, string code, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+
+            if (user != null && user.VerificationCode == code && user.VerificationCodeExpiry > DateTime.Now)
+            {
+                user.PasswordHash = _passwordHasher.HashPassword(user, newPassword);
+                user.VerificationCode = null;
+                user.VerificationCodeExpiry = null;
+
+                // طرد الطالب من جميع الأجهزة الأخرى عند تغيير كلمة المرور كإجراء أمني
+                user.ActiveSessionsJson = "[]";
+
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "تم تغيير كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن بكلمة المرور الجديدة.";
+                return RedirectToAction("Login");
+            }
+
+            ModelState.AddModelError("", "رمز التحقق غير صحيح أو منتهي الصلاحية.");
+            ViewBag.Phone = phoneNumber;
+            return View();
         }
     }
 }

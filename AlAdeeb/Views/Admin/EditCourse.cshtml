@@ -273,6 +273,14 @@
             </div>
 
             <div class="form-group" style="margin: 0;">
+                <label asp-for="OldPrice" class="form-label">السعر القديم (لعمل خصم - اختياري)</label>
+                <div class="price-wrapper">
+                    <input asp-for="OldPrice" type="number" step="0.01" class="form-control price-input" style="color: #ef4444;" />
+                    <i class="fa-solid fa-tag price-icon" style="color: #ef4444;"></i>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
                 <label asp-for="AccessDurationMonths" class="form-label">صلاحية الدورة (بالشهور)</label>
                 <input asp-for="AccessDurationMonths" type="number" class="form-control" placeholder="اتركه فارغاً لصلاحية مفتوحة..." />
             </div>
@@ -291,8 +299,8 @@
                 </select>
             </div>
 
-            <div class="form-group" style="margin: 0;">
-                <label class="form-label" style="visibility: hidden;">التفعيل</label>
+            <div class="form-group" style="margin: 0; grid-column: 1 / -1;">
+                <label class="form-label" style="visibility: hidden; display:none;">التفعيل</label>
                 <div class="toggle-box" onclick="document.getElementById('IsActive').click()">
                     <input asp-for="IsActive" type="checkbox" id="IsActive" style="pointer-events: none;" />
                     <div class="toggle-text">

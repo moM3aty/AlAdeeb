@@ -1,0 +1,339 @@
+﻿@model AlAdeeb.Models.Course
+@{
+    ViewData["Title"] = "بنك الأسئلة للكورس";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    /* ... تنسيقات مشابهة لشاشات الإدارة ... */
+    .page-header {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2.5rem;
+        color: var(--c-white);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .header-icon {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-text h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.2rem;
+        margin: 0 0 0.3rem 0;
+        line-height: 1.2;
+    }
+
+    .add-section-card {
+        background: var(--c-white);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+        .add-section-card input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #f8fafc;
+        }
+
+        .add-section-card button {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .add-section-card button:hover {
+                background: var(--c-secondary-light);
+            }
+
+    .q-section {
+        background: var(--c-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .q-sec-head {
+        background: #f8fafc;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+        .q-sec-head h3 {
+            font-family: 'Hayah';
+            font-size: 1.8rem;
+            color: var(--c-primary);
+            margin: 0;
+        }
+
+    .q-list {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .q-item {
+        background: var(--c-bg);
+        border-radius: 1rem;
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+        .q-item h5 {
+            font-size: 1.1rem;
+            color: var(--c-primary);
+            margin: 0 0 0.3rem 0;
+            font-weight: 800;
+        }
+
+        .q-item span {
+            font-size: 0.85rem;
+            color: var(--c-secondary);
+            background: rgba(175,143,66,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+    .btn-danger {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        padding: 0.6rem 1rem;
+        border-radius: 0.6rem;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-add-q {
+        width: 100%;
+        text-align: center;
+        background: #f8fafc;
+        padding: 1rem;
+        border: 2px dashed #cbd5e1;
+        border-radius: 1rem;
+        color: var(--c-primary);
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 1rem;
+    }
+
+        .btn-add-q:hover {
+            border-color: var(--c-secondary);
+            color: var(--c-secondary);
+            background: #fffcf2;
+        }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,50,84,0.6);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+        .modal.open {
+            display: flex;
+            opacity: 1;
+        }
+
+    .modal-content {
+        background: #fff;
+        width: 100%;
+        max-width: 600px;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal.open .modal-content {
+        transform: scale(1);
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.8rem;
+        font-family: inherit;
+        font-weight: bold;
+        background: #f8fafc;
+    }
+</style>
+
+<div class="page-header">
+    <div class="header-info">
+        <div class="header-icon"><i class="fa-solid fa-vault"></i></div>
+        <div class="header-text">
+            <h2>بنك الأسئلة - @Model.Title</h2>
+            <p>أضف أقساماً وأسئلة ليسحب منها المحاكي العشوائي لاحقاً.</p>
+        </div>
+    </div>
+</div>
+
+<form asp-action="AddBankSection" method="post" class="add-section-card">
+    <input type="hidden" name="courseId" value="@Model.Id" />
+    <input type="text" name="title" required placeholder="اسم القسم الجديد (مثال: تجميعات الفترة الأولى 2024)..." />
+    <button type="submit"><i class="fa-solid fa-folder-plus"></i> إنشاء قسم</button>
+</form>
+
+@if (Model.QuestionBankSections != null && Model.QuestionBankSections.Any())
+{
+    foreach (var sec in Model.QuestionBankSections)
+    {
+        <div class="q-section">
+            <div class="q-sec-head">
+                <h3><i class="fa-solid fa-folder-open" style="color:var(--c-secondary);"></i> @sec.Title</h3>
+                <form asp-action="DeleteBankSection" method="post" onsubmit="return confirm('حذف القسم وكل أسئلته؟');" style="margin:0;">
+                    <input type="hidden" name="id" value="@sec.Id" />
+                    <input type="hidden" name="courseId" value="@Model.Id" />
+                    <button type="submit" class="btn-danger"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+            <div class="q-list">
+                @if (sec.Questions != null && sec.Questions.Any())
+                {
+                    foreach (var q in sec.Questions)
+                    {
+                        <div class="q-item">
+                            <div>
+                                <h5>@q.QuestionText</h5>
+                                <span>@q.SkillType</span>
+                            </div>
+                            <form asp-action="DeleteBankQuestion" method="post" onsubmit="return confirm('حذف السؤال؟');" style="margin:0;">
+                                <input type="hidden" name="id" value="@q.Id" />
+                                <input type="hidden" name="courseId" value="@Model.Id" />
+                                <button type="submit" class="btn-danger"><i class="fa-solid fa-xmark"></i></button>
+                            </form>
+                        </div>
+                    }
+                }
+
+                <button type="button" class="btn-add-q" onclick="openQModal(@sec.Id)"><i class="fa-solid fa-plus"></i> إضافة سؤال جديد في هذا القسم</button>
+            </div>
+        </div>
+    }
+}
+
+<!-- Modal لإضافة سؤال للبنك -->
+<div id="qModal" class="modal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+            <h3 style="margin:0; color:var(--c-primary); font-family:'Hayah'; font-size:1.8rem;">إضافة سؤال للبنك</h3>
+            <button type="button" onclick="closeQModal()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form asp-action="SaveBankQuestion" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <input type="hidden" name="sectionId" id="modalSecId" value="" />
+
+            <div class="form-group">
+                <label>نوع المهارة</label>
+                <select name="SkillType" class="form-control">
+                    <option value="التناظر اللفظي">التناظر اللفظي</option>
+                    <option value="إكمال الجمل">إكمال الجمل</option>
+                    <option value="الخطأ السياقي">الخطأ السياقي</option>
+                    <option value="استيعاب المقروء">استيعاب المقروء</option>
+                    <option value="المفردة الشاذة">المفردة الشاذة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>نص السؤال</label>
+                <textarea name="QuestionText" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>صورة (اختياري)</label>
+                <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group"><label>أ</label><input type="text" name="OptionA" required class="form-control" /></div>
+                <div class="form-group"><label>ب</label><input type="text" name="OptionB" required class="form-control" /></div>
+                <div class="form-group"><label>ج</label><input type="text" name="OptionC" required class="form-control" /></div>
+                <div class="form-group"><label>د</label><input type="text" name="OptionD" required class="form-control" /></div>
+            </div>
+            <div class="form-group">
+                <label>الإجابة الصحيحة</label>
+                <select name="CorrectOption" class="form-control">
+                    <option value="A">أ</option>
+                    <option value="B">ب</option>
+                    <option value="C">ج</option>
+                    <option value="D">د</option>
+                </select>
+            </div>
+            <button type="submit" style="width:100%; background:var(--c-primary); color:var(--c-secondary); padding:1rem; border:none; border-radius:1rem; font-weight:bold; font-size:1.2rem; cursor:pointer; margin-top:1rem;">حفظ في البنك</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openQModal(secId) {
+        document.getElementById('modalSecId').value = secId;
+        document.getElementById('qModal').classList.add('open');
+    }
+    function closeQModal() {
+        document.getElementById('qModal').classList.remove('open');
+    }
+</script>
