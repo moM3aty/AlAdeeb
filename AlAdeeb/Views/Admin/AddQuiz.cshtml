@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* ... احتفظ بنفس التنسيقات السابقة ... */
     .page-header {
         background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
         border-radius: var(--radius-xl);
@@ -322,6 +321,14 @@
                 <label>المدة الزمنية (بالدقائق)</label>
                 <input type="number" name="DurationInMinutes" value="20" required class="form-control" style="font-family: Arial; font-weight:900;" />
             </div>
+
+            @if (ViewBag.IsFinalExam == true)
+            {
+                <div class="form-group" style="margin:0;">
+                    <label>درجة الاجتياز للشهادة (%)</label>
+                    <input type="number" name="MinimumPassScore" value="50" required class="form-control" style="font-family: Arial; font-weight:900;" />
+                </div>
+            }
         </div>
 
         <div id="manualQuestionsSection">
@@ -348,10 +355,16 @@
             simOptions.classList.remove('hidden');
             manualSec.classList.add('hidden');
             btnAddQ.classList.add('hidden');
+
+            // حل المشكلة: تعطيل كافة حقول الأسئلة اليدوية حتى لا تمنع الحفظ
+            manualSec.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
         } else {
             simOptions.classList.add('hidden');
             manualSec.classList.remove('hidden');
             btnAddQ.classList.remove('hidden');
+
+            // إعادة التفعيل
+            manualSec.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
         }
     }
 

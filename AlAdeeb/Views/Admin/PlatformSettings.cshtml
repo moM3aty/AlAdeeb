@@ -1,0 +1,206 @@
+﻿@model AlAdeeb.Models.PlatformSetting
+@{
+    ViewData["Title"] = "إعدادات المنصة الرئيسية";
+    Layout = "_AdminLayout";
+    var quizzes = ViewBag.AllQuizzes as IEnumerable<AlAdeeb.Models.Quiz>;
+}
+
+<style>
+    .page-header {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), var(--c-primary);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2.5rem;
+        color: var(--c-white);
+    }
+
+    .header-icon {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(255,255,255,0.1);
+        color: var(--c-secondary);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-text h2 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.2rem;
+        margin: 0 0 0.3rem 0;
+        line-height: 1.2;
+    }
+
+    .settings-card {
+        background: var(--c-white);
+        padding: 3rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 900;
+        color: var(--c-primary);
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        width: 100%;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--c-primary);
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--c-secondary);
+            background: var(--c-white);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(175,143,66,0.1);
+        }
+
+    .btn-save {
+        width: 100%;
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        padding: 1.2rem;
+        border-radius: 1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+        .btn-save:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
+            transform: translateY(-3px);
+        }
+
+    .hint-box {
+        background: #eff6ff;
+        color: #1e40af;
+        padding: 1rem;
+        border-radius: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: 1px dashed #bfdbfe;
+    }
+</style>
+
+<div class="page-header">
+    <div class="header-icon"><i class="fa-solid fa-sliders"></i></div>
+    <div class="header-text">
+        <h2>إعدادات الواجهة الرئيسية</h2>
+        <p>تحكم في الاختبار المجاني ومقطع الفيديو الترويجي والباقة الشاملة.</p>
+    </div>
+</div>
+
+<div class="settings-card">
+    <form asp-action="SavePlatformSettings" method="post">
+
+        <div class="form-group">
+            <label class="form-label"><i class="fa-brands fa-youtube" style="color:#ef4444;"></i> رابط الفيديو الترويجي للمنصة</label>
+            <input type="url" name="PromoVideoUrl" value="@Model.PromoVideoUrl" class="form-control" dir="ltr" placeholder="https://www.youtube.com/watch?v=..." />
+            <div class="hint-box"><i class="fa-solid fa-circle-info"></i> ضع رابط اليوتيوب هنا. إذا تركته فارغاً، سيتم إخفاء قسم الفيديو من الصفحة الرئيسية.</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-clipboard-check" style="color:#10b981;"></i> اختبار تحديد المستوى (المجاني)</label>
+            <select name="PlacementTestQuizId" class="form-control" style="cursor:pointer;">
+                <option value="">-- بدون اختبار مجاني (إخفاء القسم) --</option>
+                @if (quizzes != null)
+                {
+                    foreach (var q in quizzes)
+                    {
+                        if (Model.PlacementTestQuizId == q.Id)
+                        {
+                            <option value="@q.Id" selected>@q.Title (تابع لكورس: @q.Course?.Title)</option>
+                        }
+                        else
+                        {
+                            <option value="@q.Id">@q.Title (تابع لكورس: @q.Course?.Title)</option>
+                        }
+                    }
+                }
+            </select>
+            <div class="hint-box"><i class="fa-solid fa-lightbulb"></i> اختر الاختبار الذي سيظهر للطلاب الجدد لاختبار مستواهم قبل التسجيل.</div>
+        </div>
+
+        <hr style="margin: 3rem 0; border: 1px dashed #e2e8f0;" />
+
+        <h3 style="color: var(--c-primary); font-family: 'Hayah'; margin-bottom: 1.5rem; font-size: 1.8rem;"><i class="fa-solid fa-layer-group" style="color: var(--c-secondary);"></i> إعدادات الباقة الشاملة</h3>
+
+        <div class="form-group" style="background: #fef9c3; padding: 1rem; border-radius: 1rem; border: 1px solid #fef08a;">
+            <label class="form-label" style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; margin:0;">
+                <input type="checkbox" name="IsBundleActive" value="true" @(Model.IsBundleActive ? "checked" : "") style="width: 1.4rem; height: 1.4rem; accent-color: #ca8a04;" />
+                <span style="color: #a16207;">تفعيل الباقة الشاملة (تسمح للطلاب بالاشتراك في جميع الدورات مرة واحدة)</span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">عنوان الباقة</label>
+            <input type="text" name="BundleTitle" value="@Model.BundleTitle" class="form-control" placeholder="مثال: الباقة الماسية الشاملة..." />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">وصف الباقة</label>
+            <textarea name="BundleDescription" class="form-control" rows="3" placeholder="اشترك في جميع دورات المنصة بخصم حصري...">@Model.BundleDescription</textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">سعر الباقة (ريال)</label>
+                <input type="number" step="0.01" name="BundlePrice" value="@Model.BundlePrice" class="form-control" style="font-family: Arial; font-weight: 900;" />
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">السعر القديم (للخصم)</label>
+                <input type="number" step="0.01" name="BundleOldPrice" value="@Model.BundleOldPrice" class="form-control" style="font-family: Arial; font-weight: 900; color: #ef4444;" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">مدة اشتراك الباقة (بالشهور)</label>
+            <input type="number" name="BundleDurationMonths" value="@Model.BundleDurationMonths" class="form-control" placeholder="مثال: 12 شهر..." />
+        </div>
+
+        <hr style="margin: 3rem 0; border: 1px dashed #e2e8f0;" />
+
+        <h3 style="color: var(--c-primary); font-family: 'Hayah'; margin-bottom: 1.5rem; font-size: 1.8rem;"><i class="fa-solid fa-address-card" style="color: var(--c-secondary);"></i> السيرة الذاتية للمدرب</h3>
+
+        <div class="form-group">
+            <label class="form-label">نبذة عن المدرب (تظهر في صفحة "عن المدرب")</label>
+            <textarea name="TrainerBio" class="form-control" rows="5" placeholder="يُعد الأستاذ فلان من أبرز الخبراء...">@Model.TrainerBio</textarea>
+            <div class="hint-box"><i class="fa-solid fa-lightbulb"></i> يمكنك كتابة إنجازاتك وسيرتك الذاتية هنا، وستظهر للطلاب بشكل فخم في صفحة "عن المدرب".</div>
+        </div>
+
+        <button type="submit" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات وتطبيقها فوراً</button>
+    </form>
+</div>

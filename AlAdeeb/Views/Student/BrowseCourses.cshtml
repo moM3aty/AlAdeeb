@@ -85,7 +85,6 @@
             border-color: rgba(175, 143, 66, 0.3);
         }
 
-    /* شريط الخصم */
     .discount-badge {
         position: absolute;
         top: 1.5rem;
@@ -151,7 +150,6 @@
         overflow: hidden;
     }
 
-    /* منطقة السعر */
     .price-box {
         margin-top: auto;
         display: flex;
@@ -222,6 +220,18 @@
         color: white;
         cursor: default;
     }
+
+    .btn-outline {
+        background: #f8fafc;
+        color: var(--c-primary);
+        border: 2px solid var(--c-primary);
+        margin-top: 0.5rem;
+    }
+
+        .btn-outline:hover {
+            background: var(--c-primary);
+            color: var(--c-white);
+        }
 </style>
 
 <div class="browse-page">
@@ -230,50 +240,79 @@
         <p>باقات متنوعة مصممة خصيصاً لتأسيسك وتدريبك حتى تصل إلى العلامة الكاملة 100%.</p>
     </div>
 
-    <div class="course-grid">
-        @foreach (var course in Model)
+    <div style="max-width: 1300px; margin: 0 auto;">
+        @if (ViewBag.PlatformSettings != null && ViewBag.PlatformSettings.IsBundleActive)
         {
-            bool isOwned = mySubscriptions.Contains(course.Id);
-
-            <div class="course-card">
-                @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
-                {
-                    <div class="discount-badge">عرض خاص</div>
-                }
-
-                <div class="c-cover">
-                    @if (!string.IsNullOrEmpty(course.ImageUrl))
-                    {
-                        <img src="@course.ImageUrl" alt="@course.Title" />
-                    }
-                    else
-                    {
-                        <i class="fa-solid fa-graduation-cap" style="font-size: 5rem; color: rgba(255,255,255,0.2); position:absolute;"></i>
-                    }
+            <div style="background: linear-gradient(135deg, var(--c-secondary) 0%, #ca8a04 100%); border-radius: 2rem; padding: 3rem; color: #fff; margin-bottom: 4rem; box-shadow: 0 20px 40px rgba(175, 143, 66, 0.3); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+                <i class="fa-solid fa-crown" style="position: absolute; left: -20px; top: -20px; font-size: 15rem; opacity: 0.1; transform: rotate(-15deg);"></i>
+                <div style="position: relative; z-index: 10;">
+                    <span style="background: #fff; color: #ca8a04; padding: 0.4rem 1rem; border-radius: 50px; font-weight: 900; font-size: 0.9rem; margin-bottom: 1rem; display: inline-block;">أفضل قيمة 💎</span>
+                    <h2 style="font-family: 'Hayah'; font-size: 3rem; margin: 0 0 0.5rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">@ViewBag.PlatformSettings.BundleTitle</h2>
+                    <p style="font-size: 1.2rem; font-weight: 600; max-width: 600px; margin: 0;">@ViewBag.PlatformSettings.BundleDescription</p>
                 </div>
-
-                <div class="c-body">
-                    <h3 class="c-title">@course.Title</h3>
-                    <p class="c-desc">@course.Description</p>
-
-                    <div class="price-box">
-                        @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
-                        {
-                            <div class="old-price">@course.OldPrice ريال</div>
-                        }
-                        <div class="current-price">@course.Price <span>ريال سعودي</span></div>
-                    </div>
-
-                    @if (isOwned)
+                <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); padding: 2rem; border-radius: 1.5rem; text-align: center; backdrop-filter: blur(10px); min-width: 250px; z-index: 10;">
+                    @if (ViewBag.PlatformSettings.BundleOldPrice != null)
                     {
-                        <a href="/Student/Dashboard" class="btn-action btn-owned"><i class="fa-solid fa-circle-check"></i> مشترك بالفعل</a>
+                        <div style="text-decoration: line-through; opacity: 0.8; font-size: 1.2rem; font-family: Arial; font-weight: bold; margin-bottom: 0.5rem;">@ViewBag.PlatformSettings.BundleOldPrice ريال</div>
+                    }
+                    <div style="font-size: 3rem; font-weight: 900; font-family: Arial; line-height: 1; margin-bottom: 1rem;">@ViewBag.PlatformSettings.BundlePrice <span style="font-size: 1.2rem; font-family: 'Hayah';">ريال</span></div>
+
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Student"))
+                    {
+                        <form asp-action="SubscribeToBundle" method="post">
+                            <button type="submit" style="display: block; width: 100%; border: none; background: var(--c-primary); color: var(--c-secondary); padding: 1rem; border-radius: 1rem; font-size: 1.3rem; font-family: 'Hayah'; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(10,50,84,0.3);">اشترك في الباقة الآن</button>
+                        </form>
                     }
                     else
                     {
-                        <a href="/Home/Checkout/@course.Id" class="btn-action btn-buy"><i class="fa-solid fa-cart-shopping"></i> اشترك الآن</a>
+                        <a href="/Account/Login" style="display: block; width: 100%; border: none; background: var(--c-primary); color: var(--c-secondary); padding: 1rem; border-radius: 1rem; font-size: 1.3rem; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(10,50,84,0.3);">سجل دخول للاشتراك</a>
                     }
                 </div>
             </div>
         }
+
+        <div class="course-grid">
+            @foreach (var course in Model)
+            {
+                bool isOwned = mySubscriptions.Contains(course.Id);
+                <div class="course-card">
+                    @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
+                    {
+                        <div class="discount-badge">عرض خاص</div>
+                    }
+                    <div class="c-cover">
+                        @if (!string.IsNullOrEmpty(course.ImageUrl))
+                        {
+                            <img src="@course.ImageUrl" alt="@course.Title" />
+                        }
+                        else
+                        {
+
+                            <i class="fa-solid fa-graduation-cap" style="font-size: 5rem; color: rgba(255,255,255,0.2); position:absolute;"></i>
+                        }
+                    </div>
+                    <div class="c-body">
+                        <h3 class="c-title">@course.Title</h3>
+                        <p class="c-desc">@course.Description</p>
+                        <div class="price-box">
+                            @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
+                            {
+                                <div class="old-price">@course.OldPrice ريال</div>
+                            }
+                            <div class="current-price">@course.Price <span>ريال سعودي</span></div>
+                        </div>
+                        @if (isOwned)
+                        {
+                            <a href="/Student/Dashboard" class="btn-action btn-owned"><i class="fa-solid fa-circle-check"></i> مشترك بالفعل</a>
+                        }
+                        else
+                        {
+                            <a href="/Student/Subscribe/@course.Id" class="btn-action btn-buy"><i class="fa-solid fa-cart-shopping"></i> اشترك الآن</a>
+                            <a href="/Student/CourseContent/@course.Id" class="btn-action btn-outline"><i class="fa-solid fa-eye"></i> شاهد العينة المجانية</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>

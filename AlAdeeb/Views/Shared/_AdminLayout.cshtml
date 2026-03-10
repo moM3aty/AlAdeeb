@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - منصة الأديب</title>
+    <title>@ViewData["Title"] - إدارة منصة الأديب</title>
 
-    <!-- خطوط وأيقونات -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link type="image/x-icon" rel="icon" href="~/images/logo.png" /> 
+    <link type="image/x-icon" rel="icon" href="~/images/logo.png" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
     <style>
         @@font-face {
             font-family: 'Hayah';
@@ -56,7 +57,6 @@
             text-decoration: none;
         }
 
-        /* ================= Sidebar ================= */
         .sidebar {
             width: 300px;
             background: linear-gradient(180deg, var(--c-primary-dark) 0%, var(--c-primary) 100%);
@@ -69,18 +69,6 @@
             position: relative;
             overflow: hidden;
         }
-
-            .sidebar::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=');
-                z-index: 0;
-                pointer-events: none;
-            }
 
         .sidebar-header {
             height: 90px;
@@ -201,7 +189,6 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        /* ================= Main Wrapper ================= */
         .main-wrapper {
             flex: 1;
             display: flex;
@@ -328,7 +315,6 @@
             font-weight: 700;
         }
 
-        /* ================= Content Area ================= */
         .content-area {
             flex: 1;
             overflow-y: auto;
@@ -365,7 +351,6 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* ================= Mobile Overlay ================= */
         .sidebar-overlay {
             position: fixed;
             inset: 0;
@@ -423,7 +408,6 @@
             }
         }
 
-        /* تأثيرات الظهور للعناصر بالداخل */
         .animate-fade-in {
             animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -475,8 +459,15 @@
                 <a href="/Admin/StudentsList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "StudentsList" ? "active" : "")">
                     <div class="nav-item-content"><i class="fa-solid fa-user-gear"></i> قاعدة بيانات الطلاب</div>
                 </a>
+                <a href="/Admin/AddStudentManual" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "AddStudentManual" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-user-plus"></i> إضافة طالب يدوياً</div>
+                </a>
                 <a href="/Admin/TeachersList" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "TeachersList" ? "active" : "")">
                     <div class="nav-item-content"><i class="fa-solid fa-chalkboard-user"></i> فريق المعلمين</div>
+                </a>
+
+                <a href="/Admin/PlatformSettings" class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "PlatformSettings" ? "active" : "")">
+                    <div class="nav-item-content"><i class="fa-solid fa-sliders"></i> إعدادات المنصة الرئيسية</div>
                 </a>
             }
 
@@ -541,6 +532,7 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('adminSidebar');
@@ -552,7 +544,71 @@
                 overlay.classList.remove('active');
             }
         }
+
+        // ==============================================================
+        // نظام الحماية الذكي: تحويل أي عملية حذف في الإدارة إلى SweetAlert
+        // ==============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                const action = form.getAttribute('action');
+                if (action && (action.toLowerCase().includes('delete') || action.toLowerCase().includes('remove'))) {
+                    const existingOnSubmit = form.getAttribute('onsubmit');
+                    if(existingOnSubmit && existingOnSubmit.includes('confirm')) {
+                        form.removeAttribute('onsubmit');
+                    }
+
+                    form.addEventListener('submit', function(e) {
+                        if (!form.dataset.swalConfirmed) {
+                            e.preventDefault();
+                            Swal.fire({
+                                title: 'تأكيد عملية الحذف',
+                                text: 'هل أنت متأكد من رغبتك في حذف هذا العنصر نهائياً؟ لا يمكن التراجع عن هذا الإجراء.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#dc2626',
+                                cancelButtonColor: '#0a3254',
+                                confirmButtonText: 'نعم، قم بالحذف',
+                                cancelButtonText: 'تراجع وإلغاء'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    form.dataset.swalConfirmed = 'true';
+                                    form.submit();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // دالة يدوية مخصصة للأزرار التي تعتمد على الاستدعاء المباشر
+        function confirmAction(event, message, confirmText = 'نعم، قم بالحذف', confirmColor = '#dc2626') {
+            event.preventDefault();
+            const form = event.target.closest('form') || event.target;
+
+            if (form.dataset.swalConfirmed) return;
+
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#0a3254',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'تراجع وإلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.swalConfirmed = 'true';
+                    form.submit();
+                }
+            });
+        }
+
+        const confirmDelete = confirmAction;
     </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

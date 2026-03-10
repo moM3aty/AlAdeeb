@@ -1,17 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using AlAdeeb.Data;
+﻿using AlAdeeb.Data;
 using AlAdeeb.Models;
 using AlAdeeb.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace AlAdeeb.Controllers
 {
@@ -19,6 +21,7 @@ namespace AlAdeeb.Controllers
     {
         private readonly AppDbContext _context;
         private readonly PasswordHasher<ApplicationUser> _passwordHasher;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public AccountController(AppDbContext context)
         {
@@ -206,5 +209,184 @@ namespace AlAdeeb.Controllers
             ViewBag.Phone = phoneNumber;
             return View();
         }
+        [HttpGet]
+        public async Task<IActionResult> QuestionBank(int courseId)
+        {
+            var course = await _context.Courses
+                .Include(c => c.QuestionBankSections)
+                    .ThenInclude(s => s.Questions)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null) return NotFound();
+            return View(course);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddBankSection(int courseId, string title)
+        {
+            if (!string.IsNullOrEmpty(title))
+            {
+                var section = new QuestionBankSection { CourseId = courseId, Title = title };
+                _context.QuestionBankSections.Add(section);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم إضافة قسم جديد لبنك الأسئلة.";
+            }
+            return RedirectToAction("QuestionBank", new { courseId = courseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveBankQuestion(int sectionId, int courseId, string SkillType, string QuestionText, string OptionA, string OptionB, string OptionC, string OptionD, string CorrectOption, IFormFile ImageFile)
+        {
+            var q = new BankQuestion
+            {
+                QuestionBankSectionId = sectionId,
+                SkillType = SkillType ?? "أسئلة منوعة",
+                QuestionText = QuestionText ?? "",
+                OptionA = OptionA ?? "",
+                OptionB = OptionB ?? "",
+                OptionC = OptionC ?? "",
+                OptionD = OptionD ?? "",
+                CorrectOption = CorrectOption ?? "A"
+            };
+
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/questions");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ImageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create)) { await ImageFile.CopyToAsync(fileStream); }
+                q.QuestionImagePath = "/uploads/questions/" + uniqueFileName;
+            }
+            else { q.QuestionImagePath = ""; }
+
+            if (string.IsNullOrEmpty(q.QuestionText) && !string.IsNullOrEmpty(q.QuestionImagePath)) { q.QuestionText = "[سؤال مصور]"; }
+
+            _context.BankQuestions.Add(q);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "تم حفظ السؤال في البنك.";
+            return RedirectToAction("QuestionBank", new { courseId = courseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBankQuestion(int id, int courseId)
+        {
+            var q = await _context.BankQuestions.FindAsync(id);
+            if (q != null) { _context.BankQuestions.Remove(q); await _context.SaveChangesAsync(); }
+            return RedirectToAction("QuestionBank", new { courseId = courseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBankSection(int id, int courseId)
+        {
+            var s = await _context.QuestionBankSections.FindAsync(id);
+            if (s != null) { _context.QuestionBankSections.Remove(s); await _context.SaveChangesAsync(); }
+            return RedirectToAction("QuestionBank", new { courseId = courseId });
+        }
+
+        // ==========================================
+        // إدارة الاختبارات والمحاكي
+        // ==========================================
+        [HttpGet]
+        public async Task<IActionResult> AddQuiz(int courseId, int? lessonId, bool isFinalExam = false)
+        {
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null) return NotFound();
+            ViewBag.LessonId = lessonId;
+            ViewBag.IsFinalExam = isFinalExam;
+            return View(course);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveQuiz(int CourseId, int? LessonId, string QuizTitle, int DurationInMinutes, bool IsFinalExam, bool IsSimulator, int SimulatorSectionsCount, List<Question> Questions)
+        {
+            if (Questions == null) Questions = new List<Question>();
+            var newQuiz = new Quiz
+            {
+                CourseId = IsFinalExam ? CourseId : null,
+                LessonId = IsFinalExam ? null : LessonId,
+                Title = string.IsNullOrEmpty(QuizTitle) ? "اختبار" : QuizTitle,
+                DurationInMinutes = DurationInMinutes,
+                IsFinalExam = IsFinalExam,
+                IsSimulator = IsSimulator,
+                SimulatorSectionsCount = IsSimulator ? SimulatorSectionsCount : 0,
+                Questions = new List<Question>()
+            };
+
+            if (!IsSimulator)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/questions");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                for (int i = 0; i < Questions.Count; i++)
+                {
+                    var q = Questions[i];
+                    if (q == null) continue;
+                    var fileKey = $"Questions[{i}].ImageFile";
+                    var imageFile = Request.Form.Files[fileKey];
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create)) { await imageFile.CopyToAsync(fileStream); }
+                        q.QuestionImagePath = "/uploads/questions/" + uniqueFileName;
+                    }
+                    q.QuestionText = q.QuestionText ?? ""; q.OptionA = q.OptionA ?? ""; q.OptionB = q.OptionB ?? ""; q.OptionC = q.OptionC ?? ""; q.OptionD = q.OptionD ?? ""; q.CorrectOption = q.CorrectOption ?? "A"; q.SkillType = q.SkillType ?? "أسئلة منوعة";
+                    newQuiz.Questions.Add(q);
+                }
+            }
+
+            _context.Quizzes.Add(newQuiz);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "تم حفظ الاختبار بنجاح!";
+            return RedirectToAction("Details", "Course", new { id = CourseId });
+        }
+
+        // ==========================================
+        // إدارة إعدادات المنصة (الشاشة الرئيسية)
+        // ==========================================
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PlatformSettings()
+        {
+            var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
+            if (settings == null)
+            {
+                settings = new PlatformSetting { PromoVideoUrl = "", PlacementTestQuizId = null };
+                _context.PlatformSettings.Add(settings);
+                await _context.SaveChangesAsync();
+            }
+
+            // جلب جميع الاختبارات ليتمكن المدير من اختيار اختبار تحديد المستوى
+            ViewBag.AllQuizzes = await _context.Quizzes.Include(q => q.Course).ToListAsync();
+
+            return View(settings);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SavePlatformSettings(PlatformSetting model)
+        {
+            var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
+            if (settings != null)
+            {
+                settings.PromoVideoUrl = model.PromoVideoUrl;
+                settings.PlacementTestQuizId = model.PlacementTestQuizId;
+                _context.Update(settings);
+            }
+            else
+            {
+                _context.PlatformSettings.Add(model);
+            }
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "تم تحديث إعدادات الشاشة الرئيسية بنجاح.";
+            return RedirectToAction(nameof(PlatformSettings));
+        }
     }
 }
+    

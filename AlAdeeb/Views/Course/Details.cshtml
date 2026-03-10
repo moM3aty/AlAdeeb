@@ -5,7 +5,7 @@
 
     int videoCount = 0;
     int pdfCount = 0;
-    int quizCount = Model.Quizzes?.Count ?? 0; // الاختبارات النهائية
+    int quizCount = Model.Quizzes?.Count ?? 0;
 
     if (Model.Lessons != null)
     {
@@ -18,7 +18,7 @@
             }
             if (lesson.Quizzes != null)
             {
-                quizCount += lesson.Quizzes.Count; // اختبارات الدروس
+                quizCount += lesson.Quizzes.Count;
             }
         }
     }
@@ -188,12 +188,14 @@
         line-height: 1;
     }
 
-    /* 3. Add Lesson Button */
+    /* 3. Actions */
     .header-actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
         .header-actions h3 {
@@ -218,6 +220,7 @@
         transition: var(--transition);
         box-shadow: 0 4px 10px rgba(10, 50, 84, 0.15);
         font-family: inherit;
+        text-decoration: none;
     }
 
         .btn-primary-action:hover {
@@ -389,10 +392,6 @@
             background: #f8fafc;
         }
 
-        .btn-add-mini i {
-            font-size: 1rem;
-        }
-
     /* 7. Final Exam Section */
     .final-exam-zone {
         background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), #fff;
@@ -417,7 +416,7 @@
             font-weight: 600;
         }
 
-    /* 8. Modals Clean Up */
+    /* 8. Modals */
     .modal {
         display: none;
         position: fixed;
@@ -613,9 +612,15 @@
     <!-- Lessons Area Header -->
     <div class="header-actions">
         <h3><i class="fa-solid fa-layer-group" style="color:var(--secondary);"></i> المنهج الدراسي</h3>
-        <button class="btn-primary-action" onclick="openModal('lessonModal')">
-            <i class="fa-solid fa-plus"></i> إضافة وحدة / درس
-        </button>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <!-- زر بنك الأسئلة المضاف حديثاً هنا -->
+            <a href="/Admin/QuestionBank?courseId=@Model.Id" class="btn-primary-action" style="background: var(--secondary); color: var(--primary);">
+                <i class="fa-solid fa-vault"></i> بنك الأسئلة للمحاكي
+            </a>
+            <button class="btn-primary-action" onclick="openModal('lessonModal')">
+                <i class="fa-solid fa-plus"></i> إضافة وحدة / درس
+            </button>
+        </div>
     </div>
 
     <!-- Lessons List -->
@@ -799,6 +804,13 @@
                 <input type="file" name="pdfFile" id="pFile" class="form-control" accept="application/pdf" style="padding: 0.8rem;" />
             </div>
 
+            <div class="form-group" style="margin-top: 1.5rem; background: #fef9c3; padding: 1rem; border-radius: 1rem; border: 1px solid #fef08a;">
+                <label class="form-label" style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; margin:0;">
+                    <input type="checkbox" name="isFreeSample" value="true" style="width: 1.4rem; height: 1.4rem; accent-color: #ca8a04;" />
+                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية" (متاح للطلاب حتى لو انتهى اشتراكهم)</span>
+                </label>
+            </div>
+
             <div class="m-foot">
                 <button type="submit" class="btn-m-save"><i class="fa-solid fa-cloud-arrow-up"></i> رفع وحفظ</button>
                 <button type="button" class="btn-m-cancel" onclick="closeModal('materialModal')">إلغاء</button>
@@ -842,32 +854,35 @@
     </div>
 </div>
 
-<!-- تضمين مكتبة SweetAlert2 لضمان عمل التنبيهات -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // دالة التأكيد قبل الحذف
     function confirmDelete(event, message) {
-        event.preventDefault(); // إيقاف إرسال الفورم فوراً
+        event.preventDefault();
         const form = event.target.closest('form');
 
-        Swal.fire({
-            title: 'هل أنت متأكد؟',
-            text: message,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#0a3254',
-            confirmButtonText: 'نعم، قم بالحذف',
-            cancelButtonText: 'إلغاء',
-            customClass: {
-                popup: 'swal2-custom-popup',
-                title: 'swal2-custom-title'
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#0a3254',
+                confirmButtonText: 'نعم، قم بالحذف',
+                cancelButtonText: 'إلغاء',
+                customClass: {
+                    popup: 'swal2-custom-popup',
+                    title: 'swal2-custom-title'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        } else {
+            if (confirm(message)) {
+                form.submit();
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit(); // استكمال الإرسال إذا وافق المستخدم
-            }
-        });
+        }
     }
 
     function openModal(id) {
@@ -917,7 +932,7 @@
             document.getElementById('editYUrl').required = false;
 
             document.getElementById('editFileGroup').classList.remove('hidden-f');
-            document.getElementById('editPFile').required = false; // اختياري في حالة التعديل
+            document.getElementById('editPFile').required = false;
         }
         openModal('editMaterialModal');
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlAdeeb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260225124203_AddForumSystem")]
-    partial class AddForumSystem
+    [Migration("20260310015121_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,12 @@ namespace AlAdeeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActiveSessionsJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AllowedDevicesCount")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -68,6 +74,53 @@ namespace AlAdeeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("AlAdeeb.Models.BankQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CorrectOption")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OptionA")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OptionB")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OptionC")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OptionD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuestionBankSectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuestionText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SkillType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionBankSectionId");
+
+                    b.ToTable("BankQuestions");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.Certificate", b =>
@@ -127,17 +180,25 @@ namespace AlAdeeb.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<decimal?>("OldPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
                 });
@@ -298,6 +359,46 @@ namespace AlAdeeb.Migrations
                     b.ToTable("LiveSessions");
                 });
 
+            modelBuilder.Entity("AlAdeeb.Models.PlatformSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BundleDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BundleDurationMonths")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("BundleOldPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BundlePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BundleTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsBundleActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PlacementTestQuizId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PromoVideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrainerBio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlatformSettings");
+                });
+
             modelBuilder.Entity("AlAdeeb.Models.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -335,11 +436,36 @@ namespace AlAdeeb.Migrations
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SkillType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("QuizId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("AlAdeeb.Models.QuestionBankSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("QuestionBankSections");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.Quiz", b =>
@@ -359,11 +485,17 @@ namespace AlAdeeb.Migrations
                     b.Property<bool>("IsFinalExam")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSimulator")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("LessonId")
                         .HasColumnType("int");
 
                     b.Property<double>("MinimumPassScore")
                         .HasColumnType("float");
+
+                    b.Property<int>("SimulatorSectionsCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -452,6 +584,17 @@ namespace AlAdeeb.Migrations
                     b.ToTable("SubscriptionRequests");
                 });
 
+            modelBuilder.Entity("AlAdeeb.Models.BankQuestion", b =>
+                {
+                    b.HasOne("AlAdeeb.Models.QuestionBankSection", "Section")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuestionBankSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
             modelBuilder.Entity("AlAdeeb.Models.Certificate", b =>
                 {
                     b.HasOne("AlAdeeb.Models.Course", "Course")
@@ -469,6 +612,15 @@ namespace AlAdeeb.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("AlAdeeb.Models.Course", b =>
+                {
+                    b.HasOne("AlAdeeb.Models.ApplicationUser", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.ForumPost", b =>
@@ -553,6 +705,17 @@ namespace AlAdeeb.Migrations
                     b.Navigation("Quiz");
                 });
 
+            modelBuilder.Entity("AlAdeeb.Models.QuestionBankSection", b =>
+                {
+                    b.HasOne("AlAdeeb.Models.Course", "Course")
+                        .WithMany("QuestionBankSections")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("AlAdeeb.Models.Quiz", b =>
                 {
                     b.HasOne("AlAdeeb.Models.Course", "Course")
@@ -611,6 +774,8 @@ namespace AlAdeeb.Migrations
                 {
                     b.Navigation("Lessons");
 
+                    b.Navigation("QuestionBankSections");
+
                     b.Navigation("Quizzes");
                 });
 
@@ -624,6 +789,11 @@ namespace AlAdeeb.Migrations
                     b.Navigation("Materials");
 
                     b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("AlAdeeb.Models.QuestionBankSection", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("AlAdeeb.Models.Quiz", b =>

@@ -12,7 +12,7 @@ namespace AlAdeeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Student")] // تأمين الكنترولر ليقبل فقط طلبات الطلاب المسجلين
+    [Authorize(Roles = "Student")]
     public class QuizController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -22,7 +22,6 @@ namespace AlAdeeb.Controllers
             _context = context;
         }
 
-        // نموذج استلام بيانات الاختبار من واجهة الطالب (AJAX)
         public class QuizSubmissionModel
         {
             public int QuizId { get; set; }
@@ -34,7 +33,6 @@ namespace AlAdeeb.Controllers
         [HttpPost("submit")]
         public async Task<IActionResult> SubmitQuiz([FromBody] QuizSubmissionModel submission)
         {
-            // جلب الاختبار من قاعدة البيانات للتحقق من نوعه والأسئلة المرتبطة به
             var quiz = await _context.Quizzes
                 .Include(q => q.Questions)
                 .Include(q => q.Lesson)
@@ -46,12 +44,8 @@ namespace AlAdeeb.Controllers
             int correctAnswersCount = 0;
             int totalQuestions = submission.TotalQuestions;
 
-            // =========================================================
-            // 1. التصحيح الذكي (حسب نوع الاختبار: محاكي عشوائي أو عادي)
-            // =========================================================
             if (quiz.IsSimulator)
             {
-                // إذا كان محاكي عشوائي: جلب الأسئلة التي أجاب عليها الطالب من بنك الأسئلة
                 var answeredIds = submission.Answers?.Keys.ToList() ?? new List<int>();
                 var bankQuestions = await _context.BankQuestions
                     .Where(q => answeredIds.Contains(q.Id))
@@ -68,7 +62,6 @@ namespace AlAdeeb.Controllers
             }
             else
             {
-                // إذا كان اختبار عادي: جلب الأسئلة الثابتة المرتبطة بالاختبار مباشرة
                 totalQuestions = quiz.Questions.Count;
                 foreach (var question in quiz.Questions)
                 {
@@ -80,13 +73,9 @@ namespace AlAdeeb.Controllers
                 }
             }
 
-            // حساب النسبة المئوية ومعرفة حالة الاجتياز
             double scorePercentage = totalQuestions > 0 ? ((double)correctAnswersCount / totalQuestions) * 100 : 0;
             bool passed = scorePercentage >= quiz.MinimumPassScore;
 
-            // =========================================================
-            // 2. توثيق نتيجة الطالب في قاعدة البيانات
-            // =========================================================
             var scoreRecord = new StudentScore
             {
                 StudentId = submission.StudentId,
@@ -101,7 +90,7 @@ namespace AlAdeeb.Controllers
             _context.StudentScores.Add(scoreRecord);
 
             // =========================================================
-            // 3. إصدار الشهادة تلقائياً (إذا كان اختباراً نهائياً ونجح فيه)
+            // التعديل: إصدار الشهادة بمتوسط درجات جميع الاختبارات بالكورس
             // =========================================================
             if (passed && quiz.IsFinalExam)
             {
@@ -109,18 +98,31 @@ namespace AlAdeeb.Controllers
 
                 if (courseId > 0)
                 {
-                    // التأكد من عدم وجود شهادة مسبقة لنفس الطالب في هذا الكورس
                     bool hasCert = await _context.Certificates
                         .AnyAsync(c => c.StudentId == submission.StudentId && c.CourseId == courseId);
 
                     if (!hasCert)
                     {
+                        // جلب جميع درجات الطالب السابقة في هذا الكورس بالتحديد
+                        var allCourseScores = await _context.StudentScores
+                            .Include(s => s.Quiz)
+                            .ThenInclude(q => q.Lesson)
+                            .Where(s => s.StudentId == submission.StudentId &&
+                                        (s.Quiz.CourseId == courseId || s.Quiz.Lesson.CourseId == courseId))
+                            .ToListAsync();
+
+                        // إضافة نتيجة الاختبار النهائي الحالي للقائمة
+                        allCourseScores.Add(scoreRecord);
+
+                        // حساب المتوسط لجميع الاختبارات (الدروس + النهائي)
+                        double averageScore = allCourseScores.Any() ? allCourseScores.Average(s => s.ScorePercentage) : scorePercentage;
+
                         var cert = new Certificate
                         {
                             StudentId = submission.StudentId,
                             CourseId = courseId,
                             SerialNumber = "ALD-" + DateTime.Now.Year + "-" + Guid.NewGuid().ToString().Substring(0, 6).ToUpper(),
-                            FinalScore = Math.Round(scorePercentage, 2),
+                            FinalScore = Math.Round(averageScore, 2), // وضع المتوسط النهائي في الشهادة
                             IssueDate = DateTime.Now
                         };
                         _context.Certificates.Add(cert);
@@ -128,10 +130,8 @@ namespace AlAdeeb.Controllers
                 }
             }
 
-            // حفظ جميع التغييرات (النتيجة + الشهادة إن وجدت) في قاعدة البيانات
             await _context.SaveChangesAsync();
 
-            // إرجاع النتيجة لواجهة الطالب ليتم عرضها في المحاكي فوراً
             return Ok(new
             {
                 Score = Math.Round(scorePercentage, 2),

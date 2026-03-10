@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using AlAdeeb.Models;
 using AlAdeeb.Data;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlAdeeb.Controllers
 {
@@ -20,20 +22,23 @@ namespace AlAdeeb.Controllers
             ViewBag.StudentsCount = await _context.Users.CountAsync(u => u.Role == "Student");
             ViewBag.TotalStudentsDisplay = 10000 + ViewBag.StudentsCount;
 
+            var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
+            ViewBag.PromoVideoUrl = settings?.PromoVideoUrl;
+            ViewBag.PlacementTestQuizId = settings?.PlacementTestQuizId;
+
             return View();
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> About()
         {
+            // جلب السيرة الذاتية من الإعدادات
+            var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
+            ViewBag.TrainerBio = settings?.TrainerBio;
+
             return View();
         }
 
         public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        public IActionResult Error()
         {
             return View();
         }
