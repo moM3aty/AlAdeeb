@@ -5,6 +5,7 @@
 
     int videoCount = 0;
     int pdfCount = 0;
+    int linkCount = 0;
     int quizCount = Model.Quizzes?.Count ?? 0;
 
     if (Model.Lessons != null)
@@ -13,8 +14,9 @@
         {
             if (lesson.Materials != null)
             {
-                videoCount += lesson.Materials.Count(m => m.MaterialType != "PDF");
+                videoCount += lesson.Materials.Count(m => m.MaterialType == "YouTube" || m.MaterialType == "RecordedLive");
                 pdfCount += lesson.Materials.Count(m => m.MaterialType == "PDF");
+                linkCount += lesson.Materials.Count(m => m.MaterialType == "Link");
             }
             if (lesson.Quizzes != null)
             {
@@ -119,7 +121,7 @@
     /* 2. Stats Grid */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2.5rem;
     }
@@ -170,6 +172,11 @@
     .bg-gold-soft {
         background: rgba(175, 143, 66, 0.1);
         color: var(--secondary);
+    }
+
+    .bg-purple-soft {
+        background: #f3e8ff;
+        color: #a855f7;
     }
 
     .stat-text h4 {
@@ -563,7 +570,6 @@
 
 <div class="course-details-page">
 
-    <!-- Header Banner -->
     <div class="hero-banner">
         <div class="course-title-box">
             <div class="course-icon-main"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -577,43 +583,33 @@
         </div>
     </div>
 
-    <!-- Stats Grid -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon bg-gold-soft"><i class="fa-solid fa-book-open"></i></div>
-            <div class="stat-text">
-                <h4>إجمالي الدروس</h4>
-                <p>@(Model.Lessons?.Count ?? 0)</p>
-            </div>
+            <div class="stat-text"><h4>إجمالي الدروس</h4><p>@(Model.Lessons?.Count ?? 0)</p></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon bg-blue-soft"><i class="fa-solid fa-play"></i></div>
-            <div class="stat-text">
-                <h4>مقاطع الفيديو</h4>
-                <p>@videoCount</p>
-            </div>
+            <div class="stat-text"><h4>مقاطع الفيديو</h4><p>@videoCount</p></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon bg-red-soft"><i class="fa-solid fa-file-pdf"></i></div>
-            <div class="stat-text">
-                <h4>المذكرات والملفات</h4>
-                <p>@pdfCount</p>
-            </div>
+            <div class="stat-text"><h4>المذكرات والملفات</h4><p>@pdfCount</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-purple-soft"><i class="fa-solid fa-link"></i></div>
+            <div class="stat-text"><h4>روابط خارجية</h4><p>@linkCount</p></div>
         </div>
         <div class="stat-card">
             <div class="stat-icon bg-green-soft"><i class="fa-solid fa-list-check"></i></div>
-            <div class="stat-text">
-                <h4>الاختبارات والتطبيقات</h4>
-                <p>@quizCount</p>
-            </div>
+            <div class="stat-text"><h4>الاختبارات والتطبيقات</h4><p>@quizCount</p></div>
         </div>
     </div>
 
-    <!-- Lessons Area Header -->
     <div class="header-actions">
         <h3><i class="fa-solid fa-layer-group" style="color:var(--secondary);"></i> المنهج الدراسي</h3>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <!-- زر بنك الأسئلة المضاف حديثاً هنا -->
+            <!-- زر بنك الأسئلة للمحاكي -->
             <a href="/Admin/QuestionBank?courseId=@Model.Id" class="btn-primary-action" style="background: var(--secondary); color: var(--primary);">
                 <i class="fa-solid fa-vault"></i> بنك الأسئلة للمحاكي
             </a>
@@ -623,7 +619,6 @@
         </div>
     </div>
 
-    <!-- Lessons List -->
     @if (Model.Lessons != null && Model.Lessons.Any())
     {
         foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
@@ -631,8 +626,7 @@
             <div class="lesson-box">
                 <div class="lesson-head">
                     <div class="lesson-head-title">
-                        <i class="fa-solid fa-book"></i>
-                        @lesson.Title
+                        <i class="fa-solid fa-book"></i> @lesson.Title
                     </div>
                     <form asp-controller="Course" asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmDelete(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
                         <button type="submit" class="btn-delete-sm" title="حذف الدرس بالكامل" style="width: 40px; height: 40px;"><i class="fa-solid fa-trash-can"></i></button>
@@ -646,12 +640,12 @@
                         {
                             <div class="material-item">
                                 <div class="m-info">
-                                    <div class="m-icon @(m.MaterialType == "PDF" ? "bg-red-soft" : "bg-blue-soft")">
-                                        <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play")"></i>
+                                    <div class="m-icon @(m.MaterialType == "PDF" ? "bg-red-soft" : (m.MaterialType == "Link" ? "bg-purple-soft" : "bg-blue-soft"))">
+                                        <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : (m.MaterialType == "Link" ? "fa-link" : "fa-play"))"></i>
                                     </div>
                                     <div class="m-details">
                                         <h5>@m.Title</h5>
-                                        <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : "فيديو مسجل")</span>
+                                        <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : (m.MaterialType == "Link" ? "رابط خارجي" : "فيديو مسجل"))</span>
                                     </div>
                                 </div>
                                 <div class="action-group">
@@ -692,7 +686,7 @@
                     {
                         <div style="text-align:center; padding: 2rem; color:var(--text-muted); background: #f8fafc; border-radius: 1rem; border: 1px dashed var(--border-light);">
                             <i class="fa-solid fa-inbox" style="font-size: 2rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i>
-                            <p style="margin:0; font-weight:700;">الدرس فارغ، ابدأ بإضافة المحتوى من الأزرار بالأسفل.</p>
+                            <p style="margin:0; font-weight:700;">الدرس فارغ، أضف محتوى من الأسفل.</p>
                         </div>
                     }
                 </div>
@@ -704,8 +698,13 @@
                     <button type="button" class="btn-add-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')">
                         <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> رفع PDF
                     </button>
+
+                    <button type="button" class="btn-add-mini" onclick="openMaterialModal(@lesson.Id, 'Link')">
+                        <i class="fa-solid fa-link" style="color:#8b5cf6;"></i> إضافة رابط
+                    </button>
+
                     <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-add-mini">
-                        <i class="fa-solid fa-list-check" style="color:#10b981;"></i> بناء اختبار للدرس
+                        <i class="fa-solid fa-clipboard-question" style="color:#10b981;"></i> بناء اختبار للدرس
                     </a>
                 </div>
             </div>
@@ -720,7 +719,6 @@
         </div>
     }
 
-    <!-- Final Exam Section -->
     <div class="final-exam-zone">
         <h3><i class="fa-solid fa-award"></i> الاختبار النهائي والشهادة</h3>
         <p>الاختبار الشامل الذي يحدد اجتياز الطالب للدورة وحصوله على شهادة التقدير.</p>
@@ -753,10 +751,9 @@
             </a>
         }
     </div>
-
 </div>
 
-<!-- Modal 1: Add Lesson -->
+<!-- Modal: Add Lesson -->
 <div id="lessonModal" class="modal">
     <div class="modal-content">
         <div class="m-head">
@@ -767,7 +764,7 @@
             <input type="hidden" name="courseId" value="@Model.Id" />
             <div class="form-group">
                 <label>عنوان الدرس</label>
-                <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى: التناظر اللفظي" />
+                <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى..." />
             </div>
             <div class="m-foot">
                 <button type="submit" class="btn-m-save">حفظ الدرس</button>
@@ -777,7 +774,7 @@
     </div>
 </div>
 
-<!-- Modal 2: Add Material -->
+<!-- Modal: Add Material -->
 <div id="materialModal" class="modal">
     <div class="modal-content">
         <div class="m-head">
@@ -795,8 +792,8 @@
             </div>
 
             <div class="form-group" id="urlGroup">
-                <label>رابط يوتيوب <span style="color:var(--danger);">*</span></label>
-                <input type="url" name="youtubeUrl" id="yUrl" class="form-control" dir="ltr" placeholder="https://youtube.com/..." />
+                <label>الرابط (يوتيوب أو خارجي) <span style="color:var(--danger);">*</span></label>
+                <input type="url" name="youtubeUrl" id="yUrl" class="form-control" dir="ltr" placeholder="https://..." />
             </div>
 
             <div class="form-group hidden-f" id="fileGroup">
@@ -807,7 +804,7 @@
             <div class="form-group" style="margin-top: 1.5rem; background: #fef9c3; padding: 1rem; border-radius: 1rem; border: 1px solid #fef08a;">
                 <label class="form-label" style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; margin:0;">
                     <input type="checkbox" name="isFreeSample" value="true" style="width: 1.4rem; height: 1.4rem; accent-color: #ca8a04;" />
-                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية" (متاح للطلاب حتى لو انتهى اشتراكهم)</span>
+                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية"</span>
                 </label>
             </div>
 
@@ -819,7 +816,7 @@
     </div>
 </div>
 
-<!-- Modal 3: Edit Material -->
+<!-- Modal: Edit Material -->
 <div id="editMaterialModal" class="modal">
     <div class="modal-content">
         <div class="m-head">
@@ -837,7 +834,7 @@
             </div>
 
             <div class="form-group" id="editUrlGroup">
-                <label>رابط يوتيوب <span style="color:var(--danger);">*</span></label>
+                <label>الرابط <span style="color:var(--danger);">*</span></label>
                 <input type="url" name="youtubeUrl" id="editYUrl" class="form-control" dir="ltr" />
             </div>
 
@@ -860,38 +857,16 @@
         const form = event.target.closest('form');
 
         if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'هل أنت متأكد؟',
-                text: message,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#0a3254',
-                confirmButtonText: 'نعم، قم بالحذف',
-                cancelButtonText: 'إلغاء',
-                customClass: {
-                    popup: 'swal2-custom-popup',
-                    title: 'swal2-custom-title'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
+            Swal.fire({ title: 'هل أنت متأكد؟', text: message, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', cancelButtonColor: '#0a3254', confirmButtonText: 'نعم، قم بالحذف', cancelButtonText: 'إلغاء' }).then((result) => {
+                if (result.isConfirmed) { form.submit(); }
             });
         } else {
-            if (confirm(message)) {
-                form.submit();
-            }
+            if (confirm(message)) { form.submit(); }
         }
     }
 
-    function openModal(id) {
-        document.getElementById(id).classList.add('open');
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
-    }
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
     function openMaterialModal(lessonId, type) {
         document.getElementById('matLessonId').value = lessonId;
@@ -901,6 +876,14 @@
             document.getElementById('matModalTitle').innerText = 'إضافة فيديو للدرس';
             document.getElementById('urlGroup').classList.remove('hidden-f');
             document.getElementById('yUrl').required = true;
+            document.getElementById('yUrl').placeholder = "https://youtube.com/...";
+            document.getElementById('fileGroup').classList.add('hidden-f');
+            document.getElementById('pFile').required = false;
+        } else if(type === 'Link'){
+            document.getElementById('matModalTitle').innerText = 'إضافة رابط خارجي (درايف أو موقع)';
+            document.getElementById('urlGroup').classList.remove('hidden-f');
+            document.getElementById('yUrl').required = true;
+            document.getElementById('yUrl').placeholder = "https://...";
             document.getElementById('fileGroup').classList.add('hidden-f');
             document.getElementById('pFile').required = false;
         } else {
@@ -918,19 +901,17 @@
         document.getElementById('editMatTitle').value = title;
         document.getElementById('editMatType').value = type;
 
-        if(type === 'YouTube' || type === 'RecordedLive'){
-            document.getElementById('editMatModalTitle').innerText = 'تعديل بيانات الفيديو';
+        if(type === 'YouTube' || type === 'RecordedLive' || type === 'Link'){
+            document.getElementById('editMatModalTitle').innerText = type === 'Link' ? 'تعديل الرابط' : 'تعديل بيانات الفيديو';
             document.getElementById('editUrlGroup').classList.remove('hidden-f');
             document.getElementById('editYUrl').value = urlOrPath;
             document.getElementById('editYUrl').required = true;
-
             document.getElementById('editFileGroup').classList.add('hidden-f');
             document.getElementById('editPFile').required = false;
         } else {
             document.getElementById('editMatModalTitle').innerText = 'تعديل بيانات المذكرة';
             document.getElementById('editUrlGroup').classList.add('hidden-f');
             document.getElementById('editYUrl').required = false;
-
             document.getElementById('editFileGroup').classList.remove('hidden-f');
             document.getElementById('editPFile').required = false;
         }

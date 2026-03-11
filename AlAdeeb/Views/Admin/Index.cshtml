@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<AlAdeeb.Models.Course>
 @{
-    ViewData["Title"] = "اللوحة الرئيسية";
+    ViewData["Title"] = User.IsInRole("Admin") ? "لوحة التحكم الرئيسية" : "لوحة المعلم المساعد";
     Layout = "_AdminLayout";
 }
 
 <style>
-    /* تصميم البطاقة الترحيبية الفخمة */
-    .welcome-widget {
-        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6IiBmaWxsPSIjMGEzMjU0Ii8+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6IiBmaWxsPSJ1cmwoI2EpIi8+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxMjRiN2EiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwYTMyNTQiIHN0b3Atb3BhY2l0eT0iMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg=='), linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary) 100%);
+    .dash-banner {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
         border-radius: var(--radius-xl);
         padding: 3rem;
+        color: var(--c-white);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -17,63 +17,61 @@
         margin-bottom: 2.5rem;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(175, 143, 66, 0.2);
     }
 
-        .welcome-widget::after {
+        .dash-banner::after {
             content: '\f5d2';
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             position: absolute;
-            left: -20px;
-            top: -40px;
-            font-size: 15rem;
+            left: 1rem;
+            top: -1rem;
+            font-size: 12rem;
             color: rgba(255,255,255,0.03);
-            transform: rotate(-15deg);
             pointer-events: none;
+            transform: rotate(-15deg);
         }
 
-    .welcome-text h2 {
-        font-size: 2.5rem;
-        color: #FFF !important;
-        margin: 0 0 0.5rem 0;
+    .dash-text h2 {
         font-family: 'Hayah', sans-serif;
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
     }
 
-        .welcome-text h2 span {
-            color: var(--c-secondary);
-        }
+    .dash-text span {
+        color: var(--c-secondary);
+    }
 
-    .welcome-text p {
+    .dash-text p {
+        margin: 0;
         font-size: 1.1rem;
         color: rgba(255,255,255,0.8);
-        margin: 0;
         font-weight: 600;
     }
 
     .btn-create-course {
-        background: linear-gradient(135deg, var(--c-secondary), var(--c-secondary-light));
+        background: var(--c-secondary);
         color: var(--c-primary-dark);
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 1.1rem;
-        display: flex;
+        padding: 1.2rem 2.5rem;
+        border-radius: 1.5rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
         gap: 0.8rem;
         box-shadow: var(--shadow-glow);
         transition: var(--transition);
-        border: none;
         position: relative;
-        z-index: 2;
+        z-index: 10;
     }
 
         .btn-create-course:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(175, 143, 66, 0.5);
+            transform: translateY(-3px);
+            background: var(--c-secondary-light);
         }
 
-    /* شبكة الإحصائيات الزجاجية */
     .kpi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -84,7 +82,7 @@
     .kpi-card {
         background: var(--c-white);
         border-radius: var(--radius-lg);
-        padding: 2rem;
+        padding: 1.5rem 2rem;
         display: flex;
         align-items: center;
         gap: 1.5rem;
@@ -98,226 +96,234 @@
         .kpi-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-md);
-            border-color: rgba(175, 143, 66, 0.3);
-        }
-
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--c-secondary);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: var(--transition);
-        }
-
-        .kpi-card:hover::before {
-            transform: scaleX(1);
+            border-color: rgba(175, 143, 66, 0.2);
         }
 
     .kpi-icon {
-        width: 5rem;
-        height: 5rem;
+        width: 4.5rem;
+        height: 4.5rem;
         border-radius: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.2rem;
+        font-size: 2rem;
+        flex-shrink: 0;
     }
 
     .kpi-blue {
-        background: #e0f2fe;
-        color: #0284c7;
+        background: #eff6ff;
+        color: #3b82f6;
     }
 
     .kpi-gold {
-        background: #fef3c7;
-        color: #d97706;
+        background: rgba(175, 143, 66, 0.1);
+        color: var(--c-secondary);
     }
 
     .kpi-red {
-        background: #fee2e2;
-        color: #dc2626;
+        background: #fef2f2;
+        color: #ef4444;
     }
 
     .kpi-info h3 {
-        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
         color: var(--c-text-muted);
-        margin: 0 0 0.3rem 0;
-        font-weight: 800;
-        text-transform: uppercase;
+        font-weight: 700;
     }
 
     .kpi-info p {
-        font-size: 2.5rem;
-        color: var(--c-primary);
         margin: 0;
-        font-weight: 900;
+        font-size: 2.2rem;
         font-family: Arial, sans-serif;
+        font-weight: 900;
+        color: var(--c-primary);
         line-height: 1;
-    }
-
-    /* قسم الدورات الفخم */
-    .section-glass {
-        background: var(--c-white);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid rgba(0,0,0,0.05);
-        padding: 2rem;
     }
 
     .section-title {
         font-family: 'Hayah', sans-serif;
         font-size: 2rem;
         color: var(--c-primary);
-        margin: 0 0 2rem 0;
+        margin: 0 0 1.5rem 0;
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
+        gap: 0.8rem;
     }
 
         .section-title i {
             color: var(--c-secondary);
+            font-size: 1.6rem;
         }
 
-    .grid-courses {
+    .courses-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 2rem;
     }
 
-    .course-neo-card {
-        background: var(--c-bg);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        border: 1px solid rgba(0,0,0,0.03);
+    .course-card {
+        background: var(--c-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,0.05);
         transition: var(--transition);
         display: flex;
         flex-direction: column;
     }
 
-        .course-neo-card:hover {
-            background: var(--c-white);
+        .course-card:hover {
+            transform: translateY(-10px);
             box-shadow: var(--shadow-md);
-            transform: translateY(-5px);
-            border-color: rgba(10,50,84,0.1);
+            border-color: rgba(175, 143, 66, 0.3);
         }
 
-    .c-top {
+    .c-cover {
+        height: 180px;
+        background: var(--c-primary);
+        position: relative;
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1rem;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
     }
 
-    .c-status {
-        padding: 0.3rem 0.8rem;
+        .c-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+    .course-card:hover .c-cover img {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+
+    .c-cover i {
+        position: absolute;
+        font-size: 4rem;
+        color: rgba(255,255,255,0.2);
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.4rem 1rem;
         border-radius: 50px;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: 800;
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        backdrop-filter: blur(5px);
     }
 
-        .c-status.active {
-            background: #dcfce7;
-            color: #166534;
-        }
+    .b-active {
+        background: rgba(16, 185, 129, 0.9);
+        color: #fff;
+    }
 
-        .c-status.inactive {
-            background: #f1f5f9;
-            color: #475569;
-        }
+    .b-inactive {
+        background: rgba(239, 68, 68, 0.9);
+        color: #fff;
+    }
 
-        .c-status i {
-            font-size: 0.6rem;
-        }
+    .c-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .c-title {
+        font-size: 1.3rem;
+        color: var(--c-primary);
+        margin: 0 0 1rem 0;
+        font-weight: 900;
+        line-height: 1.4;
+    }
+
+    .c-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: var(--c-text-muted);
+    }
 
     .c-price {
         font-family: Arial, sans-serif;
+        font-size: 1.2rem;
         font-weight: 900;
         color: var(--c-secondary);
-        font-size: 1.2rem;
-        background: rgba(175,143,66,0.1);
-        padding: 0.3rem 0.8rem;
-        border-radius: 8px;
-    }
-
-    .c-body h4 {
-        font-family: 'Hayah', sans-serif;
-        font-size: 1.6rem;
-        color: var(--c-primary);
-        margin: 0 0 0.5rem 0;
-    }
-
-    .c-body p {
-        font-size: 0.95rem;
-        color: var(--c-text-muted);
-        line-height: 1.6;
-        margin: 0 0 1.5rem 0;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-weight: 600;
     }
 
     .c-actions {
-        display: flex;
-        gap: 0.8rem;
-        margin-top: auto;
-        border-top: 1px solid rgba(0,0,0,0.05);
-        padding-top: 1.5rem;
-    }
-
-    .btn-action {
-        flex: 1;
-        text-align: center;
-        padding: 0.8rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        transition: var(--transition);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
         gap: 0.5rem;
-        cursor: pointer;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1.2rem;
+        margin-top: auto;
+    }
+
+    .btn-act {
+        padding: 0.8rem;
+        border-radius: 0.8rem;
+        font-weight: 800;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: var(--transition);
         border: none;
+        cursor: pointer;
     }
 
-    .btn-mng {
-        background: var(--c-primary-light);
-        color: var(--c-white);
+    .btn-manage {
+        background: var(--c-primary);
+        color: var(--c-secondary);
+        grid-column: 1;
     }
 
-        .btn-mng:hover {
-            background: var(--c-primary);
-            box-shadow: var(--shadow-sm);
+        .btn-manage:hover {
+            background: var(--c-secondary);
+            color: var(--c-primary);
         }
 
     .btn-icon {
-        width: 45px;
-        flex: none;
-        background: #e2e8f0;
-        color: #475569;
+        width: 42px;
+        padding: 0;
     }
 
-        .btn-icon:hover {
-            background: var(--c-secondary);
-            color: var(--c-white);
+        .btn-icon.edit {
+            background: #eff6ff;
+            color: #3b82f6;
         }
 
-        .btn-icon.del:hover {
-            background: #ef4444;
-            color: var(--c-white);
+            .btn-icon.edit:hover {
+                background: #3b82f6;
+                color: var(--c-white);
+            }
+
+        .btn-icon.del {
+            background: #fef2f2;
+            color: #ef4444;
+            height: 100%;
         }
+
+            .btn-icon.del:hover {
+                background: #ef4444;
+                color: var(--c-white);
+            }
 
     @@media(max-width: 768px) {
         .dash-banner {
@@ -325,89 +331,109 @@
             text-align: center;
             padding: 2.5rem 1.5rem;
         }
-
-        .welcome-widget::after {
-            display: none;
-        }
     }
 </style>
 
 <div class="dash-banner welcome-widget">
-    <div class="dash-text ">
-        <h2 style="color:#FFF;">نظرة عامة على <span style="color:#d1b46b;">المنصة</span></h2>
-        <p style="color:#FFF;">تابع الإحصائيات، أدر المحتوى، وتحكم في كل شيء بسهولة تامة.</p>
+    <div class="dash-text">
+        <h2>نظرة عامة على <span>المنصة</span></h2>
+        <p>@(User.IsInRole("Admin") ? "تابع الإحصائيات، أدر المحتوى، وتحكم في كل شيء بسهولة تامة." : "مرحباً بك، أدر الكورسات المسندة إليك وتابع أسئلة الطلاب.")</p>
     </div>
-    <a href="/Admin/CreateCourse" class="btn-create-course">
-        <i class="fa-solid fa-rocket"></i> إطلاق دورة جديدة
-    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a href="/Admin/CreateCourse" class="btn-create-course">
+            <i class="fa-solid fa-rocket"></i> إطلاق دورة جديدة
+        </a>
+    }
 </div>
 
-<div class="kpi-grid">
-    <div class="kpi-card">
-        <div class="kpi-icon kpi-blue"><i class="fa-solid fa-user-graduate"></i></div>
-        <div class="kpi-info">
-            <h3>إجمالي الطلاب</h3>
-            <p>@ViewBag.TotalStudentsCount</p>
+@if (User.IsInRole("Admin"))
+{
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-blue"><i class="fa-solid fa-user-graduate"></i></div>
+            <div class="kpi-info">
+                <h3>إجمالي الطلاب</h3>
+                <p>@ViewBag.TotalStudentsCount</p>
+            </div>
         </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-gold"><i class="fa-solid fa-cubes"></i></div>
+            <div class="kpi-info">
+                <h3>الدورات المتاحة</h3>
+                <p>@ViewBag.TotalCoursesCount</p>
+            </div>
+        </div>
+        <a href="/Admin/SubscriptionRequests" class="kpi-card" style="cursor: pointer; text-decoration:none;">
+            <div class="kpi-icon kpi-red"><i class="fa-solid fa-bell"></i></div>
+            <div class="kpi-info">
+                <h3>طلبات بانتظار التفعيل</h3>
+                <p>@ViewBag.PendingRequestsCount</p>
+            </div>
+            <i class="fa-solid fa-angle-left" style="position:absolute; left:1.5rem; font-size:1.5rem; color:#cbd5e1;"></i>
+        </a>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon kpi-gold"><i class="fa-solid fa-cubes"></i></div>
-        <div class="kpi-info">
-            <h3>الدورات المتاحة</h3>
-            <p>@ViewBag.TotalCoursesCount</p>
-        </div>
-    </div>
-    <a href="/Admin/SubscriptionRequests" class="kpi-card" style="cursor: pointer; text-decoration:none;">
-        <div class="kpi-icon kpi-red"><i class="fa-solid fa-bell"></i></div>
-        <div class="kpi-info">
-            <h3>طلبات بانتظار التفعيل</h3>
-            <p>@ViewBag.PendingRequestsCount</p>
-        </div>
-        <i class="fa-solid fa-angle-left" style="position:absolute; left:1.5rem; font-size:1.5rem; color:#cbd5e1;"></i>
-    </a>
-</div>
+}
 
 <div class="section-glass">
     <h3 class="section-title"><i class="fa-solid fa-layer-group"></i> المسارات التعليمية الحالية</h3>
 
-    <div class="grid-courses">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var course in Model)
+    @if (Model != null && Model.Any())
+    {
+        <div class="courses-grid">
+            @foreach (var course in Model)
             {
-                <div class="course-neo-card">
-                    <div class="c-top">
-                        @if (course.IsActive)
+                <div class="course-card">
+                    <div class="c-cover">
+                        @if (!string.IsNullOrEmpty(course.ImageUrl))
                         {
-                            <span class="c-status active"><i class="fa-solid fa-circle"></i> مفعل للطلاب</span>
+                            <img src="@course.ImageUrl" alt="@course.Title" />
                         }
                         else
                         {
-                            <span class="c-status inactive"><i class="fa-solid fa-circle"></i> مسودة (مخفي)</span>
+
+                            <i class="fa-solid fa-graduation-cap"></i>
                         }
-                        <span class="c-price">@course.Price ر.س</span>
+
+                        @if (course.IsActive)
+                        {
+                            <div class="status-badge b-active"><i class="fa-solid fa-check"></i> مفعل للطلاب</div>
+                        }
+                        else
+                        {
+
+                            <div class="status-badge b-inactive"><i class="fa-solid fa-eye-slash"></i> مسودة (مخفي)</div>
+                        }
                     </div>
                     <div class="c-body">
-                        <h4>@course.Title</h4>
-                        <p>@course.Description</p>
-                    </div>
-                    <div class="c-actions">
-                        <a href="/Course/Details/@course.Id" class="btn-action btn-mng"><i class="fa-solid fa-photo-film"></i> إدارة المحتوى</a>
-                        <a href="/Admin/EditCourse/@course.Id" class="btn-action btn-icon" title="تعديل"><i class="fa-solid fa-pen-clip"></i></a>
-                        <form asp-action="DeleteCourse" asp-route-id="@course.Id" method="post" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف الكورس نهائياً بكافة محتوياته؟');" style="margin:0;">
-                            <button type="submit" class="btn-action btn-icon del" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
-                        </form>
+                        <h4 class="c-title">@course.Title</h4>
+                        <div class="c-meta">
+                            <span><i class="fa-solid fa-chalkboard-user"></i> المدرب: @(string.IsNullOrEmpty(course.TrainerName) ? "غير محدد" : course.TrainerName)</span>
+                            <span class="c-price">@course.Price ريال</span>
+                        </div>
+
+                        <div class="c-actions">
+                            <a href="/Course/Details/@course.Id" class="btn-act btn-manage"><i class="fa-solid fa-folder-open"></i> إدارة المحتوى</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="/Admin/EditCourse/@course.Id" class="btn-act btn-icon edit" title="تعديل الإعدادات"><i class="fa-solid fa-pen"></i></a>
+                                <form asp-action="DeleteCourse" method="post" style="margin:0;" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف هذه الدورة نهائياً بكل محتوياتها؟');">
+                                    <input type="hidden" name="id" value="@course.Id" />
+                                    <button type="submit" class="btn-act btn-icon del" title="حذف الدورة"><i class="fa-solid fa-trash-can"></i></button>
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
             }
-        }
-        else
-        {
-            <div style="grid-column: 1/-1; text-align:center; padding: 4rem 1rem;">
-                <i class="fa-solid fa-box-open" style="font-size: 5rem; color:#cbd5e1; margin-bottom: 1.5rem;"></i>
-                <h4 style="font-family:'Hayah',sans-serif; font-size: 2rem; color:var(--c-primary); margin:0 0 1rem 0;">المنصة فارغة تماماً</h4>
-                <p style="color:var(--c-text-muted); font-size:1.1rem; font-weight:600;">قم ببناء الدورة الأولى وابدأ في إضافة المحاضرات والاختبارات.</p>
-            </div>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div style="background:var(--c-white); border-radius:var(--radius-xl); padding: 5rem 2rem; text-align:center; box-shadow:var(--shadow-sm); border:1px solid rgba(0,0,0,0.05);">
+            <i class="fa-solid fa-box-open" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 1.5rem;"></i>
+            <h3 style="font-family:'Hayah',sans-serif; font-size: 2rem; color:var(--c-primary); margin:0 0 0.5rem 0;">لا توجد دورات حالياً</h3>
+            <p style="color:var(--c-text-muted); font-size: 1.1rem; font-weight:600;">@(User.IsInRole("Admin") ? "ابدأ بإنشاء أول دورة تعليمية لك من الزر بالأعلى." : "لم تقم الإدارة بتعيينك كمعلم لأي دورة حتى الآن.")</p>
+        </div>
+    }
 </div>

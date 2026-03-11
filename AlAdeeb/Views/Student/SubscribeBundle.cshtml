@@ -1,6 +1,6 @@
-﻿@model AlAdeeb.Models.Course
+﻿@model AlAdeeb.Models.PlatformSetting
 @{
-    ViewData["Title"] = "تأكيد الاشتراك";
+    ViewData["Title"] = "تأكيد اشتراك الباقة الشاملة";
 }
 
 <style>
@@ -24,13 +24,13 @@
         background: var(--c-white);
         border-radius: 2rem;
         box-shadow: var(--shadow-card);
-        border: 1px solid rgba(175,143,66,0.1);
+        border: 2px solid rgba(175,143,66,0.3);
         animation: fadeUp 0.6s ease forwards;
         overflow: visible;
     }
 
     .sub-header {
-        background: linear-gradient(135deg, var(--c-primary) 0%, #051b2e 100%);
+        background: linear-gradient(135deg, var(--c-secondary) 0%, #ca8a04 100%);
         padding: 2.5rem 2rem;
         display: flex;
         flex-direction: column;
@@ -50,12 +50,16 @@
     }
 
     .sub-header::before {
-        content: '';
+        content: '\f521';
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
         position: absolute;
-        inset: 0;
-        background-image: radial-gradient(rgba(175,143,66,0.2) 2px, transparent 2px);
-        background-size: 20px 20px;
-        opacity: 0.5;
+        left: -50px;
+        top: -50px;
+        font-size: 15rem;
+        opacity: 0.1;
+        color: var(--c-white);
+        transform: rotate(-15deg);
     }
 
     .course-info {
@@ -71,81 +75,48 @@
     .course-icon {
         width: 4.5rem;
         height: 4.5rem;
-        background: rgba(255,255,255,0.1);
-        border: 2px solid rgba(175,143,66,0.5);
+        background: rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.5);
         border-radius: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2rem;
-        color: var(--c-secondary);
+        color: var(--c-white);
         backdrop-filter: blur(5px);
         flex-shrink: 0;
     }
 
     .course-info h2 {
         font-family: 'Hayah', sans-serif;
-        font-size: 2rem;
+        font-size: 2.5rem;
         color: var(--c-white);
         margin: 0 0 0.2rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
 
     .course-info p {
         font-size: 1.1rem;
-        color: var(--c-secondary);
-        margin: 0;
-        font-weight: 700;
-    }
-
-    /* تنسيقات بيانات المدرب المضافة */
-    .trainer-badge {
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        padding: 1rem 1.5rem;
-        border-radius: 1rem;
-        margin-top: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        backdrop-filter: blur(5px);
-    }
-
-    .trainer-icon {
-        width: 3rem;
-        height: 3rem;
-        background: var(--c-secondary);
         color: var(--c-primary);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        flex-shrink: 0;
-    }
-
-    .trainer-badge h4 {
-        color: var(--c-white);
-        margin: 0 0 0.2rem 0;
-        font-size: 1.1rem;
-    }
-
-    .trainer-badge p {
-        color: rgba(255,255,255,0.7);
         margin: 0;
-        font-size: 0.9rem;
-        font-family: Arial, sans-serif;
+        font-weight: 900;
+        background: rgba(255,255,255,0.8);
+        padding: 0.2rem 1rem;
+        border-radius: 50px;
+        display: inline-block;
     }
 
     .price-tag {
         position: relative;
         z-index: 10;
-        background: rgba(255,255,255,0.1);
+        background: var(--c-primary);
         border: 1px solid rgba(255,255,255,0.2);
         padding: 1rem 2rem;
         border-radius: 1.2rem;
         text-align: center;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         min-width: 180px;
+        color: var(--c-white);
     }
 
         .price-tag span {
@@ -159,16 +130,16 @@
 
         .price-tag strong {
             font-size: 2.2rem;
-            color: var(--c-white);
             font-family: Arial, sans-serif;
             font-weight: 900;
             line-height: 1;
+            color: var(--c-secondary);
         }
 
         .price-tag small {
             font-size: 1rem;
-            color: var(--c-secondary);
             font-family: 'Hayah', sans-serif;
+            color: var(--c-white);
         }
 
     .sub-body {
@@ -198,7 +169,6 @@
             color: var(--c-secondary);
         }
 
-    /* Payment Methods Grid */
     .payment-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -254,7 +224,7 @@
     .bank-logo-icon {
         width: 140px;
         height: 140px;
-        background: #5031a9; /* STC Pay Color */
+        background: #5031a9;
         color: var(--c-white);
         border-radius: 1.2rem;
         margin-bottom: 1.2rem;
@@ -324,7 +294,6 @@
             color: var(--c-white);
         }
 
-    /* Upload Form */
     .upload-area {
         border: 2px dashed #cbd5e1;
         border-radius: 1.5rem;
@@ -473,46 +442,28 @@
 
 <div class="subscribe-page">
     <div class="sub-card">
-
         <div class="sub-header">
             <div class="course-info">
-                <div class="course-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                <div class="course-icon"><i class="fa-solid fa-crown"></i></div>
                 <div>
-                    <h2>تأكيد حجز الدورة</h2>
-                    <p>@Model.Title</p>
-
-                    <!-- بيانات المدرب التي تظهر للطالب -->
-                    @if (!string.IsNullOrEmpty(Model.TrainerName))
-                    {
-                        <div class="trainer-badge">
-                            <div class="trainer-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-                            <div>
-                                <h4>بإشراف المدرب: @Model.TrainerName</h4>
-                                <p>@Model.TrainerBio</p>
-                            </div>
-                        </div>
-                    }
+                    <h2>@Model.BundleTitle</h2>
+                    <p>الاشتراك الشامل في جميع الكورسات</p>
                 </div>
             </div>
             <div class="price-tag">
                 <span>المبلغ المطلوب</span>
-                <strong>@Model.Price <small>ريال</small></strong>
+                <strong>@Model.BundlePrice <small>ريال</small></strong>
             </div>
         </div>
 
         <div class="sub-body">
-
             <!-- طرق الدفع -->
             <div class="bank-section">
                 <h3 class="section-title"><i class="fa-solid fa-money-check-dollar"></i> 1. اختر طريقة الدفع الأنسب لك وحول المبلغ</h3>
-
                 <div class="payment-grid">
-
                     <!-- بنك الإنماء -->
                     <div class="bank-card">
-                        <div class="qr-container">
-                            <img src="~/images/1.jpg" alt="QR بنك الإنماء" />
-                        </div>
+                        <div class="qr-container"><img src="~/images/1.jpg" alt="QR بنك الإنماء" /></div>
                         <h4>بنك الإنماء</h4>
                         <p>صلاح الدين فتحي عبدالعال</p>
                         <div class="iban-box">
@@ -520,12 +471,9 @@
                             <button type="button" class="copy-btn" onclick="copyText('SA9405000068205855779000')" title="نسخ الآيبان"><i class="fa-regular fa-copy"></i></button>
                         </div>
                     </div>
-
                     <!-- بنك الراجحي -->
                     <div class="bank-card">
-                        <div class="qr-container">
-                            <img src="~/images/2.jpg" alt="QR بنك الراجحي" />
-                        </div>
+                        <div class="qr-container"><img src="~/images/2.jpg" alt="QR بنك الراجحي" /></div>
                         <h4>بنك الراجحي</h4>
                         <p>صلاح الدين فتحي عبدالعال</p>
                         <div class="iban-box">
@@ -533,12 +481,9 @@
                             <button type="button" class="copy-btn" onclick="copyText('SA6880000694608016626187')" title="نسخ الآيبان"><i class="fa-regular fa-copy"></i></button>
                         </div>
                     </div>
-
                     <!-- STC Pay -->
                     <div class="bank-card">
-                        <div class="bank-logo-icon">
-                            <i class="fa-solid fa-wallet"></i>
-                        </div>
+                        <div class="bank-logo-icon"><i class="fa-solid fa-wallet"></i></div>
                         <h4>STC Pay</h4>
                         <p>صلاح الدين فتحي عبدالعال</p>
                         <div class="iban-box">
@@ -546,16 +491,13 @@
                             <button type="button" class="copy-btn" onclick="copyText('0540091992')" title="نسخ رقم المحفظة"><i class="fa-regular fa-copy"></i></button>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <!-- رفع الإيصال -->
             <div class="upload-section">
-                <h3 class="section-title"><i class="fa-solid fa-cloud-arrow-up"></i> 2. إرفاق إيصال التحويل</h3>
-                <form asp-controller="Student" asp-action="SubmitSubscription" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="courseId" value="@Model.Id" />
-
+                <h3 class="section-title"><i class="fa-solid fa-cloud-arrow-up"></i> 2. إرفاق إيصال التحويل لتفعيل الباقة</h3>
+                <form asp-controller="Student" asp-action="SubmitBundleSubscription" method="post" enctype="multipart/form-data">
                     <div class="upload-area">
                         <input type="file" name="receiptImage" id="receiptImage" required accept="image/*" class="upload-input" onchange="previewImg(this)">
                         <img id="preview" src="" class="preview-img" />
@@ -565,13 +507,11 @@
                             <p class="upload-hint">يجب أن تكون صورة واضحة (JPG, PNG)</p>
                         </div>
                     </div>
-
                     <button type="submit" class="submit-btn">
-                        إرسال الإيصال للتفعيل <i class="fa-solid fa-paper-plane"></i>
+                        تأكيد وإرسال للإدارة <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </form>
             </div>
-
         </div>
 
         <div class="whatsapp-support">
@@ -580,7 +520,6 @@
                 <i class="fa-brands fa-whatsapp"></i> تواصل مع خدمة العملاء
             </a>
         </div>
-
     </div>
 </div>
 
@@ -588,31 +527,12 @@
     function copyText(text) {
         navigator.clipboard.writeText(text).then(function() {
             if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'تم نسخ الرقم بنجاح',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    customClass: { popup: 'swal2-custom-popup' }
-                });
-            } else {
-                alert('تم النسخ: ' + text);
-            }
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'تم النسخ بنجاح', showConfirmButton: false, timer: 3000, timerProgressBar: true });
+            } else { alert('تم النسخ: ' + text); }
         }, function(err) {
             if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطأ',
-                    text: 'تعذر النسخ تلقائياً، يرجى تحديده ونسخه يدوياً.',
-                    confirmButtonColor: '#dc2626',
-                    customClass: { popup: 'swal2-custom-popup', title: 'swal2-custom-title' }
-                });
-            } else {
-                alert('فشل النسخ.');
-            }
+                Swal.fire({ icon: 'error', title: 'خطأ', text: 'تعذر النسخ، انسخه يدوياً.', confirmButtonColor: '#dc2626' });
+            } else { alert('فشل النسخ.'); }
         });
     }
 

@@ -1,329 +1,429 @@
 ﻿@model AlAdeeb.Models.Course
 @{
     ViewData["Title"] = "إدارة محتوى الدورة";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    int videoCount = 0;
+    int pdfCount = 0;
+    int linkCount = 0;
+    int quizCount = Model.Quizzes?.Count ?? 0;
+
+    if (Model.Lessons != null)
+    {
+        foreach (var lesson in Model.Lessons)
+        {
+            if (lesson.Materials != null)
+            {
+                videoCount += lesson.Materials.Count(m => m.MaterialType == "YouTube" || m.MaterialType == "RecordedLive");
+                pdfCount += lesson.Materials.Count(m => m.MaterialType == "PDF");
+                linkCount += lesson.Materials.Count(m => m.MaterialType == "Link");
+            }
+            if (lesson.Quizzes != null)
+            {
+                quizCount += lesson.Quizzes.Count;
+            }
+        }
+    }
 }
 
 <style>
-    /* ... (احتفظ بنفس تنسيقات الصفحة هنا دون تغيير لتوفير المساحة) ... */
-    .course-banner {
-        background: linear-gradient(135deg, var(--c-primary-dark) 0%, var(--c-primary-light) 100%);
-        border-radius: var(--radius-xl);
-        padding: 3rem;
-        color: var(--c-white);
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        box-shadow: var(--shadow-md);
-        margin-bottom: 3rem;
-        position: relative;
-        overflow: hidden;
+    :root {
+        --dash-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --border-light: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary: #0a3254;
+        --secondary: #af8f42;
+        --danger: #ef4444;
+        --success: #10b981;
+        --info: #3b82f6;
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        --radius-lg: 1.5rem;
+        --transition: all 0.3s ease;
     }
 
-    @@media(min-width: 768px) {
-        .course-banner {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .course-details-page {
+        font-family: 'Cairo', sans-serif;
+        color: var(--text-main);
     }
 
-    .course-banner::before {
-        content: '';
-        position: absolute;
-        right: -50px;
-        top: -50px;
-        width: 200px;
-        height: 200px;
-        background: var(--c-secondary);
-        border-radius: 50%;
-        filter: blur(50px);
-        opacity: 0.2;
-    }
-
-    .c-info {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        position: relative;
-        z-index: 10;
-    }
-
-    .c-icon {
-        width: 5.5rem;
-        height: 5.5rem;
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        color: var(--c-secondary);
-        backdrop-filter: blur(10px);
-    }
-
-    .c-info h2 {
-        font-family: 'Hayah', sans-serif;
-        font-size: 2.5rem;
-        margin: 0 0 0.5rem 0;
-        line-height: 1.2;
-    }
-
-    .c-badge {
-        background: #059669;
-        color: #fff;
-        font-size: 0.8rem;
-        font-weight: 800;
-        padding: 0.3rem 0.8rem;
-        border-radius: 50px;
-        display: inline-block;
-    }
-
-    .c-stats-box {
-        background: rgba(0,0,0,0.2);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 1.5rem 2.5rem;
-        border-radius: 1.5rem;
-        text-align: center;
-        position: relative;
-        z-index: 10;
-    }
-
-        .c-stats-box span {
-            display: block;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .c-stats-box strong {
-            font-size: 2.8rem;
-            font-family: Arial, sans-serif;
-            font-weight: 900;
-            line-height: 1;
-        }
-
-    .add-lesson-btn {
-        background: var(--c-secondary);
-        color: var(--c-primary-dark);
-        padding: 1.2rem 2.5rem;
-        border-radius: 1.5rem;
-        font-size: 1.2rem;
-        font-weight: 900;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.8rem;
-        border: none;
-        cursor: pointer;
-        box-shadow: var(--shadow-glow);
-        transition: var(--transition);
-        margin-bottom: 2rem;
-    }
-
-        .add-lesson-btn:hover {
-            transform: translateY(-3px);
-            background: var(--c-secondary-light);
-        }
-
-    .lesson-card {
-        background: var(--c-white);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid rgba(0,0,0,0.05);
-        margin-bottom: 2rem;
-        overflow: hidden;
-    }
-
-    .lesson-header {
-        background: #f8fafc;
-        padding: 1.5rem 2.5rem;
-        border-bottom: 2px solid #f1f5f9;
+    /* 1. Header Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, #061c33 100%);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
     }
 
-    .lesson-title {
+        .hero-banner::after {
+            content: '\f5d2';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: -20px;
+            top: -40px;
+            font-size: 15rem;
+            color: rgba(255,255,255,0.03);
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+    .course-title-box {
+        position: relative;
+        z-index: 10;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
-        .lesson-title i {
-            color: var(--c-primary);
-            font-size: 1.5rem;
-        }
-
-        .lesson-title h3 {
-            font-family: 'Hayah', sans-serif;
-            font-size: 1.8rem;
-            color: var(--c-primary);
-            margin: 0;
-        }
-
-    .lesson-body {
-        padding: 2rem 2.5rem;
-    }
-
-    .lesson-actions {
+    .course-icon-main {
+        width: 5rem;
+        height: 5rem;
+        background: rgba(175, 143, 66, 0.2);
+        border: 1px solid rgba(175, 143, 66, 0.4);
+        color: var(--secondary);
+        border-radius: 1.2rem;
         display: flex;
-        gap: 1rem;
-        padding: 1.5rem 2.5rem;
-        background: #fdfdfd;
-        border-top: 1px dashed #e2e8f0;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        backdrop-filter: blur(10px);
     }
 
-    .btn-act-mini {
-        background: rgba(10,50,84,0.05);
-        color: var(--c-primary);
-        padding: 0.8rem 1.5rem;
-        border-radius: 1rem;
-        font-weight: 800;
-        font-size: 0.95rem;
-        border: none;
-        cursor: pointer;
+    .course-title-box h1 {
+        font-family: 'Hayah', sans-serif;
+        font-size: 2.2rem;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* 2. Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 1.2rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-card);
+        transition: var(--transition);
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(10, 50, 84, 0.2);
+        }
+
+    .stat-icon {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .bg-blue-soft {
+        background: #eff6ff;
+        color: #3b82f6;
+    }
+
+    .bg-red-soft {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .bg-green-soft {
+        background: #ecfdf5;
+        color: #10b981;
+    }
+
+    .bg-gold-soft {
+        background: rgba(175, 143, 66, 0.1);
+        color: var(--secondary);
+    }
+
+    .bg-purple-soft {
+        background: #f3e8ff;
+        color: #a855f7;
+    }
+
+    .stat-text h4 {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0 0 0.3rem 0;
+        font-weight: 700;
+    }
+
+    .stat-text p {
+        font-size: 1.8rem;
+        font-family: Arial, sans-serif;
+        color: var(--primary);
+        font-weight: 900;
+        margin: 0;
+        line-height: 1;
+    }
+
+    /* 3. Actions */
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+        .header-actions h3 {
+            font-family: 'Hayah', sans-serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+    .btn-primary-action {
+        background: var(--primary);
+        color: var(--secondary);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 10px rgba(10, 50, 84, 0.15);
+        font-family: inherit;
+        text-decoration: none;
+    }
+
+        .btn-primary-action:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+    /* 4. Lesson Cards */
+    .lesson-box {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .lesson-head {
+        background: #f8fafc;
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .lesson-head-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--primary);
+    }
+
+        .lesson-head-title i {
+            color: var(--secondary);
+            font-size: 1.4rem;
+        }
+
+    .lesson-content {
+        padding: 1.5rem;
+    }
+
+    /* 5. Materials List */
+    .material-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border: 1px solid var(--border-light);
+        border-radius: 1rem;
+        margin-bottom: 0.8rem;
+        transition: var(--transition);
+        background: #ffffff;
+    }
+
+        .material-item:hover {
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-card);
+        }
+
+    .m-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .m-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .m-details h5 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0 0 0.2rem 0;
+    }
+
+    .m-details span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-edit-sm {
+        background: #eff6ff;
+        color: var(--info);
+        border: 1px solid #bfdbfe;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
         transition: var(--transition);
         text-decoration: none;
     }
 
-        .btn-act-mini:hover {
-            background: var(--c-primary);
-            color: var(--c-secondary);
+        .btn-edit-sm:hover {
+            background: var(--info);
+            color: white;
+            border-color: var(--info);
         }
 
-    .btn-del-lesson {
-        background: #fee2e2;
-        color: #dc2626;
-        padding: 0.8rem;
-        border-radius: 1rem;
-        border: none;
-        cursor: pointer;
-        transition: var(--transition);
+    .btn-delete-sm {
+        background: #fef2f2;
+        color: var(--danger);
+        border: 1px solid #fecaca;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.6rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        cursor: pointer;
+        transition: var(--transition);
     }
 
-        .btn-del-lesson:hover {
-            background: #dc2626;
-            color: #fff;
+        .btn-delete-sm:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
         }
 
-    .item-row {
-        background: var(--c-bg);
-        border: 1px solid rgba(0,0,0,0.04);
-        border-radius: 1rem;
+    /* 6. Lesson Actions Footer */
+    .lesson-foot {
         padding: 1rem 1.5rem;
-        margin-bottom: 1rem;
+        background: #fcfcfd;
+        border-top: 1px dashed var(--border-light);
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: var(--transition);
+        gap: 0.8rem;
+        flex-wrap: wrap;
     }
 
-        .item-row:hover {
-            background: var(--c-white);
-            border-color: var(--c-secondary);
-            transform: translateX(-5px);
-            box-shadow: var(--shadow-sm);
-        }
-
-    .item-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .i-ico {
-        width: 40px;
-        height: 40px;
-        background: var(--c-white);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-        .i-ico.vid {
-            color: #3b82f6;
-        }
-
-        .i-ico.pdf {
-            color: #ef4444;
-        }
-
-        .i-ico.qz {
-            color: #10b981;
-        }
-
-    .item-info h5 {
-        font-size: 1.1rem;
+    .btn-add-mini {
+        background: white;
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.8rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        color: var(--c-primary);
-        margin: 0;
-    }
-
-    .item-info span {
-        font-size: 0.8rem;
-        color: var(--c-text-muted);
-        font-weight: 600;
-    }
-
-    .btn-del-item {
-        background: #fee2e2;
-        color: #dc2626;
-        border: none;
-        width: 35px;
-        height: 35px;
-        border-radius: 8px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.5rem;
         cursor: pointer;
         transition: var(--transition);
+        text-decoration: none;
     }
 
-        .btn-del-item:hover {
-            background: #dc2626;
-            color: var(--c-white);
+        .btn-add-mini:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f8fafc;
         }
 
-    .final-exam-section {
-        background: linear-gradient(135deg, rgba(175, 143, 66, 0.1) 0%, rgba(175, 143, 66, 0.02) 100%);
-        border: 2px dashed var(--c-secondary);
-        border-radius: var(--radius-xl);
-        padding: 3rem;
+    /* 7. Final Exam Section */
+    .final-exam-zone {
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0iI2FmOGY0MiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+PC9zdmc+'), #fff;
+        border: 2px dashed var(--secondary);
+        border-radius: var(--radius-lg);
+        padding: 3rem 2rem;
         text-align: center;
-        margin-top: 4rem;
+        margin-top: 3rem;
     }
 
-        .final-exam-section h3 {
+        .final-exam-zone h3 {
             font-family: 'Hayah', sans-serif;
             font-size: 2.2rem;
-            color: var(--c-primary);
-            margin: 0 0 1rem 0;
+            color: var(--primary);
+            margin: 0 0 0.5rem 0;
         }
 
-        .final-exam-section p {
-            color: var(--c-text-muted);
-            font-weight: 600;
-            margin-bottom: 2rem;
+        .final-exam-zone p {
+            color: var(--text-muted);
             font-size: 1.1rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
         }
 
+    /* 8. Modals */
     .modal {
         display: none;
         position: fixed;
@@ -344,10 +444,10 @@
         }
 
     .modal-content {
-        background: var(--c-white);
+        background: var(--card-bg);
         width: 100%;
         max-width: 500px;
-        border-radius: var(--radius-xl);
+        border-radius: var(--radius-lg);
         box-shadow: 0 25px 50px rgba(0,0,0,0.2);
         overflow: hidden;
         transform: scale(0.9);
@@ -361,7 +461,7 @@
     .m-head {
         background: #f8fafc;
         padding: 1.5rem 2rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-light);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -370,7 +470,7 @@
         .m-head h3 {
             font-family: 'Hayah', sans-serif;
             font-size: 1.8rem;
-            color: var(--c-primary);
+            color: var(--primary);
             margin: 0;
         }
 
@@ -378,13 +478,13 @@
         background: none;
         border: none;
         font-size: 1.5rem;
-        color: #94a3b8;
+        color: var(--text-muted);
         cursor: pointer;
         transition: color 0.3s;
     }
 
         .btn-close:hover {
-            color: #ef4444;
+            color: var(--danger);
         }
 
     .m-body {
@@ -398,16 +498,16 @@
         .form-group label {
             display: block;
             font-weight: 800;
-            color: var(--c-primary);
+            color: var(--primary);
             margin-bottom: 0.5rem;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
     .form-control {
         width: 100%;
         padding: 1rem 1.2rem;
         border-radius: 1rem;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--border-light);
         font-family: inherit;
         font-size: 1rem;
         font-weight: 600;
@@ -416,8 +516,8 @@
     }
 
         .form-control:focus {
-            border-color: var(--c-secondary);
-            background: var(--c-white);
+            border-color: var(--secondary);
+            background: var(--card-bg);
             outline: none;
         }
 
@@ -425,13 +525,13 @@
         display: flex;
         gap: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--border-light);
     }
 
     .btn-m-save {
         flex: 2;
-        background: var(--c-primary);
-        color: var(--c-secondary);
+        background: var(--primary);
+        color: var(--secondary);
         padding: 1rem;
         border-radius: 1rem;
         font-weight: 800;
@@ -442,14 +542,14 @@
     }
 
         .btn-m-save:hover {
-            background: var(--c-secondary);
-            color: var(--c-primary);
+            background: var(--secondary);
+            color: var(--primary);
         }
 
     .btn-m-cancel {
         flex: 1;
         background: #f1f5f9;
-        color: #64748b;
+        color: var(--text-muted);
         padding: 1rem;
         border-radius: 1rem;
         font-weight: 800;
@@ -459,158 +559,201 @@
     }
 
         .btn-m-cancel:hover {
-            background: #e2e8f0;
-            color: var(--c-primary);
+            background: var(--border-light);
+            color: var(--primary);
         }
 
     .hidden-f {
         display: none !important;
     }
-
-    /* تنسيق خاص للعينات المجانية */
-    .badge-free {
-        background: #ecfccb;
-        color: #ca8a04;
-        border: 1px solid #fef08a;
-        font-size: 0.75rem;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        font-weight: bold;
-        margin-right: 0.5rem;
-    }
 </style>
 
-<div class="course-banner">
-    <div class="c-info">
-        <div class="c-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div>
-            <h2>@Model.Title</h2>
-            @if (Model.IsActive)
-            {
-                <span class="c-badge"><i class="fa-solid fa-check"></i> الكورس مفعل ومتاح للطلاب</span>
-            }
+<div class="course-details-page">
+
+    <div class="hero-banner">
+        <div class="course-title-box">
+            <div class="course-icon-main"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div>
+                <h1>@Model.Title</h1>
+                @if (Model.IsActive)
+                {
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> الكورس مفعل للطلاب</span>
+                }
+            </div>
         </div>
     </div>
-    <div class="c-stats-box">
-        <span>إجمالي الدروس</span>
-        <strong>@(Model.Lessons?.Count ?? 0)</strong>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon bg-gold-soft"><i class="fa-solid fa-book-open"></i></div>
+            <div class="stat-text"><h4>إجمالي الدروس</h4><p>@(Model.Lessons?.Count ?? 0)</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-soft"><i class="fa-solid fa-play"></i></div>
+            <div class="stat-text"><h4>مقاطع الفيديو</h4><p>@videoCount</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-red-soft"><i class="fa-solid fa-file-pdf"></i></div>
+            <div class="stat-text"><h4>المذكرات والملفات</h4><p>@pdfCount</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-purple-soft"><i class="fa-solid fa-link"></i></div>
+            <div class="stat-text"><h4>روابط خارجية</h4><p>@linkCount</p></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-green-soft"><i class="fa-solid fa-list-check"></i></div>
+            <div class="stat-text"><h4>الاختبارات والتطبيقات</h4><p>@quizCount</p></div>
+        </div>
     </div>
-</div>
 
-<button class="add-lesson-btn" onclick="openModal('lessonModal')">
-    <i class="fa-solid fa-folder-plus"></i> إضافة وحدة / درس جديد
-</button>
+    <div class="header-actions">
+        <h3><i class="fa-solid fa-layer-group" style="color:var(--secondary);"></i> المنهج الدراسي</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <!-- زر بنك الأسئلة للمحاكي -->
+            <a href="/Admin/QuestionBank?courseId=@Model.Id" class="btn-primary-action" style="background: var(--secondary); color: var(--primary);">
+                <i class="fa-solid fa-vault"></i> بنك الأسئلة للمحاكي
+            </a>
+            <button class="btn-primary-action" onclick="openModal('lessonModal')">
+                <i class="fa-solid fa-plus"></i> إضافة وحدة / درس
+            </button>
+        </div>
+    </div>
 
-@if (Model.Lessons != null && Model.Lessons.Any())
-{
-    foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
+    @if (Model.Lessons != null && Model.Lessons.Any())
     {
-        <div class="lesson-card">
-            <div class="lesson-header">
-                <div class="lesson-title">
-                    <i class="fa-solid fa-book-open"></i>
-                    <h3>@lesson.Title</h3>
+        foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
+        {
+            <div class="lesson-box">
+                <div class="lesson-head">
+                    <div class="lesson-head-title">
+                        <i class="fa-solid fa-book"></i> @lesson.Title
+                    </div>
+                    <form asp-controller="Course" asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmDelete(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
+                        <button type="submit" class="btn-delete-sm" title="حذف الدرس بالكامل" style="width: 40px; height: 40px;"><i class="fa-solid fa-trash-can"></i></button>
+                    </form>
                 </div>
-                <form asp-controller="Course" asp-action="DeleteLesson" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'هل أنت متأكد من حذف الدرس بكافة فيديوهاته واختباراته؟');" style="margin:0;">
-                    <button type="submit" class="btn-del-lesson" title="حذف الدرس"><i class="fa-solid fa-trash-can"></i></button>
-                </form>
-            </div>
-            <div class="lesson-body">
-                @if (lesson.Materials != null && lesson.Materials.Any())
-                {
-                    foreach (var m in lesson.Materials.OrderBy(x => x.OrderIndex))
+
+                <div class="lesson-content">
+                    @if (lesson.Materials != null && lesson.Materials.Any())
                     {
-                        <div class="item-row">
-                            <div class="item-info">
-                                <div class="i-ico @(m.MaterialType == "PDF" ? "pdf" : "vid")">
-                                    <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : "fa-play")"></i>
+                        foreach (var m in lesson.Materials.OrderBy(x => x.OrderIndex))
+                        {
+                            <div class="material-item">
+                                <div class="m-info">
+                                    <div class="m-icon @(m.MaterialType == "PDF" ? "bg-red-soft" : (m.MaterialType == "Link" ? "bg-purple-soft" : "bg-blue-soft"))">
+                                        <i class="fa-solid @(m.MaterialType == "PDF" ? "fa-file-pdf" : (m.MaterialType == "Link" ? "fa-link" : "fa-play"))"></i>
+                                    </div>
+                                    <div class="m-details">
+                                        <h5>@m.Title</h5>
+                                        <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : (m.MaterialType == "Link" ? "رابط خارجي" : "فيديو مسجل"))</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h5>
-                                        @m.Title
-                                        @if (m.IsFreeSample)
-                                        {
-                                            <span class="badge-free"><i class="fa-solid fa-unlock-keyhole"></i> عينة مجانية</span>
-                                        }
-                                    </h5>
-                                    <span>@(m.MaterialType == "PDF" ? "مذكرة / ملف" : "فيديو مسجل")</span>
+                                <div class="action-group">
+                                    <button type="button" class="btn-edit-sm" onclick="openEditMaterialModal(@m.Id, '@Html.Raw(m.Title.Replace("'", "\\'"))', '@m.MaterialType', '@Html.Raw((m.UrlOrPath ?? "").Replace("'", "\\'"))')" title="تعديل المحتوى"><i class="fa-solid fa-pen"></i></button>
+                                    <form asp-controller="Course" asp-action="DeleteMaterial" asp-route-id="@m.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmDelete(event, 'هل أنت متأكد من حذف هذا المحتوى نهائياً؟');">
+                                        <button type="submit" class="btn-delete-sm" title="حذف المحتوى"><i class="fa-solid fa-xmark"></i></button>
+                                    </form>
                                 </div>
                             </div>
-                            <form asp-controller="Course" asp-action="DeleteMaterial" asp-route-id="@m.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف هذا المحتوى نهائياً؟');">
-                                <button type="submit" class="btn-del-item"><i class="fa-solid fa-xmark"></i></button>
-                            </form>
-                        </div>
+                        }
                     }
-                }
 
-                @if (lesson.Quizzes != null && lesson.Quizzes.Any())
-                {
-                    foreach (var q in lesson.Quizzes)
+                    @if (lesson.Quizzes != null && lesson.Quizzes.Any())
                     {
-                        <div class="item-row">
-                            <div class="item-info">
-                                <div class="i-ico qz"><i class="fa-solid fa-list-check"></i></div>
-                                <div>
-                                    <h5>@q.Title</h5>
-                                    <span>اختبار تطبيقي - @q.DurationInMinutes دقيقة</span>
+                        foreach (var q in lesson.Quizzes)
+                        {
+                            <div class="material-item">
+                                <div class="m-info">
+                                    <div class="m-icon bg-green-soft">
+                                        <i class="fa-solid fa-clipboard-question"></i>
+                                    </div>
+                                    <div class="m-details">
+                                        <h5>@q.Title</h5>
+                                        <span>اختبار تطبيقي - @q.DurationInMinutes دقيقة</span>
+                                    </div>
+                                </div>
+                                <div class="action-group">
+                                    <a href="/Admin/EditQuiz/@q.Id" class="btn-edit-sm" title="تعديل الاختبار"><i class="fa-solid fa-pen"></i></a>
+                                    <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@q.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmDelete(event, 'حذف الاختبار سيؤدي لمسح إجابات الطلاب المتعلقة به؟');">
+                                        <button type="submit" class="btn-delete-sm" title="حذف الاختبار"><i class="fa-solid fa-xmark"></i></button>
+                                    </form>
                                 </div>
                             </div>
-                            <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@q.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار؟');">
-                                <button type="submit" class="btn-del-item"><i class="fa-solid fa-xmark"></i></button>
-                            </form>
+                        }
+                    }
+
+                    @if ((lesson.Materials == null || !lesson.Materials.Any()) && (lesson.Quizzes == null || !lesson.Quizzes.Any()))
+                    {
+                        <div style="text-align:center; padding: 2rem; color:var(--text-muted); background: #f8fafc; border-radius: 1rem; border: 1px dashed var(--border-light);">
+                            <i class="fa-solid fa-inbox" style="font-size: 2rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i>
+                            <p style="margin:0; font-weight:700;">الدرس فارغ، أضف محتوى من الأسفل.</p>
                         </div>
                     }
-                }
+                </div>
 
-                @if ((lesson.Materials == null || !lesson.Materials.Any()) && (lesson.Quizzes == null || !lesson.Quizzes.Any()))
-                {
-                    <p style="text-align:center; color:#94a3b8; font-weight:600; margin: 1rem 0;">الدرس فارغ حالياً، أضف محتوى من الأسفل.</p>
-                }
-            </div>
-            <div class="lesson-actions">
-                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'YouTube')"><i class="fa-brands fa-youtube" style="color:#3b82f6;"></i> إضافة فيديو</button>
-                <button type="button" class="btn-act-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')"><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> رفع PDF</button>
-                <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-act-mini"><i class="fa-solid fa-clipboard-question" style="color:#10b981;"></i> بناء اختبار للدرس</a>
-            </div>
-        </div>
-    }
-}
-else
-{
-    <div style="text-align:center; padding: 4rem; background: var(--c-white); border-radius: var(--radius-xl); border: 1px dashed rgba(10,50,84,0.2);">
-        <i class="fa-solid fa-folder-open" style="font-size:4rem; color:#cbd5e1; margin-bottom:1.5rem;"></i>
-        <h3 style="font-family:'Hayah',sans-serif; font-size:2rem; color:var(--c-primary); margin:0 0 0.5rem 0;">الدورة فارغة</h3>
-        <p style="color:var(--c-text-muted); font-size:1.1rem; font-weight:600;">قم بإضافة الوحدة التعليمية الأولى للبدء في رفع المحتوى.</p>
-    </div>
-}
+                <div class="lesson-foot">
+                    <button type="button" class="btn-add-mini" onclick="openMaterialModal(@lesson.Id, 'YouTube')">
+                        <i class="fa-brands fa-youtube" style="color:#3b82f6;"></i> إضافة فيديو
+                    </button>
+                    <button type="button" class="btn-add-mini" onclick="openMaterialModal(@lesson.Id, 'PDF')">
+                        <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> رفع PDF
+                    </button>
 
-<div class="final-exam-section">
-    <h3><i class="fa-solid fa-award"></i> الاختبار النهائي والشهادة</h3>
-    <p>أضف اختباراً شاملاً للدورة ليحصل الطالب على شهادة اجتياز عند تجاوزه بنجاح.</p>
+                    <button type="button" class="btn-add-mini" onclick="openMaterialModal(@lesson.Id, 'Link')">
+                        <i class="fa-solid fa-link" style="color:#8b5cf6;"></i> إضافة رابط
+                    </button>
 
-    @if (Model.Quizzes != null && Model.Quizzes.Any(q => q.IsFinalExam))
-    {
-        var finalExam = Model.Quizzes.First(q => q.IsFinalExam);
-        <div class="item-row" style="max-width: 600px; margin: 0 auto; background: var(--c-white); border-color: var(--c-secondary);">
-            <div class="item-info">
-                <div class="i-ico" style="background: var(--c-secondary); color: var(--c-white);"><i class="fa-solid fa-star"></i></div>
-                <div style="text-align: right;">
-                    <h5>@finalExam.Title</h5>
-                    <span>درجة الاجتياز للشهادة: @finalExam.MinimumPassScore% | @finalExam.DurationInMinutes دقيقة</span>
+                    <a href="/Admin/AddQuiz?courseId=@Model.Id&lessonId=@lesson.Id" class="btn-add-mini">
+                        <i class="fa-solid fa-clipboard-question" style="color:#10b981;"></i> بناء اختبار للدرس
+                    </a>
                 </div>
             </div>
-            <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@finalExam.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmAction(event, 'حذف الاختبار النهائي سيلغي قدرة الطلاب الجدد على استخراج الشهادة؟');">
-                <button type="submit" class="btn-del-lesson"><i class="fa-solid fa-trash-can"></i></button>
-            </form>
-        </div>
+        }
     }
     else
     {
-        <a href="/Admin/AddQuiz?courseId=@Model.Id&isFinalExam=true" class="add-lesson-btn" style="margin:0;"><i class="fa-solid fa-plus"></i> بناء الاختبار النهائي للدورة</a>
+        <div style="text-align:center; padding: 5rem 2rem; background: var(--card-bg); border-radius: var(--radius-lg); border: 1px dashed var(--border-light); box-shadow: var(--shadow-card);">
+            <i class="fa-solid fa-box-open" style="font-size:5rem; color:#cbd5e1; margin-bottom:1.5rem;"></i>
+            <h3 style="font-family:'Hayah',sans-serif; font-size:2rem; color:var(--primary); margin:0 0 0.5rem 0;">لم تقم بإضافة أي دروس</h3>
+            <p style="color:var(--text-muted); font-size:1.1rem; font-weight:600;">قم بالضغط على "إضافة وحدة / درس" للبدء في تقسيم الكورس.</p>
+        </div>
     }
+
+    <div class="final-exam-zone">
+        <h3><i class="fa-solid fa-award"></i> الاختبار النهائي والشهادة</h3>
+        <p>الاختبار الشامل الذي يحدد اجتياز الطالب للدورة وحصوله على شهادة التقدير.</p>
+
+        @if (Model.Quizzes != null && Model.Quizzes.Any(q => q.IsFinalExam))
+        {
+            var finalExam = Model.Quizzes.First(q => q.IsFinalExam);
+            <div class="material-item" style="max-width: 600px; margin: 0 auto; border-color: var(--secondary); background: #fffcf2;">
+                <div class="m-info">
+                    <div class="m-icon" style="background: var(--secondary); color: white;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="m-details">
+                        <h5 style="font-size: 1.2rem;">@finalExam.Title</h5>
+                        <span>درجة الاجتياز: @finalExam.MinimumPassScore% | المدة: @finalExam.DurationInMinutes دقيقة</span>
+                    </div>
+                </div>
+                <div class="action-group">
+                    <a href="/Admin/EditQuiz/@finalExam.Id" class="btn-edit-sm" title="تعديل الاختبار"><i class="fa-solid fa-pen"></i></a>
+                    <form asp-controller="Course" asp-action="DeleteQuiz" asp-route-id="@finalExam.Id" asp-route-courseId="@Model.Id" method="post" onsubmit="confirmDelete(event, 'حذف الاختبار النهائي سيلغي قدرة الطلاب على استخراج الشهادة؟');">
+                        <button type="submit" class="btn-delete-sm" style="border-color:#fecaca;" title="حذف الاختبار"><i class="fa-solid fa-trash-can"></i></button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a href="/Admin/AddQuiz?courseId=@Model.Id&isFinalExam=true" class="btn-primary-action" style="margin:0;">
+                <i class="fa-solid fa-plus"></i> بناء الاختبار النهائي للدورة
+            </a>
+        }
+    </div>
 </div>
 
-<!-- Modal 1: Add Lesson -->
+<!-- Modal: Add Lesson -->
 <div id="lessonModal" class="modal">
     <div class="modal-content">
         <div class="m-head">
@@ -621,7 +764,7 @@ else
             <input type="hidden" name="courseId" value="@Model.Id" />
             <div class="form-group">
                 <label>عنوان الدرس</label>
-                <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى: التناظر اللفظي" />
+                <input type="text" name="title" required class="form-control" placeholder="مثال: الوحدة الأولى..." />
             </div>
             <div class="m-foot">
                 <button type="submit" class="btn-m-save">حفظ الدرس</button>
@@ -631,7 +774,7 @@ else
     </div>
 </div>
 
-<!-- Modal 2: Add Material -->
+<!-- Modal: Add Material -->
 <div id="materialModal" class="modal">
     <div class="modal-content">
         <div class="m-head">
@@ -644,25 +787,24 @@ else
             <input type="hidden" name="materialType" id="matType" value="" />
 
             <div class="form-group">
-                <label>عنوان المحتوى <span style="color:#ef4444;">*</span></label>
+                <label>عنوان المحتوى <span style="color:var(--danger);">*</span></label>
                 <input type="text" name="title" required class="form-control" placeholder="مثال: الشرح التفصيلي..." />
             </div>
 
             <div class="form-group" id="urlGroup">
-                <label>رابط يوتيوب <span style="color:#ef4444;">*</span></label>
-                <input type="url" name="youtubeUrl" id="yUrl" class="form-control" dir="ltr" placeholder="https://youtube.com/..." />
+                <label>الرابط (يوتيوب أو خارجي) <span style="color:var(--danger);">*</span></label>
+                <input type="url" name="youtubeUrl" id="yUrl" class="form-control" dir="ltr" placeholder="https://..." />
             </div>
 
             <div class="form-group hidden-f" id="fileGroup">
-                <label>اختر ملف الـ PDF <span style="color:#ef4444;">*</span></label>
+                <label>اختر ملف الـ PDF <span style="color:var(--danger);">*</span></label>
                 <input type="file" name="pdfFile" id="pFile" class="form-control" accept="application/pdf" style="padding: 0.8rem;" />
             </div>
 
-            <!-- خيار العينة المجانية -->
             <div class="form-group" style="margin-top: 1.5rem; background: #fef9c3; padding: 1rem; border-radius: 1rem; border: 1px solid #fef08a;">
                 <label class="form-label" style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer; margin:0;">
                     <input type="checkbox" name="isFreeSample" value="true" style="width: 1.4rem; height: 1.4rem; accent-color: #ca8a04;" />
-                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية" (متاح للطلاب حتى لو انتهى اشتراكهم)</span>
+                    <span style="color: #a16207;">جعل هذا المقطع "عينة مجانية"</span>
                 </label>
             </div>
 
@@ -674,14 +816,57 @@ else
     </div>
 </div>
 
+<!-- Modal: Edit Material -->
+<div id="editMaterialModal" class="modal">
+    <div class="modal-content">
+        <div class="m-head">
+            <h3 id="editMatModalTitle">تعديل محتوى</h3>
+            <button class="btn-close" onclick="closeModal('editMaterialModal')" type="button"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form asp-controller="Course" asp-action="EditMaterial" method="post" enctype="multipart/form-data" class="m-body">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+            <input type="hidden" name="id" id="editMatId" value="" />
+            <input type="hidden" name="materialType" id="editMatType" value="" />
+
+            <div class="form-group">
+                <label>عنوان المحتوى <span style="color:var(--danger);">*</span></label>
+                <input type="text" name="title" id="editMatTitle" required class="form-control" />
+            </div>
+
+            <div class="form-group" id="editUrlGroup">
+                <label>الرابط <span style="color:var(--danger);">*</span></label>
+                <input type="url" name="youtubeUrl" id="editYUrl" class="form-control" dir="ltr" />
+            </div>
+
+            <div class="form-group hidden-f" id="editFileGroup">
+                <label>تحديث ملف الـ PDF <span style="color:var(--text-muted); font-weight: normal;">(اختياري)</span></label>
+                <input type="file" name="pdfFile" id="editPFile" class="form-control" accept="application/pdf" style="padding: 0.8rem;" />
+            </div>
+
+            <div class="m-foot">
+                <button type="submit" class="btn-m-save"><i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات</button>
+                <button type="button" class="btn-m-cancel" onclick="closeModal('editMaterialModal')">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function openModal(id) {
-        document.getElementById(id).classList.add('open');
+    function confirmDelete(event, message) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ title: 'هل أنت متأكد؟', text: message, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', cancelButtonColor: '#0a3254', confirmButtonText: 'نعم، قم بالحذف', cancelButtonText: 'إلغاء' }).then((result) => {
+                if (result.isConfirmed) { form.submit(); }
+            });
+        } else {
+            if (confirm(message)) { form.submit(); }
+        }
     }
 
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
-    }
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
     function openMaterialModal(lessonId, type) {
         document.getElementById('matLessonId').value = lessonId;
@@ -691,6 +876,14 @@ else
             document.getElementById('matModalTitle').innerText = 'إضافة فيديو للدرس';
             document.getElementById('urlGroup').classList.remove('hidden-f');
             document.getElementById('yUrl').required = true;
+            document.getElementById('yUrl').placeholder = "https://youtube.com/...";
+            document.getElementById('fileGroup').classList.add('hidden-f');
+            document.getElementById('pFile').required = false;
+        } else if(type === 'Link'){
+            document.getElementById('matModalTitle').innerText = 'إضافة رابط خارجي (درايف أو موقع)';
+            document.getElementById('urlGroup').classList.remove('hidden-f');
+            document.getElementById('yUrl').required = true;
+            document.getElementById('yUrl').placeholder = "https://...";
             document.getElementById('fileGroup').classList.add('hidden-f');
             document.getElementById('pFile').required = false;
         } else {
@@ -701,5 +894,27 @@ else
             document.getElementById('pFile').required = true;
         }
         openModal('materialModal');
+    }
+
+    function openEditMaterialModal(id, title, type, urlOrPath) {
+        document.getElementById('editMatId').value = id;
+        document.getElementById('editMatTitle').value = title;
+        document.getElementById('editMatType').value = type;
+
+        if(type === 'YouTube' || type === 'RecordedLive' || type === 'Link'){
+            document.getElementById('editMatModalTitle').innerText = type === 'Link' ? 'تعديل الرابط' : 'تعديل بيانات الفيديو';
+            document.getElementById('editUrlGroup').classList.remove('hidden-f');
+            document.getElementById('editYUrl').value = urlOrPath;
+            document.getElementById('editYUrl').required = true;
+            document.getElementById('editFileGroup').classList.add('hidden-f');
+            document.getElementById('editPFile').required = false;
+        } else {
+            document.getElementById('editMatModalTitle').innerText = 'تعديل بيانات المذكرة';
+            document.getElementById('editUrlGroup').classList.add('hidden-f');
+            document.getElementById('editYUrl').required = false;
+            document.getElementById('editFileGroup').classList.remove('hidden-f');
+            document.getElementById('editPFile').required = false;
+        }
+        openModal('editMaterialModal');
     }
 </script>

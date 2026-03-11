@@ -166,24 +166,55 @@ namespace AlAdeeb.Controllers
             return RedirectToAction(nameof(Dashboard));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SubscribeBundle()
+        {
+            var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
+            if (settings == null || !settings.IsBundleActive)
+                return RedirectToAction(nameof(BrowseCourses));
+
+            return View(settings);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubscribeToBundle()
+        public async Task<IActionResult> SubmitBundleSubscription(IFormFile receiptImage)
         {
             int studentId = GetCurrentStudentId();
             var settings = await _context.PlatformSettings.FirstOrDefaultAsync();
-            if (settings == null || !settings.IsBundleActive) return RedirectToAction(nameof(BrowseCourses));
+            if (settings == null || !settings.IsBundleActive)
+                return RedirectToAction(nameof(BrowseCourses));
 
+            // معالجة صورة الإيصال المرفقة
+            string receiptPath = null;
+            if (receiptImage != null && receiptImage.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/receipts");
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + receiptImage.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create)) { await receiptImage.CopyToAsync(fileStream); }
+                receiptPath = "/uploads/receipts/" + uniqueFileName;
+            }
+
+            // إضافة طلب اشتراك لكل الكورسات الفعالة وربطها بنفس الإيصال
             var allCourses = await _context.Courses.Where(c => c.IsActive).ToListAsync();
             foreach (var c in allCourses)
             {
                 if (!await _context.SubscriptionRequests.AnyAsync(r => r.CourseId == c.Id && r.StudentId == studentId))
                 {
-                    _context.SubscriptionRequests.Add(new SubscriptionRequest { StudentId = studentId, CourseId = c.Id, Status = "Pending", RequestDate = DateTime.Now });
+                    _context.SubscriptionRequests.Add(new SubscriptionRequest
+                    {
+                        StudentId = studentId,
+                        CourseId = c.Id,
+                        Status = "Pending",
+                        RequestDate = DateTime.Now,
+                        ReceiptImagePath = receiptPath // حفظ مسار الإيصال هنا
+                    });
                 }
             }
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "تم رفع طلب اشتراكك في الباقة الشاملة بنجاح!";
+            TempData["SuccessMessage"] = "تم رفع إيصال اشتراكك في الباقة الشاملة بنجاح، يرجى انتظار التفعيل من الإدارة.";
             return RedirectToAction(nameof(Dashboard));
         }
 

@@ -102,13 +102,12 @@ namespace AlAdeeb.Controllers
         }
 
         // ==========================================
-        // إدارة الكورسات (مُحدثة لحل مشكلة قائمة المعلمين)
+        // إدارة الكورسات
         // ==========================================
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCourse()
         {
-            // إرسال قائمة المعلمين للواجهة
             ViewBag.Teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync();
             return View();
         }
@@ -122,6 +121,7 @@ namespace AlAdeeb.Controllers
             ModelState.Remove("Quizzes");
             ModelState.Remove("Teacher");
             ModelState.Remove("QuestionBankSections");
+
             if (ModelState.IsValid)
             {
                 if (courseImage != null)
@@ -139,7 +139,6 @@ namespace AlAdeeb.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // في حال وجود خطأ بالبيانات، يجب إعادة إرسال القائمة حتى لا تختفي
             ViewBag.Teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync();
             return View(model);
         }
@@ -151,7 +150,6 @@ namespace AlAdeeb.Controllers
             var course = await _context.Courses.FindAsync(id);
             if (course == null) return NotFound();
 
-            // إرسال قائمة المعلمين للواجهة
             ViewBag.Teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync();
             return View(course);
         }
@@ -162,15 +160,19 @@ namespace AlAdeeb.Controllers
         public async Task<IActionResult> EditCourse(int id, Course model)
         {
             if (id != model.Id) return NotFound();
+            ModelState.Remove("Lessons");
+            ModelState.Remove("Quizzes");
+            ModelState.Remove("Teacher");
+            ModelState.Remove("QuestionBankSections");
+
             if (ModelState.IsValid)
             {
                 _context.Update(model);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "تم تعديل الكورس وتعيين المعلم بنجاح!";
+                TempData["SuccessMessage"] = "تم تعديل الكورس بنجاح!";
                 return RedirectToAction(nameof(Index));
             }
 
-            // إعادة إرسال القائمة في حال فشل الـ Validation
             ViewBag.Teachers = await _context.Users.Where(u => u.Role == "Teacher").ToListAsync();
             return View(model);
         }
@@ -223,7 +225,6 @@ namespace AlAdeeb.Controllers
             var student = await _context.Users.FindAsync(id);
             if (student != null)
             {
-                // مسح كافة سجلات الطالب بشكل متسلسل لتجنب أخطاء قواعد البيانات
                 var subscriptions = _context.SubscriptionRequests.Where(s => s.StudentId == id);
                 _context.SubscriptionRequests.RemoveRange(subscriptions);
 
@@ -237,10 +238,7 @@ namespace AlAdeeb.Controllers
                 _context.ForumReplies.RemoveRange(forumReplies);
 
                 var forumPosts = _context.ForumPosts.Include(p => p.Replies).Where(p => p.UserId == id);
-                foreach (var post in forumPosts)
-                {
-                    _context.ForumReplies.RemoveRange(post.Replies);
-                }
+                foreach (var post in forumPosts) { _context.ForumReplies.RemoveRange(post.Replies); }
                 _context.ForumPosts.RemoveRange(forumPosts);
 
                 _context.Users.Remove(student);
@@ -661,6 +659,42 @@ namespace AlAdeeb.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "تم تحديث إعدادات الشاشة الرئيسية والباقة الشاملة بنجاح.";
             return RedirectToAction(nameof(PlatformSettings));
+        }
+
+        // ==========================================
+        // تغيير كلمة المرور للإدارة والمعلمين
+        // ==========================================
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user != null)
+            {
+                var passwordHasher = new PasswordHasher<ApplicationUser>();
+                var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, currentPassword);
+
+                if (result == PasswordVerificationResult.Success)
+                {
+                    user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "تم تغيير كلمة المرور بنجاح!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "كلمة المرور الحالية غير صحيحة.";
+                }
+            }
+            return View();
         }
     }
 }

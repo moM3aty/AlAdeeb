@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "استكشاف الدورات التدريبية";
     var mySubscriptions = ViewBag.MySubscriptions as List<int> ?? new List<int>();
+    var settings = ViewBag.PlatformSettings as AlAdeeb.Models.PlatformSetting;
 }
 
 <style>
@@ -15,8 +16,8 @@
         --c-secondary: #af8f42;
         --c-bg: #f8fafc;
         --c-white: #ffffff;
-        --shadow-card: 0 10px 30px rgba(10, 50, 84, 0.08);
-        --transition: all 0.4s ease;
+        --shadow-card: 0 15px 35px rgba(10, 50, 84, 0.08);
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .browse-page {
@@ -27,13 +28,15 @@
         direction: rtl;
     }
 
+    /* Page Header */
     .page-header {
         text-align: center;
         margin-bottom: 4rem;
+        animation: fadeUp 0.8s ease;
     }
 
         .page-header h2 {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
             color: var(--c-primary);
             margin: 0 0 1rem 0;
             font-weight: 900;
@@ -45,11 +48,152 @@
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.6;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
         }
 
-    .course-grid {
+    .container {
         max-width: 1300px;
         margin: 0 auto;
+    }
+
+    /* VIP Bundle Card */
+    .bundle-card {
+        background: linear-gradient(135deg, var(--c-primary) 0%, #061c33 100%);
+        border-radius: 2.5rem;
+        padding: 3rem;
+        color: #fff;
+        margin-bottom: 4rem;
+        box-shadow: 0 25px 50px rgba(10, 50, 84, 0.2);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 3rem;
+        border: 2px solid rgba(175, 143, 66, 0.3);
+        animation: fadeUp 1s ease;
+    }
+
+        .bundle-card::before {
+            content: '\f521';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: -50px;
+            top: -50px;
+            font-size: 20rem;
+            opacity: 0.05;
+            color: var(--c-secondary);
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+    .bundle-info {
+        position: relative;
+        z-index: 10;
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .bundle-badge {
+        background: var(--c-secondary);
+        color: var(--c-primary);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 5px 15px rgba(175, 143, 66, 0.4);
+    }
+
+    .bundle-info h2 {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        margin: 0 0 1rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        color: var(--c-white);
+    }
+
+    .bundle-info p {
+        font-size: 1.2rem;
+        color: #cbd5e1;
+        max-width: 600px;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+    }
+
+    .bundle-pricing {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 2.5rem;
+        border-radius: 2rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        min-width: 280px;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .bundle-old-price {
+        text-decoration: line-through;
+        opacity: 0.6;
+        font-size: 1.4rem;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        color: #fca5a5;
+        margin-bottom: 0.5rem;
+    }
+
+    .bundle-price {
+        font-size: 3.5rem;
+        font-weight: 900;
+        font-family: Arial, sans-serif;
+        line-height: 1;
+        margin-bottom: 1.5rem;
+        color: var(--c-secondary);
+        text-shadow: 0 5px 15px rgba(175, 143, 66, 0.3);
+    }
+
+        .bundle-price span {
+            font-size: 1.2rem;
+            font-family: 'Hayah', sans-serif;
+            color: var(--c-white);
+        }
+
+    .btn-bundle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        width: 100%;
+        border: none;
+        background: var(--c-secondary);
+        color: var(--c-primary);
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        font-size: 1.4rem;
+        font-family: 'Hayah', sans-serif;
+        font-weight: 900;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(175, 143, 66, 0.3);
+        text-decoration: none;
+    }
+
+        .btn-bundle:hover {
+            transform: translateY(-5px);
+            background: #cfa858;
+            box-shadow: 0 15px 30px rgba(175, 143, 66, 0.5);
+        }
+
+    /* Courses Grid */
+    .course-grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: 2.5rem;
@@ -73,36 +217,45 @@
         overflow: hidden;
         box-shadow: var(--shadow-card);
         transition: var(--transition);
-        border: 1px solid rgba(0,0,0,0.03);
+        border: 1px solid rgba(10,50,84,0.04);
         position: relative;
         display: flex;
         flex-direction: column;
+        animation: fadeUp 0.8s ease backwards;
     }
 
+        .course-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .course-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
         .course-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(175, 143, 66, 0.15);
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(10, 50, 84, 0.12);
             border-color: rgba(175, 143, 66, 0.3);
         }
 
     .discount-badge {
         position: absolute;
         top: 1.5rem;
-        left: -2rem;
+        left: -2.5rem;
         background: #ef4444;
         color: white;
-        padding: 0.5rem 3rem;
+        padding: 0.5rem 4rem;
         font-size: 1.1rem;
         font-weight: 900;
         transform: rotate(-45deg);
-        z-index: 10;
-        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+        z-index: 20;
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     .c-cover {
-        height: 220px;
+        height: 240px;
         background: var(--c-primary);
         position: relative;
         display: flex;
@@ -124,8 +277,54 @@
         opacity: 1;
     }
 
+    .cover-icon {
+        position: absolute;
+        font-size: 5rem;
+        color: rgba(255,255,255,0.1);
+        transition: var(--transition);
+    }
+
+    .course-card:hover .cover-icon {
+        transform: scale(1.2);
+        color: rgba(255,255,255,0.2);
+    }
+
+    /* Trainer Badge */
+    .trainer-tag {
+        position: absolute;
+        bottom: .4rem;
+        right: 2rem;
+        background: var(--c-white);
+        padding: 0.5rem 1rem 0.5rem 0.5rem;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        z-index: 10;
+        border: 1px solid rgba(175, 143, 66, 0.2);
+    }
+
+        .trainer-tag i {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--c-primary);
+            color: var(--c-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .trainer-tag span {
+            font-weight: 900;
+            color: var(--c-primary);
+            font-size: 1rem;
+        }
+
     .c-body {
-        padding: 2rem;
+        padding: 3rem 2rem 2rem 2rem;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
@@ -140,7 +339,7 @@
     }
 
     .c-desc {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #64748b;
         margin: 0 0 2rem 0;
         line-height: 1.7;
@@ -148,27 +347,34 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
     }
 
     .price-box {
         margin-top: auto;
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: 1.5rem;
         background: #f8fafc;
-        padding: 1rem;
-        border-radius: 1rem;
+        padding: 1.2rem;
+        border-radius: 1.2rem;
         border: 1px dashed #cbd5e1;
-        text-align: center;
+    }
+
+    .price-details {
+        display: flex;
+        flex-direction: column;
     }
 
     .old-price {
-        color: #94a3b8;
-        font-size: 1.2rem;
+        color: #ef4444;
+        font-size: 1.1rem;
         text-decoration: line-through;
         font-family: Arial, sans-serif;
         font-weight: bold;
+        margin-bottom: 0.2rem;
     }
 
     .current-price {
@@ -176,23 +382,26 @@
         font-size: 2rem;
         font-weight: 900;
         font-family: Arial, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+        line-height: 1;
     }
 
         .current-price span {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--c-secondary);
-            font-family: 'Hayah';
+            font-family: 'Hayah', sans-serif;
         }
+
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
 
     .btn-action {
         width: 100%;
         text-align: center;
         padding: 1.2rem;
-        border-radius: 1rem;
+        border-radius: 1.2rem;
         font-size: 1.3rem;
         font-weight: 900;
         text-decoration: none;
@@ -213,59 +422,82 @@
             background: var(--c-secondary);
             color: var(--c-primary);
             transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(175, 143, 66, 0.3);
         }
 
     .btn-owned {
         background: #10b981;
         color: white;
-        cursor: default;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
     }
+
+        .btn-owned:hover {
+            background: #059669;
+            transform: translateY(-3px);
+        }
 
     .btn-outline {
         background: #f8fafc;
         color: var(--c-primary);
         border: 2px solid var(--c-primary);
-        margin-top: 0.5rem;
     }
 
         .btn-outline:hover {
             background: var(--c-primary);
             color: var(--c-white);
         }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 
 <div class="browse-page">
-    <div class="page-header">
-        <h2>استكشف برامجنا التدريبية</h2>
-        <p>باقات متنوعة مصممة خصيصاً لتأسيسك وتدريبك حتى تصل إلى العلامة الكاملة 100%.</p>
-    </div>
+    <div class="container">
 
-    <div style="max-width: 1300px; margin: 0 auto;">
-        @if (ViewBag.PlatformSettings != null && ViewBag.PlatformSettings.IsBundleActive)
+        <div class="page-header">
+            <h2>استكشف برامجنا التدريبية</h2>
+            <p>باقات متنوعة مصممة خصيصاً لتأسيسك وتدريبك حتى تصل إلى العلامة الكاملة 100% في اختبارات القياس.</p>
+        </div>
+
+        @if (settings != null && settings.IsBundleActive)
         {
-            <div style="background: linear-gradient(135deg, var(--c-secondary) 0%, #ca8a04 100%); border-radius: 2rem; padding: 3rem; color: #fff; margin-bottom: 4rem; box-shadow: 0 20px 40px rgba(175, 143, 66, 0.3); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
-                <i class="fa-solid fa-crown" style="position: absolute; left: -20px; top: -20px; font-size: 15rem; opacity: 0.1; transform: rotate(-15deg);"></i>
-                <div style="position: relative; z-index: 10;">
-                    <span style="background: #fff; color: #ca8a04; padding: 0.4rem 1rem; border-radius: 50px; font-weight: 900; font-size: 0.9rem; margin-bottom: 1rem; display: inline-block;">أفضل قيمة 💎</span>
-                    <h2 style="font-family: 'Hayah'; font-size: 3rem; margin: 0 0 0.5rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">@ViewBag.PlatformSettings.BundleTitle</h2>
-                    <p style="font-size: 1.2rem; font-weight: 600; max-width: 600px; margin: 0;">@ViewBag.PlatformSettings.BundleDescription</p>
+            <div class="bundle-card">
+                <div class="bundle-info">
+                    <span class="bundle-badge"><i class="fa-solid fa-crown"></i> الباقة الأوفر والخيّار الذكي</span>
+                    <h2>@settings.BundleTitle</h2>
+                    <p>@settings.BundleDescription</p>
+                    <ul style="list-style:none; padding:0; margin:1.5rem 0 0 0; color:#e2e8f0; font-family:Arial; font-weight:bold; display:flex; flex-direction:column; gap:0.5rem;">
+                        <li><i class="fa-solid fa-check-circle" style="color:var(--c-secondary);"></i> اشتراك مفتوح في جميع دورات المنصة الحالية والمستقبلية.</li>
+                        <li><i class="fa-solid fa-check-circle" style="color:var(--c-secondary);"></i> وصول كامل لبنك الأسئلة والمحاكيات العشوائية.</li>
+                        <li><i class="fa-solid fa-check-circle" style="color:var(--c-secondary);"></i> دعم فني ومتابعة شخصية من المدرب.</li>
+                    </ul>
                 </div>
-                <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); padding: 2rem; border-radius: 1.5rem; text-align: center; backdrop-filter: blur(10px); min-width: 250px; z-index: 10;">
-                    @if (ViewBag.PlatformSettings.BundleOldPrice != null)
+                <div class="bundle-pricing">
+                    @if (settings.BundleOldPrice != null && settings.BundleOldPrice > settings.BundlePrice)
                     {
-                        <div style="text-decoration: line-through; opacity: 0.8; font-size: 1.2rem; font-family: Arial; font-weight: bold; margin-bottom: 0.5rem;">@ViewBag.PlatformSettings.BundleOldPrice ريال</div>
+                        <div class="bundle-old-price">@settings.BundleOldPrice ريال</div>
                     }
-                    <div style="font-size: 3rem; font-weight: 900; font-family: Arial; line-height: 1; margin-bottom: 1rem;">@ViewBag.PlatformSettings.BundlePrice <span style="font-size: 1.2rem; font-family: 'Hayah';">ريال</span></div>
+                    <div class="bundle-price">@settings.BundlePrice <span>ريال سعودي</span></div>
 
                     @if (User.Identity.IsAuthenticated && User.IsInRole("Student"))
                     {
-                        <form asp-action="SubscribeToBundle" method="post">
-                            <button type="submit" style="display: block; width: 100%; border: none; background: var(--c-primary); color: var(--c-secondary); padding: 1rem; border-radius: 1rem; font-size: 1.3rem; font-family: 'Hayah'; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(10,50,84,0.3);">اشترك في الباقة الآن</button>
+                        <form asp-action="SubscribeBundle" method="post" style="margin:0;">
+                            <button type="submit" class="btn-bundle"><i class="fa-solid fa-rocket"></i> اشترك في الباقة الآن</button>
                         </form>
                     }
-                    else
+                    else if (!User.Identity.IsAuthenticated)
                     {
-                        <a href="/Account/Login" style="display: block; width: 100%; border: none; background: var(--c-primary); color: var(--c-secondary); padding: 1rem; border-radius: 1rem; font-size: 1.3rem; text-decoration: none; transition: 0.3s; box-shadow: 0 10px 20px rgba(10,50,84,0.3);">سجل دخول للاشتراك</a>
+                        <a href="/Account/Login" class="btn-bundle"><i class="fa-solid fa-user-lock"></i> سجل دخول للاشتراك</a>
                     }
                 </div>
             </div>
@@ -275,44 +507,63 @@
             @foreach (var course in Model)
             {
                 bool isOwned = mySubscriptions.Contains(course.Id);
+
                 <div class="course-card">
                     @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
                     {
                         <div class="discount-badge">عرض خاص</div>
                     }
+
                     <div class="c-cover">
                         @if (!string.IsNullOrEmpty(course.ImageUrl))
                         {
-                            <img src="@course.ImageUrl" alt="@course.Title" />
+                            <img src="@course.ImageUrl" alt="@course.Title" loading="lazy" />
                         }
                         else
                         {
-
-                            <i class="fa-solid fa-graduation-cap" style="font-size: 5rem; color: rgba(255,255,255,0.2); position:absolute;"></i>
+                            <i class="fa-solid fa-graduation-cap cover-icon"></i>
                         }
+
+                        <!-- إظهار اسم المدرب على الغلاف -->
+                        <div class="trainer-tag">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            <span>@(string.IsNullOrEmpty(course.TrainerName) ? "أ. صلاح عبد العال" : course.TrainerName)</span>
+                        </div>
                     </div>
+
                     <div class="c-body">
                         <h3 class="c-title">@course.Title</h3>
                         <p class="c-desc">@course.Description</p>
+
                         <div class="price-box">
-                            @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
-                            {
-                                <div class="old-price">@course.OldPrice ريال</div>
-                            }
-                            <div class="current-price">@course.Price <span>ريال سعودي</span></div>
+                            <div class="price-details">
+                                @if (course.OldPrice.HasValue && course.OldPrice.Value > course.Price)
+                                {
+                                    <span class="old-price">@course.OldPrice ريال</span>
+                                }
+                                <div class="current-price">@course.Price <span>ريال سعودي</span></div>
+                            </div>
+                            <div style="text-align:left; color:#94a3b8; font-size:0.85rem; font-weight:bold;">
+                                <i class="fa-solid fa-clock"></i>
+                                @(course.AccessDurationMonths.HasValue ? $"{course.AccessDurationMonths} شهور" : "مدى الحياة")
+                            </div>
                         </div>
-                        @if (isOwned)
-                        {
-                            <a href="/Student/Dashboard" class="btn-action btn-owned"><i class="fa-solid fa-circle-check"></i> مشترك بالفعل</a>
-                        }
-                        else
-                        {
-                            <a href="/Student/Subscribe/@course.Id" class="btn-action btn-buy"><i class="fa-solid fa-cart-shopping"></i> اشترك الآن</a>
-                            <a href="/Student/CourseContent/@course.Id" class="btn-action btn-outline"><i class="fa-solid fa-eye"></i> شاهد العينة المجانية</a>
-                        }
+
+                        <div class="btn-group">
+                            @if (isOwned)
+                            {
+                                <a href="/Student/CourseContent/@course.Id" class="btn-action btn-owned"><i class="fa-solid fa-circle-play"></i> مشترك بالفعل - ادخل للدرس</a>
+                            }
+                            else
+                            {
+                                <a href="/Student/Subscribe/@course.Id" class="btn-action btn-buy"><i class="fa-solid fa-cart-plus"></i> اشترك في الدورة</a>
+                                <a href="/Student/CourseContent/@course.Id" class="btn-action btn-outline"><i class="fa-solid fa-eye"></i> شاهد العينة المجانية</a>
+                            }
+                        </div>
                     </div>
                 </div>
             }
         </div>
+
     </div>
 </div>

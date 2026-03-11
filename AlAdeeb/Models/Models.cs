@@ -38,6 +38,10 @@ namespace AlAdeeb.Models
         public int? TeacherId { get; set; }
         public ApplicationUser Teacher { get; set; }
 
+        // بيانات المدرب
+        public string? TrainerName { get; set; }
+        public string? TrainerBio { get; set; }
+
         public ICollection<Lesson> Lessons { get; set; }
         public ICollection<Quiz> Quizzes { get; set; }
         public ICollection<QuestionBankSection> QuestionBankSections { get; set; }
@@ -59,9 +63,6 @@ namespace AlAdeeb.Models
     public class ForumPost { [Key] public int Id { get; set; } public int CourseId { get; set; } public Course Course { get; set; } public int UserId { get; set; } public ApplicationUser User { get; set; } [Required] public string Content { get; set; } public DateTime CreatedAt { get; set; } public ICollection<ForumReply> Replies { get; set; } }
     public class ForumReply { [Key] public int Id { get; set; } public int ForumPostId { get; set; } public ForumPost ForumPost { get; set; } public int UserId { get; set; } public ApplicationUser User { get; set; } [Required] public string Content { get; set; } public DateTime CreatedAt { get; set; } }
 
-    // ==========================================
-    // إعدادات المنصة والباقة الشاملة
-    // ==========================================
     public class PlatformSetting
     {
         [Key] public int Id { get; set; }
@@ -75,7 +76,6 @@ namespace AlAdeeb.Models
         public decimal? BundleOldPrice { get; set; }
         public int? BundleDurationMonths { get; set; }
 
-        // السيرة الذاتية للمدرب (تعديل جديد)
         public string? TrainerBio { get; set; }
     }
 }

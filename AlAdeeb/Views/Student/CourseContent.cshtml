@@ -68,9 +68,6 @@
         min-height: 400px;
     }
 
-    /* ========================================================
-           الطبقات الزجاجية العازلة لمنع الطالب من الخروج لليوتيوب أو الكليك يمين
-           ======================================================== */
     .yt-blocker-center {
         position: absolute;
         top: 0;
@@ -81,7 +78,7 @@
         background: transparent;
         cursor: default;
     }
-    /* درع المنتصف */
+
     .yt-blocker-top {
         position: absolute;
         top: 0;
@@ -92,7 +89,7 @@
         background: transparent;
         cursor: default;
     }
-    /* يمنع الضغط على العنوان والمشاركة */
+
     .yt-blocker-logo {
         position: absolute;
         bottom: 45px;
@@ -103,7 +100,7 @@
         background: transparent;
         cursor: default;
     }
-    /* يمنع الضغط على شعار يوتيوب المائي */
+
     .yt-blocker-avatar {
         position: absolute;
         top: 10px;
@@ -114,7 +111,7 @@
         background: transparent;
         cursor: default;
     }
-    /* يمنع الضغط على صورة القناة (يمين) */
+
     .yt-blocker-avatar-left {
         position: absolute;
         top: 10px;
@@ -125,18 +122,18 @@
         background: transparent;
         cursor: default;
     }
-    /* يمنع الضغط على صورة القناة (يسار) */
+
     .yt-blocker-yt-text {
         position: absolute;
         bottom: 0;
-        right: 0px;
-        width: 120px;
+        right: 50px;
+        width: 80px;
         height: 50px;
         z-index: 15;
         background: transparent;
         cursor: default;
     }
-    /* درع كلمة YouTube */
+
     .yt-blocker-progress {
         position: absolute;
         bottom: 0;
@@ -147,7 +144,6 @@
         background: transparent;
         cursor: default;
     }
-    /* درع شريط التقدم */
 
     .player-iframe {
         width: 100%;
@@ -163,7 +159,6 @@
         object-fit: contain;
     }
 
-    /* الحماية (العلامة المائية) */
     .watermark-container {
         position: absolute;
         inset: 0;
@@ -289,6 +284,7 @@
         margin: 0;
     }
 
+    /* إصلاح السكرول للقائمة الجانبية */
     .sidebar {
         width: 100%;
         background: var(--c-white);
@@ -303,11 +299,10 @@
     @@media(min-width: 992px) {
         .sidebar {
             width: 420px;
-            height: 100%;
+            height: calc(100vh - 140px);
         }
     }
 
-    /* تبويبات القائمة الجانبية */
     .sidebar-tabs {
         display: flex;
         border-bottom: 1px solid #e2e8f0;
@@ -349,6 +344,7 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        min-height: 0;
     }
 
         .playlist-content::-webkit-scrollbar {
@@ -360,13 +356,13 @@
             border-radius: 10px;
         }
 
-    /* شريط تقدم الطالب داخل المنهج */
     .curr-progress-box {
         background: rgba(10,50,84,0.03);
         border: 1px solid rgba(10,50,84,0.05);
         padding: 1rem 1.5rem;
         border-radius: 1rem;
         margin-bottom: 0.5rem;
+        flex-shrink: 0;
     }
 
         .curr-progress-box h4 {
@@ -558,7 +554,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-    /* ===== تنسيقات لوحة الشرف ===== */
     .lb-header {
         text-align: center;
         margin-bottom: 1.5rem;
@@ -660,7 +655,6 @@
         border-radius: 0.6rem;
     }
 
-    /* المنتدى */
     .forum-container {
         display: flex;
         flex-direction: column;
@@ -823,7 +817,6 @@
         <div class="player-container" id="playerWrapper" oncontextmenu="return false;">
             <div class="watermark-container hidden" id="watermarkOverlay"><div class="watermark-text">@(User.Identity.IsAuthenticated? User.Identity.Name : "عينة مجانية")</div></div>
 
-            <!-- الطبقات العازلة للتحكم باليوتيوب ومنع كليك يمين -->
             <div class="yt-blocker-center hidden" id="ytBlockerCenter" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
             <div class="yt-blocker-top hidden" id="ytBlockerTop" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
             <div class="yt-blocker-logo hidden" id="ytBlockerLogo" oncontextmenu="return false;"></div>
@@ -976,7 +969,6 @@
                 }
             </div>
         </div>
-
     </div>
 </div>
 
@@ -1074,7 +1066,7 @@
         if(btnElement) btnElement.classList.add('active');
     }
 
-    // --- وظائف منتدى النقاشات (AJAX) ---
+    // --- Forum Functions ---
     async function loadForumPosts() {
         try {
             const response = await fetch(`/api/Forum/${currentCourseId}`);
@@ -1083,17 +1075,14 @@
                 renderPosts(posts);
                 isForumLoaded = true;
             }
-        } catch (error) {
-            console.error("خطأ في تحميل النقاشات:", error);
-        }
+        } catch (error) { console.error(error); }
     }
 
     function renderPosts(posts) {
         const container = document.getElementById('postsList');
         container.innerHTML = '';
-
         if(posts.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 2rem;">لا توجد أسئلة حالياً. كن أول من يطرح سؤالاً!</div>';
+            container.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 2rem;">لا توجد أسئلة حالياً.</div>';
             return;
         }
 
@@ -1108,12 +1097,10 @@
                             <span class="post-date">${r.createdAt}</span>
                         </div>
                         <p class="post-content">${r.content}</p>
-                    </div>
-                `;
+                    </div>`;
             });
 
             let adminBadge = (post.userRole === 'Admin' || post.userRole === 'Teacher') ? '<span class="badge-admin"><i class="fa-solid fa-crown"></i> الإدارة</span>' : '';
-
             const postHtml = `
                 <div class="post-card">
                     <div class="post-head">
@@ -1121,7 +1108,6 @@
                         <span class="post-date">${post.createdAt}</span>
                     </div>
                     <p class="post-content">${post.content}</p>
-
                     <div class="replies-section">
                         ${repliesHtml}
                         <div class="reply-add">
@@ -1129,8 +1115,7 @@
                             <button onclick="submitReply(${post.id})" class="btn-reply">رد</button>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             container.insertAdjacentHTML('beforeend', postHtml);
         });
     }
@@ -1139,18 +1124,9 @@
         const contentBox = document.getElementById('postContent');
         const content = contentBox.value.trim();
         if(!content) return;
-
         try {
-            const res = await fetch('/api/Forum/post', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ CourseId: currentCourseId, Content: content })
-            });
-
-            if(res.ok) {
-                contentBox.value = '';
-                loadForumPosts();
-            }
+            const res = await fetch('/api/Forum/post', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ CourseId: currentCourseId, Content: content }) });
+            if(res.ok) { contentBox.value = ''; loadForumPosts(); }
         } catch(e) { console.error(e); }
     }
 
@@ -1158,25 +1134,13 @@
         const inputBox = document.getElementById(`replyInput_${postId}`);
         const content = inputBox.value.trim();
         if(!content) return;
-
         try {
-            const res = await fetch('/api/Forum/reply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ PostId: postId, Content: content })
-            });
-
-            if(res.ok) {
-                inputBox.value = '';
-                loadForumPosts();
-            }
+            const res = await fetch('/api/Forum/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ PostId: postId, Content: content }) });
+            if(res.ok) { inputBox.value = ''; loadForumPosts(); }
         } catch(e) { console.error(e); }
     }
 </script>
 
 <script>
-    // منع النقر بزر الماوس الأيمن في كامل الصفحة لزيادة الحماية
-    document.addEventListener('contextmenu', function(event) {
-        event.preventDefault();
-    });
+    document.addEventListener('contextmenu', function(event) { event.preventDefault(); });
 </script>
