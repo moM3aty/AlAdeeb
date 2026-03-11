@@ -696,5 +696,36 @@ namespace AlAdeeb.Controllers
             }
             return View();
         }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetStudentPassword(int studentId, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword))
+            {
+                TempData["ErrorMessage"] = "لا يمكن أن تكون كلمة المرور فارغة.";
+                return RedirectToAction(nameof(StudentProfile), new { id = studentId });
+            }
+
+            var student = await _context.Users.FindAsync(studentId);
+            if (student != null && student.Role == "Student")
+            {
+                var passwordHasher = new PasswordHasher<ApplicationUser>();
+                student.PasswordHash = passwordHasher.HashPassword(student, newPassword);
+
+                // طرد الطالب من جميع الأجهزة كإجراء أمني لتسجيل الدخول بالباسورد الجديد
+                student.ActiveSessionsJson = "[]";
+                student.CurrentSessionId = null;
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم تغيير كلمة مرور الطالب بنجاح! وتم تسجيل خروجه من جميع الأجهزة المفتوحة.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "حدث خطأ، الطالب غير موجود.";
+            }
+
+            return RedirectToAction(nameof(StudentProfile), new { id = studentId });
+        }
     }
 }
