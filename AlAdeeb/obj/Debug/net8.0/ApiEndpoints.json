@@ -48,6 +48,292 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetCourseDetails",
+    "RelativePath": "api/mobile/course/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetForumPosts",
+    "RelativePath": "api/mobile/forum/{courseId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "courseId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "AddForumPost",
+    "RelativePath": "api/mobile/forum/post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "req",
+        "Type": "AlAdeeb.Controllers.ForumPostRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "AddForumReply",
+    "RelativePath": "api/mobile/forum/reply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "req",
+        "Type": "AlAdeeb.Controllers.ForumReplyRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetHomeData",
+    "RelativePath": "api/mobile/home",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetLeaderboard",
+    "RelativePath": "api/mobile/leaderboard/{courseId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "courseId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetLiveSessions",
+    "RelativePath": "api/mobile/live-sessions/{courseId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "courseId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "Login",
+    "RelativePath": "api/mobile/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AlAdeeb.Controllers.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetMaterialUrl",
+    "RelativePath": "api/mobile/material-url/{studentId}/{materialId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "materialId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetMyCourses",
+    "RelativePath": "api/mobile/my-courses/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetMyResults",
+    "RelativePath": "api/mobile/my-results/{studentId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/mobile/profile/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AlAdeeb.Controllers.UpdateProfileRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "GetQuiz",
+    "RelativePath": "api/mobile/quiz/{quizId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "quizId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "SubmitQuiz",
+    "RelativePath": "api/mobile/quiz/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "submission",
+        "Type": "AlAdeeb.Controllers.QuizSubmissionModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "Register",
+    "RelativePath": "api/mobile/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AlAdeeb.Controllers.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "Subscribe",
+    "RelativePath": "api/mobile/subscribe",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "courseId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "receiptImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AlAdeeb.Controllers.MobileApiController",
+    "Method": "SubscribeBundle",
+    "RelativePath": "api/mobile/subscribe-bundle",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "studentId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "receiptImage",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "AlAdeeb.Controllers.QuizController",
     "Method": "SubmitQuiz",
     "RelativePath": "api/Quiz/submit",

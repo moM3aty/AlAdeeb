@@ -9,6 +9,27 @@
 }
 
 <style>
+    @@keyframes pulse-live {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+
+        70% {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+    }
+
+    .live-pulse-icon {
+        animation: pulse-live 2s infinite;
+    }
+
     @@font-face {
         font-family: 'Hayah';
         src: url('/fonts/Hayah.otf') format('opentype');
@@ -284,7 +305,6 @@
         margin: 0;
     }
 
-    /* إصلاح السكرول للقائمة الجانبية */
     .sidebar {
         width: 100%;
         background: var(--c-white);
@@ -850,7 +870,6 @@
             <div class="s-tab" onclick="switchTab('leaderboard', this)"><i class="fa-solid fa-trophy"></i> المسابقات</div>
         </div>
 
-        <!-- 1. تبويب المنهج -->
         <div id="tab-curriculum" class="playlist-content">
 
             <div class="curr-progress-box">
@@ -860,6 +879,46 @@
                 </div>
             </div>
 
+            @if (liveSessions != null && liveSessions.Any())
+            {
+                <div class="lesson-group" style="border-color: #bfdbfe; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);">
+                    <div class="lesson-group-title" style="background: #eff6ff; color: #1d4ed8; border-bottom-color: #bfdbfe;">
+                        <i class="fa-solid fa-tower-broadcast" style="color: #ef4444;"></i> لقاءات البث المباشر
+                    </div>
+                    <div class="lesson-items">
+                        @foreach (var session in liveSessions.OrderBy(l => l.ScheduledDate))
+                        {
+                            bool isLocked = isExpired;
+
+                            if (session.IsCompleted)
+                            {
+                                if (!string.IsNullOrEmpty(session.RecordedVideoUrl))
+                                {
+                                    <button onclick="loadContent('@session.RecordedVideoUrl', '@session.Title (تسجيل البث)', 'RecordedLive', this)" class="item-btn" @(isLocked ? "disabled" : "")>
+                                        <div class="item-icon" style="background:#f3e8ff; color:#a855f7;"><i class="fa-solid fa-video"></i></div>
+                                        <div class="item-text">
+                                            <p class="item-title">@session.Title</p>
+                                            <p class="item-meta"><i class="fa-solid fa-clock-rotate-left"></i> بث مسجل - تم بتاريخ @session.ScheduledDate.ToString("yyyy/MM/dd")</p>
+                                        </div>
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <button onclick="window.open('@session.LiveUrl', '_blank')" class="item-btn" style="border-color: #93c5fd; background: #f8fafc;" @(isLocked ? "disabled" : "")>
+                                    <div class="item-icon live-pulse-icon" style="background:#fee2e2; color:#ef4444;"><i class="fa-solid fa-headset"></i></div>
+                                    <div class="item-text">
+                                        <p class="item-title" style="color: #2563eb; font-size: 1.1rem;">@session.Title</p>
+                                        <p class="item-meta" style="color: #ef4444; font-weight: 900; font-size: 0.9rem;">
+                                            <i class="fa-regular fa-calendar-check"></i> موعد الدخول: @session.ScheduledDate.ToString("yyyy/MM/dd - hh:mm tt")
+                                        </p>
+                                    </div>
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            }
             @if (Model.Lessons != null && Model.Lessons.Any())
             {
                 foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderIndex))
@@ -920,7 +979,6 @@
             }
         </div>
 
-        <!-- 2. تبويب منتدى النقاشات -->
         <div id="tab-forum" class="playlist-content hidden">
             <div class="forum-container">
                 <div class="forum-add-post">
@@ -933,7 +991,6 @@
             </div>
         </div>
 
-        <!-- 3. تبويب لوحة الشرف -->
         <div id="tab-leaderboard" class="playlist-content hidden">
             <div class="lb-header">
                 <i class="fa-solid fa-trophy"></i>

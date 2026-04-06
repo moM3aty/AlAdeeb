@@ -1,4 +1,5 @@
 D:\Dev\AlAdeeb\AlAdeeb\obj\Release\net8.0\PubTmp\Out\AlAdeeb.exe
+D:\Dev\AlAdeeb\AlAdeeb\obj\Release\net8.0\PubTmp\Out\AlAdeeb Mobile APIs Postman Collection.json
 D:\Dev\AlAdeeb\AlAdeeb\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
 D:\Dev\AlAdeeb\AlAdeeb\obj\Release\net8.0\PubTmp\Out\appsettings.json
 D:\Dev\AlAdeeb\AlAdeeb\obj\Release\net8.0\PubTmp\Out\AlAdeeb.dll

@@ -1,3 +1,4 @@
+wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\fonts\Hayah.otf
 wwwroot\images\1.jpg
@@ -79,4 +80,3 @@ wwwroot\uploads\receipts\71ddbcf7-b259-4626-9f09-8be1e8580f4e_1.jpg
 wwwroot\uploads\receipts\87979a9a-5208-434a-a52e-a8f73d3dfbc9_4.png
 wwwroot\uploads\receipts\b599e58f-a3f3-4552-9027-b9ad59e898dd_1.jpg
 wwwroot\uploads\receipts\e4789a7f-3f79-4f0d-bc83-6f5940fcab27_1.jpg
-wwwroot\css\site.css
