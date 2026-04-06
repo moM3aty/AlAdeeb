@@ -89,78 +89,23 @@
         min-height: 400px;
     }
 
-    .yt-blocker-center {
+    .yt-blocker-main {
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 55px;
-        z-index: 14;
-        background: transparent;
-        cursor: default;
-    }
-
-    .yt-blocker-top {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 90px;
+        right: 160px;
+        bottom: 0;
         z-index: 15;
         background: transparent;
         cursor: default;
     }
 
-    .yt-blocker-logo {
+    .yt-blocker-right-bottom {
         position: absolute;
-        bottom: 45px;
-        right: 5px;
+        top: 70px;
+        right: 0;
         width: 160px;
-        height: 75px;
-        z-index: 15;
-        background: transparent;
-        cursor: default;
-    }
-
-    .yt-blocker-avatar {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 80px;
-        height: 80px;
-        z-index: 15;
-        background: transparent;
-        cursor: default;
-    }
-
-    .yt-blocker-avatar-left {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        width: 80px;
-        height: 80px;
-        z-index: 15;
-        background: transparent;
-        cursor: default;
-    }
-
-    .yt-blocker-yt-text {
-        position: absolute;
         bottom: 0;
-        right: 50px;
-        width: 80px;
-        height: 50px;
-        z-index: 15;
-        background: transparent;
-        cursor: default;
-    }
-
-    .yt-blocker-progress {
-        position: absolute;
-        bottom: 0;
-        left: 140px;
-        right: 140px;
-        height: 50px;
         z-index: 15;
         background: transparent;
         cursor: default;
@@ -836,13 +781,8 @@
         <div class="player-container" id="playerWrapper" oncontextmenu="return false;">
             <div class="watermark-container hidden" id="watermarkOverlay"><div class="watermark-text">@(User.Identity.IsAuthenticated? User.Identity.Name : "عينة مجانية")</div></div>
 
-            <div class="yt-blocker-center hidden" id="ytBlockerCenter" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-top hidden" id="ytBlockerTop" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-logo hidden" id="ytBlockerLogo" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-avatar hidden" id="ytBlockerAvatar" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-avatar-left hidden" id="ytBlockerAvatarLeft" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-yt-text hidden" id="ytBlockerYtText" title="يمنع الخروج لليوتيوب" oncontextmenu="return false;"></div>
-            <div class="yt-blocker-progress hidden" id="ytBlockerProgress" oncontextmenu="return false;"></div>
+            <div class="yt-blocker-main hidden" id="ytBlockerMain" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
+            <div class="yt-blocker-right-bottom hidden" id="ytBlockerRightBottom" title="يمنع النسخ والخروج من المنصة" oncontextmenu="return false;"></div>
 
             <iframe id="mainViewer" class="player-iframe hidden" src="" allow="autoplay; fullscreen" allowfullscreen oncontextmenu="return false;"></iframe>
             <video id="videoViewer" class="player-iframe hidden" controls controlsList="nodownload" oncontextmenu="return false;"></video>
@@ -1068,24 +1008,14 @@
         var iframeViewer = document.getElementById('mainViewer');
         var videoViewer = document.getElementById('videoViewer');
 
-        var blockerCenter = document.getElementById('ytBlockerCenter');
-        var blockerTop = document.getElementById('ytBlockerTop');
-        var blockerLogo = document.getElementById('ytBlockerLogo');
-        var blockerAvatar = document.getElementById('ytBlockerAvatar');
-        var blockerAvatarLeft = document.getElementById('ytBlockerAvatarLeft');
-        var blockerYtText = document.getElementById('ytBlockerYtText');
-        var blockerProgress = document.getElementById('ytBlockerProgress');
+        var blockerMain = document.getElementById('ytBlockerMain');
+        var blockerRightBottom = document.getElementById('ytBlockerRightBottom');
         var watermark = document.getElementById('watermarkOverlay');
 
         iframeViewer.classList.add('hidden');
         videoViewer.classList.add('hidden');
-        blockerCenter.classList.add('hidden');
-        blockerTop.classList.add('hidden');
-        blockerLogo.classList.add('hidden');
-        blockerAvatar.classList.add('hidden');
-        blockerAvatarLeft.classList.add('hidden');
-        blockerYtText.classList.add('hidden');
-        blockerProgress.classList.add('hidden');
+        blockerMain.classList.add('hidden');
+        blockerRightBottom.classList.add('hidden');
         watermark.classList.add('hidden');
 
         iframeViewer.src = "";
@@ -1106,13 +1036,8 @@
             iframeViewer.src = embedUrl;
             iframeViewer.classList.remove('hidden');
 
-            blockerCenter.classList.remove('hidden');
-            blockerTop.classList.remove('hidden');
-            blockerLogo.classList.remove('hidden');
-            blockerAvatar.classList.remove('hidden');
-            blockerAvatarLeft.classList.remove('hidden');
-            blockerYtText.classList.remove('hidden');
-            blockerProgress.classList.remove('hidden');
+            blockerMain.classList.remove('hidden');
+            blockerRightBottom.classList.remove('hidden');
             watermark.classList.remove('hidden');
         }
 
