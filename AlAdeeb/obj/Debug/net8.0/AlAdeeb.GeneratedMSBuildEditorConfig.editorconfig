@@ -9,165 +9,165 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AlAdeeb
 build_property.RootNamespace = AlAdeeb
-build_property.ProjectDir = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\Projects\AlAdeeb\AlAdeeb\
+build_property.ProjectDir = D:\Dev\AlAdeeb\AlAdeeb\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\Projects\AlAdeeb\AlAdeeb
+build_property.MSBuildProjectDirectory = D:\Dev\AlAdeeb\AlAdeeb
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Account/ForgotPassword.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Account/ForgotPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxGb3Jnb3RQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Account/Login.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Account/Register.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Account/ResetPassword.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Account/ResetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZXNldFBhc3N3b3JkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/AddQuiz.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/AddQuiz.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkUXVpei5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/AddStudentManual.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/AddStudentManual.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkU3R1ZGVudE1hbnVhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/ChangePassword.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/ChangePassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ2hhbmdlUGFzc3dvcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/CourseDetails.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/CourseDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ291cnNlRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/CreateCourse.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/CreateCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlQ291cnNlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/Discussions.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/Discussions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGlzY3Vzc2lvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/EditCourse.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/EditCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdENvdXJzZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/EditQuiz.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/EditQuiz.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdFF1aXouY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/Index.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/PlatformSettings.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/PlatformSettings.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGxhdGZvcm1TZXR0aW5ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/QuestionBank.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/QuestionBank.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUXVlc3Rpb25CYW5rLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/StudentProfile.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/StudentProfile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3R1ZGVudFByb2ZpbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/StudentsList.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/StudentsList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3R1ZGVudHNMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/SubscriptionRequests.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/SubscriptionRequests.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3Vic2NyaXB0aW9uUmVxdWVzdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Admin/TeachersList.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Admin/TeachersList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVGVhY2hlcnNMaXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Course/Details.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Course/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Home/About.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Home/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Home/Index.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Home/Privacy.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Live/ManageLiveSessions.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Live/ManageLiveSessions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGl2ZVxNYW5hZ2VMaXZlU2Vzc2lvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Shared/_AdminLayout.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Shared/_AdminLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/BrowseCourses.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/BrowseCourses.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxCcm93c2VDb3Vyc2VzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/Certificate.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/Certificate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxDZXJ0aWZpY2F0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/CourseContent.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/CourseContent.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxDb3Vyc2VDb250ZW50LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/Dashboard.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxEYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/Profile.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/Results.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/Results.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxSZXN1bHRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/Subscribe.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/Subscribe.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxTdWJzY3JpYmUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/SubscribeBundle.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/SubscribeBundle.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxTdWJzY3JpYmVCdW5kbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Student/TakeQuiz.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Student/TakeQuiz.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxUYWtlUXVpei5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/_ViewImports.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/_ViewStart.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/Projects/AlAdeeb/AlAdeeb/Views/Shared/_Layout.cshtml]
+[D:/Dev/AlAdeeb/AlAdeeb/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-wedodlu6yk
